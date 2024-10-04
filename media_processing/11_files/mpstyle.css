@@ -1,0 +1,149 @@
+BODY {
+    width: 85%;
+    margin-top: 4em;
+    margin-right: 4em;
+    margin-bottom: 4em;
+    margin-left: 4em;
+    color: #666666;
+}
+H2 {
+    width: 100%;
+    font-weight: BOLD;
+    color: #FFFFFF;
+    font-size: 2.0em;
+    background-color: #00CCCC;
+    border: 1px none #9999CC;
+    border-top: 2px solid #00FFFF;
+    border-right: 2px solid #0066CC;
+    border-bottom: 2px solid #0066CC;
+    border-left: 2px solid #00FFFF;
+    padding: 10px 10px 10px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+H3 {
+    width: 95%;
+    font-weight: BOLD;
+    color: #FFFFFF;
+    font-size: 1.4em;
+    background-color: #00CCCC;
+    border: 1px none #9999CC;
+    border-top: 2px solid #00FFFF;
+    border-right: 2px solid #0066CC;
+    border-bottom: 2px solid #0066CC;
+    border-left: 2px solid #00FFFF;
+    padding: 10px 10px 10px 15px;
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    margin-left: 8px;
+}
+H4 {
+    width: 95%;
+    font-weight: BOLD;
+    color: #FFFFFF;
+    font-size: 1.0em;
+    background-color: #00CCCC;
+    border: 1px none #9999CC;
+    border-top: 2px solid #00FFFF;
+    border-right: 2px solid #0066CC;
+    border-bottom: 2px solid #0066CC;
+    border-left: 2px solid #00FFFF;
+    padding: 10px 10px 10px 20px;
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    margin-left: 8px;
+}
+H5 {
+    width: 100%;
+    font-size: 1em;
+}
+A:link {
+    color: #000099;
+}
+A:visited {
+    color: #000099;
+}
+A:hover {
+    color: #ff0000;
+}
+H4 A:link {
+    color: #ffffff;
+}
+H4 A:visited {
+    color: #ffffff;
+}
+H4 A:hover {
+    color: #ff0000;
+}
+P {
+    margin-right: 2em;
+    margin-left: 2em;
+    text-indent: 1em;
+}
+Pn {
+    margin-right: 2em;
+    margin-left: 2em;
+}
+.i {
+    margin: 0em 1em 0em 1em;
+}
+PRE.c {
+    border: 1px solid gray;
+    padding: 5px;
+    white-space: pre;
+    width: 90%;
+    margin-right: 2em;
+    margin-left: 2em;
+    background-color: #fffff0;
+}
+DIV.c {
+    border: 1px solid gray;
+    padding: 5px;
+    width: 100%;
+    background-color: #fffff0;
+}
+EM {
+    color: #cc0000;
+    font-style: normal;
+    font-weight: BOLD;
+}
+EMS {
+    color: #cc0000;
+    font-style: normal;
+}
+
+/* 用語集 */
+.term H4 {
+    color: #333355;
+    margin: 1.3em 0em 0.6em 0em;
+    border: 1px solid #c0c0c0;
+    background-color: #e0e0e0;
+    padding: 2px 2px 2px 4px;
+}
+
+/* HTMLリファレンス */
+TABLE.p { /* Plain color */
+    background-color: #fffcf8;
+    border-color: #c0c0c0;
+    border-collapse: collapse;
+}
+TABLE.p TH {
+    border-color: #999999;
+}
+TABLE.p TD {
+    border-color: #999999;
+}
+TR.th { /* Table Header */
+    background-color: #CCCCFF;
+}
+TR.at { /* ATtribute list */
+    background-color: #CCCCFF;
+}
+TR.ss { /* Sample Source */
+    background-color: #FFCCCC;
+}
+TR.sv { /* Sample View */
+    background-color: #DDFFDD;
+}
