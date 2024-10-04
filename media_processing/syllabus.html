@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Syllabus対策</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <h1>シラバス対策</h1>
+    <ol>
+        <li>画像データの種類を挙げ、それぞれの特徴を説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>階調数と量子化レベルを変更できる</li>
+        <p class="answer">answer</p>
+
+        <li>濃度値ヒストグラムについて説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>ヒストグラムの線形変換、平坦化、正規化ができる</li>
+        <p class="answer">answer</p>
+
+        <li>画像の1次微分とエッジ検出について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>画像の2次微分と輪郭強調について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>ウィンドウ処理とマスク処理の違いを説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>ウィンドウとマスクによる処理範囲の指定ができる</li>
+        <p class="answer">answer</p>
+
+        <li>多値画像を2値化できる</li>
+        <p class="answer">answer</p>
+
+        <li>独立領域を抽出し、その重心を算出できる</li>
+        <p class="answer">answer</p>
+
+        <li>膨張と収縮の効果について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>4近傍法による画素の膨張収縮処理ができる</li>
+        <p class="answer">answer</p>
+
+        <li>アフィン変換式の係数の意味について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>雑音除去の代表的な手法を挙げ、その概要を説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>移動平均法、中央値フィルタによる平滑化処理ができる</li>
+        <p class="answer">answer</p>
+
+        <li>音波と聴覚について図示説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>音の三要素を挙げ、説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>標本化の定理について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>音声波形を合成し、それを音として出力できる</li>
+        <p class="answer">answer</p>
+
+        <li>任意の周波数の音を発生できる</li>
+        <p class="answer">answer</p>
+        
+        <li>音階情報に基づいて楽曲を演奏できる</li>
+        <p class="answer">answer</p>
+
+        <li>波形と周波数の関係について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>再生パラメータと再生音の関係を説明し、変更できる</li>
+        <p class="answer">answer</p>
+
+        <li>周波数分析の原理について、図示説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>コサイン変換とサイン変換の関係を説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>フーリエ変換とその高速化手法の原理を説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>ディジタルカメラモデルの概要について図示説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>座標系とその変換、投影について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>形状モデルの種類と特徴について説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>形状表現の手法について具体例を挙げながら説明できる</li>
+        <p class="answer">answer</p>
+
+        <li>代表的なレンダリング手法と特徴について説明できる</li>
+        <p class="answer">answer</p>
+        
+    </ol>
+    <script>
+        // すべての answer クラスを取得
+        const answers = document.querySelectorAll('.answer');
+
+        // それぞれの answer の前の <li> 要素にクリックイベントを追加
+        answers.forEach((answer) => {
+            const listItem = answer.previousElementSibling; // 直前の <li> 要素を取得
+
+            listItem.addEventListener('click', () => {
+                // クリック時に回答の表示・非表示を切り替える
+                if (answer.style.display === 'none') {
+                    answer.style.display = 'block'; // 表示
+                } else {
+                    answer.style.display = 'none'; // 非表示
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
