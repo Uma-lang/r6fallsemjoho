@@ -1,0 +1,251 @@
+/* 全体のスタイル */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2em;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+h4 {
+    font-size: 1.5em;
+    color: #34495e;
+    border-left: 5px solid #3498db;
+    padding-left: 10px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+h4 a {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+p {
+    text-align: justify;
+    padding: 0 10px;
+    margin: 15px 0;
+}
+
+/* リンクのスタイル */
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1abc9c;
+    text-decoration: underline;
+}
+
+/* 画像のスタイル */
+img {
+    max-width: 80%;
+    height: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+}
+
+img[alt="highlight"] {
+    border: 2px solid #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+}
+
+/* セクション中央揃え */
+div[align="center"] {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* テーブル全体のスタイル */
+table {
+    width: 90%;
+    margin: 30px auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+    border-radius: 12px;
+}
+
+/* テーブルの各セルスタイル */
+td,
+th {
+    padding: 10px 15px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    font-size: 1.1em;
+    border-bottom: 1px solid #eeeeee;
+}
+
+/* テーブルのヘッダースタイル */
+th {
+    background-color: #3498db;
+    color: #ffffff;
+    font-weight: bold;
+    border-top: 1px solid transparent;
+}
+
+/* 偶数行と奇数行の背景色 */
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ecf0f1;
+}
+
+/* 列ヘッダーのスタイリング */
+td[bgcolor="powderblue"] {
+    background-color: #2980b9;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.2em;
+    border-radius: 12px 0 0 12px;
+}
+
+/* 各講義内容セルのスタイリング */
+td[bgcolor="aquamarine"] {
+    background-color: #e8f8f5;
+    color: #34495e;
+    padding-left: 30px;
+    text-align: left;
+    border-radius: 0 12px 12px 0;
+}
+
+/* テーブル全体の境界 */
+td:first-child {
+    border-left: none;
+}
+
+td:last-child {
+    border-right: none;
+}
+
+/* テーブルホバースタイル */
+tbody tr:hover {
+    background-color: #dff9fb;
+    transition: background-color 0.3s ease;
+}
+
+/* テーブル内リンクのスタイリング */
+table td a {
+    color: #2980b9;
+}
+
+table td a:hover {
+    color: #1abc9c;
+}
+
+/* リスト全体のスタイル */
+ol {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    list-style-type: decimal;
+}
+
+/* リスト項目のスタイリング */
+ol li {
+    padding: 10px;
+    margin: 5px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+/* リストの最後の項目のボーダーを消す */
+ol li:last-child {
+    border-bottom: none;
+}
+
+/* 番号スタイル */
+ol li::marker {
+    font-weight: bold;
+    color: #3498db;
+}
+
+/* リスト項目のテキストカラー */
+ol li:hover {
+    background-color: #ecf0f1;
+    transition: background 0.3s ease;
+}
+
+/* 追加スタイル：answer クラスの初期状態を非表示に */
+.answer {
+    display: none;
+    /* 初期状態では非表示 */
+    background-color: #ecf0f1;
+    padding: 5px 10px;
+    border-left: 3px solid #3498db;
+    margin: 5px 0;
+}
+
+/* リスト項目と回答をクリックした際のスタイル */
+li,
+.answer {
+    cursor: pointer;
+}
+
+/* テキストの強調スタイル */
+strong,
+b {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* 補足情報のスタイル */
+em {
+    background-color: #f1c40f;
+    padding: 2px 4px;
+    color: #fff;
+    border-radius: 3px;
+}
+
+/* ボタンスタイル */
+button,
+input[type="submit"] {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin: 10px;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background: #2980b9;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #3498db;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+}
