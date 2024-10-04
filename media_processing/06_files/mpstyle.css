@@ -1,0 +1,127 @@
+/* 全体のスタイル */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2em;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+h4 {
+    font-size: 1.5em;
+    color: #34495e;
+    border-left: 5px solid #3498db;
+    padding-left: 10px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+p {
+    text-align: justify;
+    padding: 0 10px;
+    margin: 15px 0;
+}
+
+/* リンクのスタイル */
+a {
+    text-decoration: none;
+    color: #3498db;
+}
+
+a:hover {
+    color: #1abc9c;
+    text-decoration: underline;
+}
+
+/* 画像のスタイル */
+img {
+    max-width: 80%;
+    height: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+}
+
+img[alt="highlight"] {
+    border: 2px solid #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+}
+
+/* セクション中央揃え */
+div[align="center"] {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* テーブルスタイル */
+table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+/* 見出しスタイル */
+h4 a {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* 補足情報のスタイル */
+em {
+    background-color: #f1c40f;
+    padding: 2px 4px;
+    color: #fff;
+    border-radius: 3px;
+}
+
+b {
+    font-weight: 600;
+}
+
+/* ボタンスタイル */
+button, input[type="submit"] {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin: 10px;
+}
+
+button:hover, input[type="submit"]:hover {
+    background: #2980b9;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #3498db;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+}
