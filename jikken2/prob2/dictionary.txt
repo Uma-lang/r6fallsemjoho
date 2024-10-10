@@ -1,0 +1,17 @@
+password
+123456
+qwerty
+abc123
+letmein
+monkey
+password1
+hello
+zipper
+test
+ziptest
+admin
+guest
+welcome
+root
+superuser
+administrator
