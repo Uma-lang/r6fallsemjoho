@@ -1,5 +1,8 @@
 /* ベースのリセット */
-body, h1, ul, li {
+body,
+h1,
+ul,
+li {
     margin: 0;
     padding: 0;
 }
@@ -46,11 +49,69 @@ a:hover {
     background-color: #2980b9;
 }
 
+h2 {
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-top: 30px;
+}
+
+/* コードブロック全体のスタイル */
+pre {
+    background-color: #282c34;  /* 背景色をダークに */
+    color: #ffffff;  /* 文字色を白に */
+    padding: 20px;  /* 内側余白 */
+    border-radius: 8px;  /* 角を丸く */
+    overflow-x: auto;  /* 横スクロールを有効に */
+    border: 1px solid #333;  /* 外枠を暗い灰色に */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);  /* ドロップシャドウ */
+    margin: 20px 0;  /* 上下の外側余白 */
+}
+
+/* コード内のスタイル */
+code {
+    font-family: "Courier New", Courier, monospace;  /* 等幅フォントを指定 */
+    font-size: 14px;  /* 文字サイズを指定 */
+    line-height: 1.5;  /* 行間の調整 */
+    white-space: pre-wrap;  /* 改行を保持 */
+}
+
+/* 強調表示用の色設定 */
+pre code {
+    color: #c5c8c6;  /* デフォルトの文字色 */
+}
+
+/* コメント部分の色を変更 */
+pre code span.comment {
+    color: #12c92a;
+    font-style: italic;
+}
+
+/* キーワードの色設定 */
+pre code span.keyword {
+    color: #cc99cd;
+}
+
+/* 文字列リテラルの色設定 */
+pre code span.string {
+    color: #b5bd68;
+}
+
+/* 関数名の色設定 */
+pre code span.function {
+    color: #81a2be;
+}
+
+/* 数字の色設定 */
+pre code span.number {
+    color: #de935f;
+}
+
 @media (max-width: 600px) {
     body {
         padding: 20px;
     }
-    
+
     h1 {
         font-size: 2em;
     }
