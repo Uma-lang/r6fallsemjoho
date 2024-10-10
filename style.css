@@ -63,9 +63,11 @@ pre {
     padding: 20px;  /* 内側余白 */
     border-radius: 8px;  /* 角を丸く */
     overflow-x: auto;  /* 横スクロールを有効に */
+    overflow-y: hidden;  /* 縦スクロールを無効に */
     border: 1px solid #333;  /* 外枠を暗い灰色に */
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);  /* ドロップシャドウ */
     margin: 20px 0;  /* 上下の外側余白 */
+    max-height: none;  /* 縦方向の高さ制限を解除 */
 }
 
 /* コード内のスタイル */
@@ -73,7 +75,9 @@ code {
     font-family: "Courier New", Courier, monospace;  /* 等幅フォントを指定 */
     font-size: 14px;  /* 文字サイズを指定 */
     line-height: 1.5;  /* 行間の調整 */
-    white-space: pre-wrap;  /* 改行を保持 */
+    white-space: pre;  /* 改行を無効にして横スクロールを有効に */
+    overflow-x: auto;  /* 横スクロールを有効に */
+    overflow-y: hidden;  /* 縦スクロールを無効に */
 }
 
 /* 強調表示用の色設定 */
