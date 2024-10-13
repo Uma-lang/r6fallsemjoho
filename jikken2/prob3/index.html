@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>prob2_1</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <h1>バイナリ解析</h1>
+    <h2><a href="prob3_1.py">問3.1 可読文字の抽出(string)</a></h2>
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import <a class="underline" href="sys.html">sys</a>
+    
+        def main():
+            file = "malware.ex_"<span class="comment"># 読み込むバイナリファイルを指定</span>
+            with <a class="underline" href="open.html">open</a>(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
+                buff = f.read()  <span class="comment"># ファイル内容をバッファに読み込む</span>
+            
+            printable = <span class="string">''</span>
+            
+            <span class="keyword">for</span> byte <span class="keyword">in</span> buff:
+                <span class="keyword">if</span> <span class="number">32</span> &lt;= byte &lt;= <span class="number">126</span>:  <span class="comment"># ASCIIの印字可能文字（32から126）の範囲内かチェック</span>
+                    printable += <span class="function">chr</span>(byte)  <span class="comment"># 該当する場合、文字として追加</span>
+            
+            <span class="function">print</span>(printable)  <span class="comment"># 集めた印字可能文字を出力またはmoreコマンドでも可能</span>
+    
+        if __name__ == "__main__":
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>MZ@!L!This program cannot be run in DOS mode.$=dyLyLyLLxLLRLLrLyLLL|LyLJLLxLLxLRichyLPEL;N@@P@</code></pre>
+
+    <h2><a href="prob3_2.py">問題3.2 通信内容のデコード(BASE64)</a></h2>
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import string, base64
+
+        '''
+        def main():
+            s = "aG9zdG5hbWUtZm9v"
+            ds = base64.decodestring(s.encode('utf-8')) # base64.decodestring()は非推奨
+            print(ds.decode('utf-8'))
+        '''
+
+        def main():
+            s = "aG9zdG5hbWUtZm9v"
+            ds = base64.b64decode(s.encode('utf-8'))
+            print(ds.decode('utf-8'))
+
+        if __name__ == "__main__":
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>hostname-foo</code></pre>
+
+    <h2><a href="prob3_3.py">問題3.3 通信先の抽出(XOR)</a></h2>
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import string <span class="comment"># asciiコードを使うため</span>
+
+        def main():
+            file = "malware.ex_"  <span class="comment"># 読み込むファイルの名前</span>
+            with open(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
+                buf = f.read()  <span class="comment"># ファイルの内容をすべて読み込む(バイト列)</span>
+            
+            xor_key = <span class="number">0x3B</span>  <span class="comment"># XORに使用するキー</span>
+            
+            plaintext = <span class="string">'www.practicalmalwareanalysis.com'</span> <span class="comment"># 検索するアドレス</span>
+            xor_encode = []  <span class="comment"># アドレスをエンコードした値を格納する</span>
+            <span class="keyword">for</span> char <span class="keyword">in</span> plaintext:
+                encode_char = <span class="function">ord</span>(char) ^ xor_key  <span class="comment"># xorエンコード</span>
+                xor_encode.append(encode_char)  <span class="comment"># リストに追加</span>
+                
+            encode_byte = <span class="function">bytes</span>(xor_encode)  <span class="comment"># xor_encodeはリストオブジェクトなので、バイト列に変換</span>
+            index = buf.find(encode_byte)  <span class="comment"># findメソッドでencode_byteを検索</span>
+            <span class="function">print</span>(f<span class="string">"オフセット:{index}"</span>)
+
+        if __name__ == "__main__":
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>オフセット:368</code></pre>
+
+    <h2><a href="prob3_4.py">問題3.4 通信先の検索(XORsearchi)</a></h2>
+    <pre><code>
+        # -*- coding: utf-8 -*-
+
+        def main():
+            file = "malware.ex_"  <span class="comment"># 読み込むファイルの名前</span>
+            with open(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
+                buf = f.read()  <span class="comment"># ファイルの内容をすべて読み込む（バイト列）</span>
+
+            plaintext = <span class="string">'www.practicalmalwareanalysis.com'</span>  <span class="comment"># 検索する文字列</span>
+            possible_keys = <span class="function">range</span>(<span class="number">256</span>)  <span class="comment"># 0x00から0xFFまでのすべてのXORキー</span>
+
+            <span class="keyword">for</span> xor_key <span class="keyword">in</span> possible_keys:
+                xor_encode = [] <span class="comment"># アドレスをエンコードした値を格納する、毎回ここでリストをリセットしている</span>
+                <span class="keyword">for</span> char <span class="keyword">in</span> plaintext:
+                    encode_char = <span class="function">ord</span>(char) ^ xor_key <span class="comment">#xorエンコード</span>
+                    xor_encode.append(encode_char) <span class="comment">#リストに追加</span>
+                
+                encode_byte = <span class="function">bytes</span>(xor_encode) <span class="comment">#xor_encodeはリストオブジェクトなので、バイト列に変換</span>
+                index = buf.find(encode_byte) <span class="comment"># エンコードされたバイト列をファイル内で検索</span>
+                <span class="keyword">if</span> index != -<span class="number">1</span>: <span class="comment">#もし一致したら</span>
+                    <span class="function">print</span>(f<span class="string">"XORキー: 0x{xor_key:02X}, オフセット: {index}"</span>)
+
+       if __name__ == "__main__":
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>XORキー: 0x3B, オフセット: 368</code></pre>
