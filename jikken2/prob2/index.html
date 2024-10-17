@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>prob2</title>
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <h2><a href="prob2_1.py">問2.1 例外処理</a></h2>
+    以下のサンプルプログラムを実行し、実行結果を確認する。パスワードの文字列を変更して再度実行し、例外処理も仕組みについて理解する。
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import zipfile
+        def main():
+            zipfilename = 'test1.zip'
+            password = "test"
+            zip_file = zipfile.ZipFile(zipfilename)
+            try:
+                zip_file.extractall(pwd=password.encode('utf-8'))
+                print('Password found: %s' % password)
+            except:
+                print('Wrong password: %s' % password)
+        if __name__ == '__main__':
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>Password found: test</code></pre>
+
+    <h2><a href="prob2_2.py">問2.2 辞書攻撃</a></h2>
+    "<a style="all: unset; color: blue;"
+        href="dictionary.txt">dictionary.txt</a>ファイルを１行ずつ読み込み、その文字列をパスワードとして"tset1.zip"を解凍するプログラムを作成せよ。
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import zipfile
+        def main():
+            zipfilename = 'test1.zip'  <span class="comment"># 解凍対象のZIPファイル</span>
+            dictionary = 'dictionary.txt'  <span class="comment"># 使用する辞書ファイル</span>
+            password = None
+            zip_file = zipfile.ZipFile(zipfilename)  <span class="comment"># ZIPファイルをオープン</span>
+            <span class="keyword">with</span> <span class="function">open</span>(dictionary, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> file:
+                <span class="keyword">for</span> line <span class="keyword">in</span> file:
+                    password = line.strip()  <span class="comment"># 改行を削除してパスワードを設定</span>
+                    <span class="keyword">try</span>:
+                        zip_file.extractall(pwd=password.encode(<span class="string">'utf-8'</span>))
+                        print(<span class="string">f"Password found: {password}"</span>)
+                        <span class="keyword">return</span>  <span class="comment"># 正しいパスワードが見つかったらプログラムを終了</span>
+                    <span class="keyword">except</span>:
+                        print(<span class="string">f"Wrong password: {password}"</span>)  <span class="comment"># パスワードが間違っていた場合</span>
+            print(<span class="string">"Password not found in dictionary."</span>)
+        if __name__ == '__main__':
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>
+        Wrong password: password
+        Wrong password: 123456
+        Wrong password: qwerty
+        Wrong password: abc123
+        Wrong password: letmein
+        Wrong password: monkey
+        Wrong password: password1
+        Wrong password: hello
+        Wrong password: zipper
+        Password found: test
+    </code></pre>
+
+    <h2><a href="prob2_3.py">問2.3 ブルートフォース攻撃(固定長の数字)</a></h2>
+    "test2.zip"には２行の数字がパスワードとして設定されている。"test2.zip"のパスワードを総当たりして解凍するプログラムを作成せよ。
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import zipfile
+        def main():
+            zipfilename = 'test2.zip'  <span class="comment"># 解凍対象のZIPファイル名</span>
+            zip_file = zipfile.ZipFile(zipfilename)  <span class="comment"># ZIPファイルを開く</span>
+            <span class="comment"># 2桁の数字の全組み合わせ（00～99）を試す</span>
+            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">100</span>):
+                password = <span class="string">f"{i:02d}"</span>  <span class="comment"># 2桁の文字列に変換（例：1 → '01'）</span>
+                <span class="keyword">try</span>:
+                    zip_file.extractall(pwd=password.encode(<span class="string">'utf-8'</span>))
+                    print(<span class="string">f"Password found: {password}"</span>)  <span class="comment"># 正しいパスワードが見つかった場合</span>
+                    <span class="keyword">return</span>  <span class="comment"># パスワードが見つかったらプログラムを終了</span>
+                <span class="keyword">except</span>:
+                    print(<span class="string">f"Wrong password: {password}"</span>)  <span class="comment"># パスワードが間違っていた場合は次のパスワードを試す</span>
+            print(<span class="string">"Password not found in the range 00-99."</span>)  <span class="comment"># すべてのパスワードを試しても見つからなかった場合</span>
+        if __name__ == '__main__':
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>
+        Wrong password: 00
+        Wrong password: 01
+        Wrong password: 02
+        Wrong password: 03
+        Wrong password: 04
+        Wrong password: 05
+        Wrong password: 06
+        Wrong password: 07
+        Wrong password: 08
+        Wrong password: 09
+        Wrong password: 10
+        Wrong password: 11
+        Wrong password: 12
+        Wrong password: 13
+        Wrong password: 14
+        Wrong password: 15
+        Wrong password: 16
+        Wrong password: 17
+        Wrong password: 18
+        Wrong password: 19
+        Wrong password: 20
+        Wrong password: 21
+        Wrong password: 22
+        Wrong password: 23
+        Password found: 24
+    </code></pre>
+
+    <h2><a href="prob2_4.py">問2.4 ブルートフォース攻撃(任意長の英数字)</a></h2>
+    2.3で作成したプログラムを、再帰処理を利用して任意の長さの英数字に対応できるように改良せよ。
+    <pre><code>
+        # -*- coding: utf-8 -*-
+        import zipfile
+        <span class="comment"># 再帰関数：全ての組み合わせを試す</span>
+        def recur(password, length):
+            zipfilename ='test3.zip'  <span class="comment"># 解凍するZIPファイル名</span>
+            zip_file = zipfile.ZipFile(zipfilename)
+            chars = <span class="string">'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>  <span class="comment"># 英数字の文字セット</span>
+            <span class="comment"># 現在のパスワードの長さが指定された長さに達した場合、解凍を試す</span>
+            <span class="keyword">if</span> <span class="function">len</span>(password) == length:
+                <span class="keyword">try</span>:
+                    zip_file.extractall(pwd=password.encode(<span class="string">'utf-8'</span>))
+                    print(<span class="string">f"Password found: {password}"</span>)
+                    <span class="keyword">return True</span>  <span class="comment"># 正しいパスワードが見つかったら終了</span>
+                <span class="keyword">except</span>:
+                    print(password)
+                    <span class="keyword">return False</span>  <span class="comment"># パスワードが間違っていた場合はFalseを返す</span>
+            <span class="comment"># 次のパスワード候補を試す（0～9, a-z, A-Z の文字を追加）</span>
+            <span class="keyword">for</span> char <span class="keyword">in</span> chars:
+                next_password = password + char
+                <span class="keyword">if</span> recur(next_password, length):
+                    <span class="keyword">return True</span>  <span class="comment"># パスワードが見つかったら再帰を終了</span>
+            <span class="keyword">return False</span>  <span class="comment"># 全ての組み合わせを試しても見つからなかった場合</span>
+        <span class="comment"># メイン関数</span>
+        def main():
+            length = 3  <span class="comment"># 試すパスワードの長さ（3桁）</span>
+            password = ""  <span class="comment"># 初期のパスワードを空文字列に設定</span>
+            recur(password, length)  <span class="comment"># 再帰関数を呼び出して全ての組み合わせを試す</span>
+        if __name__ == '__main__':
+            main()
+    </code></pre>
+    実行結果<br>
+    <pre><code>
+        000
+        001
+        002
+        003
+        004
+        005
+        006
+        007
+        008
+        009
+        00a
+        00b
+        00c
+        00d
+        00e
+        00f
+        00g
+        00h
+        00i
+        00j
+        00k
+        00l
+        00m
+        00n
+        Password found: 00o
+    </code></pre>
+</body>
+
+</html>

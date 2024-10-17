@@ -1,0 +1,40 @@
+train/practice/TRAIN_00002.eml
+From: friend@example.com
+
+Subject: Lunch
+
+
+
+Let's meet for lunch tomorrow at 12 PM.
+train/practice/TRAIN_00001.eml
+From: spammer@spam.com
+
+Subject: Win big money!
+
+
+
+You have been selected to win a million dollars! Click here to claim your prize.
+train/practice/TRAIN_00000.eml
+From: someone@example.com
+
+Subject: Hello
+
+
+
+This is a test email message.
+train/practice/TRAIN_00004.eml
+From: colleague@example.com
+
+Subject: Project update
+
+
+
+Here is the latest update on the project. Let's discuss in the meeting.
+train/practice/TRAIN_0003.eml
+From: offer@deals.com
+
+Subject: Special Offer!
+
+
+
+Buy one get one free! Limited time offer!
