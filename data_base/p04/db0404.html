@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+   <title>データベース論（岩切准教授）</title>
+   <link rel="stylesheet" href="../dbstyle.css">
+   <style type="text/css">
+   </style>
+</head>
+
+<body>
+
+
+   <h2>
+      <height=19 width=18 alt="">
+         データベースの保存と復元
+   </h2>
+
+
+
+   <h4>(1) <a name="01">データベースの保存</a></h4>
+   <p>
+      作成したデータベースのバックアップをとる方法には、いくつかあります。ここでは、 <em>mysqldump</em> ツールを用います。次の例では、ユーザiwak
+      のデータベース全てを再構成可能な形（全ての情報を含む形）で出力し、そのデータをリダイレクト（<em>></em>）保存しています。
+
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ <em>mysqldump -h home.nda.ac.jp -u iwak -p --all-databases</em> <b>> iwak.sql</b>
+</pre>
+   <p>
+      特定のデータベース領域のみを指定する場合は、<em>--all-databases</em>の部分にバックアップしたいデータベース領域名を記述します。この処理では、指定したデータベース領域の内容（テーブル等）のみがバックアップされます。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysqldump -h home.nda.ac.jp -u iwak -p <em>iwak</em> <b>> iwak.sql</b>
+</pre>
+   <p>
+      mysqldump で作成されたバックアップファイルの内容（--all-databasesの場合）は、次のようになっています。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ cat iwak.sql
+-- MySQL dump 10.11
+--
+-- Host: home.nda.ac.jp    Database:
+-- ------------------------------------------------------
+-- Server version       5.0.45
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+
+   :
+   :
+<em>
+DROP TABLE IF EXISTS `list1`;
+CREATE TABLE `list1` (
+  `cid` int(11) default NULL,
+  `cname` varchar(16) default NULL,
+  `cadd` varchar(32) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+</em>
+   :
+   :
+<em>
+LOCK TABLES `list1` WRITE;
+/*!40000 ALTER TABLE `list1` DISABLE KEYS */;
+INSERT INTO `list1` VALUES
+ (1,'member1','address1'), (2,'member2','address2'),
+ (3,'member3','address3'),(4,'member4','address4'),
+ (5,'member5','address5'),(6,'member6','address6'),
+ (7,'member7','address7'),(8,'member8','address8'),
+ (9,'member9','address9'),(10,'member10','address10'),
+ (11,'member11','address11'),(12,'member12','address12'),
+ (13,'member13',NULL),(14,NULL,'address14'),
+ (20,'member20','address20'),(19,'member19','address19'),
+ (18,'member18','address18'),(17,'member17','address17'),
+ (16,'member16','address16'),(15,'member15','address15');
+/*!40000 ALTER TABLE `list1` ENABLE KEYS */;
+UNLOCK TABLES;
+</em>
+   :
+   :
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2012-10-26  7:16:34
+</pre>
+   <p>
+      ※バイナリデータとして保存（オプション指定可能）した場合、今回のようにテキストとしての表示はできないことに注意
+   </p>
+   <p>
+      今回は、MySQLサーバが稼動したままでの保存になります。このようなバックアップを<em>ホットバックアップ</em>と呼びます。ホットバックアップでは、データベースに反映されていない情報（一時記憶領域などに蓄えられた情報や更新途中の情報）を取りこぼす可能性があります。データベース管理者としてバックアップを作成する際には、サーバを停止して処理する<em>コールドバックアップ</em>か、今回のようなホットバックアップで十分なのか、よく検討してください。
+   </p>
+
+
+
+
+   <h4>(2) <a name="02">データベースの削除</a></h4>
+   <p>
+      データベースを削除したい場合、<em>DROP DATABASE データベース名</em> を用います。次の手順は、mysql クライアントを用いて対話的に実行した例です。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -D iwak -p
+Enter password:
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5138
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+   <pre class=c>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| iwak               |
+| test               |
++--------------------+
+3 rows in set (0.00 sec)
+</pre>
+   <pre class=c>
+mysql> <em>drop database</em> iwak;
+Query OK, 2 rows affected (0.00 sec)
+</pre>
+   <pre class=c>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| test               |
++--------------------+
+2 rows in set (0.00 sec)
+</pre>
+   <p>
+      次の例のように、コマンドシェルからの直接操作（これまでの実習例と同様）してもよいです。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <ems>--execute="drop database iwak;"</ems>
+</pre>
+
+
+
+   <h4>(3) <a name="03">データベースの復元</a></h4>
+   <p>
+      先に示したバックアップファイル iwak.mydb をよく読むと、データベースを<em>再構成するためのSQL文</em>が書き込まれていることがわかります。つまり、データベースを復元する際には、このファイル（SQL文）を
+      mysql クライアントに順に読み込ませて、自動的に実行すればよいことになります。対話的処理を用いてバックアップファイルに記述された全てのSQL文を実行させるのは困難なので、mysql クライアントは終了します。
+   </p>
+   <pre class=c>
+mysql> quit
+Bye
+</pre>
+   <p>
+      管理している全てのデータベースのバックアップを生成した場合（--all-databasesの場合）、データベース領域を新たに作成した上で内容を復元するので、データベース領域をあらかじめ作成する必要はありません。※バックアップファイル内のＳＱＬ文を参照
+   </p>
+   <p>
+      データベース（バックアップ時点）が復元処理は、バックアップファイルをコマンドシェルから mysql
+      クライアントに<em>リダイレクトで渡す</em>だけで自動的に実施されます。これは、リダイレクトで標準入力から与えられたデータファイルの先頭行から順に mysql
+      クライアントが読み込み、それをデータベースサーバにそのまま送付する、という内部処理になります。
+   </p>
+   <p>
+      全てのデータベースのバックアップ（--all-databasesの場合）を作成した場合は、次のコマンドで復元します。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <em>< iwak.sql</em>
+</pre>
+   <p>
+      データベース領域名を指定してバックアップを生成した場合は、あらかじめデータベースを作成しておく必要があります（mysqlクライアントを用いて対話的に作成してもよいが、下の例ではコマンドラインから直接実行）。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p --execute="<em>create database iwak;</em>"</b>
+</pre>
+   <p>
+      特定のデータベースのバックアップを作成した場合は、次のコマンドで復元します。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <em>iwak</em> < iwak.sql
+</pre>
+   <pre class=c>
+iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5140
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+   <pre class=c>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| <em>iwak</em>               |
+| test               |
++--------------------+
+3 rows in set (0.00 sec)
+</pre>
+   <pre class=c>
+mysql> use iwak;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+</pre>
+   <pre class=c>
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
++----------------+
+2 rows in set (0.00 sec)
+</pre>
+   <pre class=c>
+mysql> select * from list1;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | M1    | a1   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   20 | m20   | a20  |
+|   19 | m19   | a19  |
+|   18 | m18   | a18  |
+|   17 | m17   | a17  |
++------+-------+------+
+15 rows in set (0.00 sec)
+</pre>
+   <h4>(参考) <a name="04">コマンドラインのまとめ</a></h4>
+   <p>
+      全てのデータベースのバックアップ（--all-databasesの場合）を作成する場合の処理手順（保存→削除→復元）は、次のとおりです。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysqldump -h home.nda.ac.jp -u iwak -p <ems>--all-databases</ems> > iwak.sql
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p --execute="<ems>drop database iwak</ems>;"
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <ems>< iwak.sql</ems>
+</pre>
+   <p>
+      特定のデータベースのバックアップ（データベース名の場合）を作成する場合の処理手順（保存→削除→復元）は、次のとおりです。
+   </p>
+   <pre class=c>
+[iwak@cmwww15 ~]$ mysqldump -h home.nda.ac.jp -u iwak -p <ems>iwak</ems> > iwak.sql
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p --execute="<ems>drop database iwak</ems>;"
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p --execute="<ems>create database iwak;</ems>"
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <ems>iwak < iwak.sql</ems>
+</pre>
+</body>
+
+</html>

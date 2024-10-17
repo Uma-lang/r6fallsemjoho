@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+  <title>データベース論（岩切准教授）</title>
+  <link rel="stylesheet" href="../dbstyle.css">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+
+  <h2>
+    <height=19 width=18 alt="">正規化の第１歩
+  </h2>
+
+  <h4>(1) <a name="01">非正規形のテーブル</a></h4>
+  <p>
+    非正規形表とは、一つのフィールドへの複数情報の記載や、複数行にわたる記述を許したものです。手書きの表として収集したデータシートなどをまとめる際、一般的に用いられている形式です。表として閲覧する際に見やすく、また、表を手書きでまとめるときには、同じ内容を何度も記載する必要がないので、便利な形式といえます。
+  </p>
+  <table border=0 cellspacing=30>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>課外活動状況（非正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>課外活動（参加状況）</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=left>Ａ部（○）、Ｂ同好会（△）</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｂ部（△）、Ｂ同好会（×）、Ｃ研究会（○）</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績一覧（非正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>科目（担当教官、教官所属）</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right rowspan=3>5001</td>
+            <td align=center rowspan=3>学生名１</td>
+            <td align=center>科目名１（教官名１、Ａ学科）</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=center>科目名２（教官名２、Ｂ学科）</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=center>科目名３（教官名２、Ｂ学科）</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right rowspan=2>5002</td>
+            <td align=center rowspan=2>学生名２</td>
+            <td align=center>科目名１（教官名１、Ａ学科）</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=center>科目名４（教官名１、Ａ学科）</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <h4>(2) <a name="02">第１正規形のテーブル</a></h4>
+  <p>
+    非正規形の表は、新しい情報の追加や削除の際に、フィールドの大きさや同じ情報を共有するレコード数を変更しなければなりません。特に、データ数が多くなると重複する要素をまとめ直す処理の負担は、大きくなります。そのため、非正規形は、機械的な自動処理には向かないといえます。そこで、一般的には、非正規形の表を正規化することにより、レコードの追加や削除を容易にします。通常、第１正規形から第３正規形が利用されます。理論的には、第４正規形、第５正規形まで定義できますが、あまり一般的ではありません。すなわち、第１正規形から第３正規形までを十分に理解していれば、問題ないといえます。
+  </p>
+  <p>
+    第１正規形は、正規化の最も基本となる形式です。これは、非正規形の表の重複する要素や分離できる要素を異なるレコードに分け、まとめ直したものです。非正規形から第１正規形への変換処理をフラット化とも呼びます。
+  </p>
+  <table border=0 cellspacing=30>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>課外活動状況（第１正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>課外活動</td>
+            <td align=center bgcolor=lightblue>参加状況</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=left>Ａ部</td>
+            <td align=center>○</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｂ部</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>×</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｃ研究会</td>
+            <td align=center>○</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績一覧（第１正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>科目</td>
+            <td align=center bgcolor=lightblue>担当教官</td>
+            <td align=center bgcolor=lightblue>教官所属</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+
+</body>
+
+</html>

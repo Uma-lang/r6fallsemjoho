@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+    <h2>
+        <height=19 width=18 alt="">
+            高度なレコード抽出（条件付検索）
+    </h2>
+
+
+    <h4>(1) <a name="01">比較演算子の活用 </a></h4>
+    <p>
+        SQLでは、SELECT文に抽出条件（<em>WHERE</em>）を加えることで、条件付のレコード抽出ができます。条件の与え方には、いろいろありますが、まずは、比較演算子による条件付検索と抽出を行います。
+    </p>
+    <pre class=c>
+mysql> select * from list1 <em>where cid=7</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
++------+-------+------+
+1 row in set (0.00 sec)
+</pre>
+    <p>
+        この例では、フィールド名 cid の値が 7 のレコードを抽出（検索）しています。代表的な比較演算子として次のものがあります。
+    </p>
+    <pre class=c>
+フィールド名 <em>> </em>値（値より大きい: Greater than）
+フィールド名 <em>< </em>値（値より小さい: Less than）
+フィールド名 <em>>=</em>値（値以上: Greater than or equal to）
+フィールド名 <em><=</em>値（値以下: Less than or equal to）
+フィールド名 <em>= </em>値（値と等しい: Equal to）
+　※Ｃ言語などの"=="と間違えないように！(Not the C/C++ operator "==")
+フィールド名 <em>!=</em>値（値と等しくない: Not equal to）
+フィールド名 <em><></em>値（値と等しくない: Not equal to）
+</pre>
+    <p>
+        検索フィールドの定義域が文字列の場合、シングルクォート「'」もしくはダブルクォート「"」による区切りを用います。
+    </p>
+
+    <h4>(2) <a name="02">リスト比較 </a></h4>
+    <p>
+        WHERE に <em>IN</em> を加えることにより、カンマ（,）区切りで列挙した値と順に比較するリスト比較ができます。
+    </p>
+    <pre class=c>
+mysql> select * from list1 <em>where</em> cid <em>in</em> (1,3,5,7,9);
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    3 | m3    | a3   |
+|    5 | m5    | a5   |
+|    7 | m7    | a7   |
+|    9 | m9    | a9   |
++------+-------+------+
+5 rows in set (0.00 sec)
+</pre>
+
+    <h4>(3) <a name="03">値域の指定 </a></h4>
+    <p>
+        WHERE に <em>BETWEEN ... AND ... </em> を加えることにより、指定した値の間に当てはまるレコードのみを検索できます。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where cid <em>between</em> 5 <em>and</em> 7;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
++------+-------+------+
+3 rows in set (0.00 sec)
+</pre>
+
+    <h4>(4) <a name="04">論理積（AND、&&）</a></h4>
+    <p>
+        複数の条件を同時に満たすレコードを検索するために、<em>AND（もしくは、&&）</em>指定ができます。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" <em>and</em> cid=7;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
++------+-------+------+
+1 row in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" <em>&&</em> cid=7;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
++------+-------+------+
+1 row in set (0.00 sec)
+
+</pre>
+    <p>
+        大小比較などを組み合わせることにより、BETWEEN...AND... と同様の結果を得ることもできます。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where <em>cid>=5 and cid<=8</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
++------+-------+------+
+4 rows in set (0.00 sec)
+</pre>
+    <p>
+        条件を満たすレコードが存在しない場合には、検索に失敗します（該当なしの回答）。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" and cid=8;
+Empty set (0.00 sec)
+</pre>
+
+
+
+    <h4>(5) <a name="05">論理和（OR、||）</a></h4>
+    <p>
+        複数示した条件のいずれかを満たすレコードを検索する場合に、<em>OR（もしくは、||）</em> を用います。基本的な記述要領は、先述の <em>AND</em> と同様です。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" <em>or</em> cname="m8";
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" <em>||</em> cname="m8";
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where cname="m7" <em>or</em> cid=8;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+    <p>
+        AND と同様に、大小比較演算子と組み合わせることにより、フィールド値が特定の範囲（値域）に収まるレコードを抽出できます。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where <em>cid<5 or cid>8</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    2 | m2    | a2   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
++------+-------+------+
+6 rows in set (0.00 sec)
+</pre>
+
+    <h4>(6) <a name="06">論理否定（NOT）</a></h4>
+    <p>
+        <em>NOT</em> は、それに続く条件式を<em>満たさない</em>レコードを抽出したい場合に指定します。NOT
+        で打ち消す条件式は、<em>（）で囲みます</em>。ほかの条件式と組み合わせることにより、柔軟な条件指定を可能にします。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where <em>not (cid<8 or cname="m9")</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    8 | m8    | a8   |
+|   10 | m10   | a10  |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(7) <a name="07">あいまいな条件（LIKE）</a></h4>
+    <p>
+        条件が定かでないような場合には、<em>LIKE</em>による<em>「あいまい検索」</em>ができます（よく使います）。
+    </p>
+    <p>
+        LIKE
+        には、不確かな要素がどの位置に含まれるかによっていくつかの指定法があります。値（文字列など）の後半部があいまいなときには、「<em>前半部%</em>」とします。逆に、前半部があいまいなときには、「<em>%後半部</em>」とします。また、どこかに特定の値が含まれていればよければ、「<em>%特定値%</em>」と指定します。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where cname <em>like "m1%"</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|   10 | m10   | a10  |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into list1 set cid=11, cname="m11",cadd="a11";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=12, cname="m12",cadd="a12";
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where <em>cname like "%1"</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|   11 | m11   | a11  |
++------+-------+------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where <em>cname like "1%"</em>;
+Empty set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where <em>cname like "%1%"</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
++------+-------+------+
+4 rows in set (0.00 sec)
+</pre>
+    <p>
+        検索キーワードに文字「%」を含めたい場合には、<em>エスケープ文字「\」</em>を付記しなければなりません（ <em>\%</em> と書くと <em>%</em> を文字として扱う）。
+    </p>
+
+    <h4>(8) <a name="08">不定値（空値、NULL）の扱い方</a></h4>
+    <p>
+        データベースにレコードを挿入する際、値が不定の状態のとき、<em>NULL（ヌル）値</em>
+        を用います。NULL値を扱えることは、データベースを逐次充実させていく途中段階において重要になる場合が多いです（部分的に値が不定な状態でも情報を登録できるため）。NULL値は、空白やゼロ値とは別に扱われます（特殊な値）。
+    </p>
+    <p>
+        次の例では、フィールド値の一部を指定せずにレコードを追加し、それをいくつかの方法で検索表示しています。
+    </p>
+    <pre class=c>
+mysql> insert into list1 set cid=13, cname="m13";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=14, cadd="a14";
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    2 | m2    | a2   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   13 | m13   | <ems>NULL</ems> |
+|   14 | <ems>NULL</ems>  | a14  |
++------+-------+------+
+14 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 where cname is <em>null</em>;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   14 | NULL  | a14  |
++------+-------+------+
+1 row in set (0.00 sec)
+
+mysql> select * from list1 where (cname is <em>null</em>) or (cadd is <em>null</em>);
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   13 | m13   | NULL |
+|   14 | NULL  | a14  |
++------+-------+------+
+
+mysql> select * from list1 where (cname is <em>null</em>) and (cadd is <em>null</em>);
+Empty set (0.00 sec)
+</pre>
+    <p>
+        これらの例から、cid=13 と cid=14 のレコードに NULL値 を代入できること、それを用いて検索できること、がわかります。
+    </p>
+    <p>
+        次の例では、NULL値 が <em>""</em> とは別に扱われていることがわかります。
+    </p>
+    <pre class=c>
+mysql> select * from list1 where <em>cname is ""</em>;
+ERROR 1064 (42000): You have an error in your SQL syntax;
+check the manual that corresponds to your MySQL server version
+ for the right syntax to use near '""' at line 1
+</pre>
+    <pre class=c>
+mysql> select * from list1 where <em>cname=""</em>;
+Empty set (0.00 sec)
+</pre>
+
+
+</body>
+
+</html>

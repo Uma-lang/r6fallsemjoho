@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+  <title>データベース論（岩切准教授）</title>
+  <link rel="stylesheet" href="../dbstyle.css">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+
+  <h2>
+    <height=19 width=18 alt="">ブラウザからのデータベース操作（フォーム活用）
+  </h2>
+
+  <p>
+    前提知識：<a href="http://home.nda.ac.jp/~iwak/J3OP/">オブジェクト指向プログラミング講義資料 </a><br>
+  </p>
+
+  <h4>(1) <a name="001">MySQLサーバへの接続とテーブル作成（準備）</a></h4>
+
+  <p>
+    <a href="./PHP/sample_connect.php">
+      sample_connect.php
+    </a>
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","ここにパスワードを記入");
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;<em>mysql_connect</em>(&quot;<ems>MySQLサーバ名</ems>&quot;,&quot;<ems>ユーザ名</ems>&quot;,&quot;<ems>パスワード</ems>&quot;);
+<em>mysql_close</em>($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+  <p>
+    sample_mknamelist.php
+    &nbsp;
+    <a href="http://home.nda.ac.jp/~iwak/J3DB/p07b/db0701.html#00">
+      ＜参考＞
+    </a>
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+
+$result = mysql_query("create table namelist(id varchar(8), name varchar(32)) select id, name from j4age");
+
+mysql_close($link);
+?>
+</body>
+</html>
+
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+
+$result&nbsp;=&nbsp;mysql_query(<span class="src_doublequotation">&quot;<ems>create&nbsp;table</ems>&nbsp;<em>namelist</em>(id&nbsp;varchar(8),&nbsp;name&nbsp;varchar(32))&nbsp;<ems>select</ems>&nbsp;id,&nbsp;name&nbsp;<ems>from</ems>&nbsp;<em>j4age</em>&quot;</span>);
+
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <p>
+    ※テーブル「namelist」は、実習で作成済み。
+  </p>
+
+  <h4>(2) <a name="002">データベースからの情報取得と表示（SELECT文）</a></h4>
+  <div align="center">
+    <img src="./a02.gif">
+    <br>
+    <br>
+    <b>処理の流れ</b>
+    <br>
+    <br>
+  </div>
+
+  <p>
+    <a href="./PHP/sample_select_plain.php">
+      sample_select_plain.php
+    </a>
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$result = mysql_query("select * from namelist");
+while ( $row = mysql_fetch_array($result) ){
+  echo $row["id"];
+  echo ",";
+  echo $row["name"];
+  echo "\n";
+}
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+<em>$result</em>&nbsp;=&nbsp;<em>mysql_query</em>(&quot;<u>select&nbsp;*&nbsp;from&nbsp;namelist</u>&quot;);
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array(<em>$result</em>)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;$row[&quot;id&quot;];
+&nbsp;&nbsp;echo&nbsp;&quot;,&quot;;
+&nbsp;&nbsp;echo&nbsp;$row[&quot;name&quot;];
+&nbsp;&nbsp;echo&nbsp;&quot;\n&quot;;
+}
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <br>
+  <p>
+    <a href="./PHP/sample_select.php">
+      sample_select.php
+    </a>
+    （表形式で出力させた場合）
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$result = mysql_query("select * from namelist");
+echo "<table>\n";
+echo "<tr>";
+echo "<td> ID   </td>";
+echo "<td> NAME </td>";
+echo "</tr>\n";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<tr>";
+  echo "<td>".$row["id"]."</td>";
+  echo "<td>".$row["name"]."</td>";
+  echo "</tr>\n";
+}
+echo "</table>\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+<em>$result</em>&nbsp;=&nbsp;<em>mysql_query</em>(&quot;<ems><u>select&nbsp;*&nbsp;from&nbsp;namelist</u></ems>&quot;);
+echo&nbsp;&quot;&lt;table&gt;\n&quot;;
+echo&nbsp;&quot;&lt;tr&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;ID&nbsp;&nbsp;&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;NAME&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;/tr&gt;\n&quot;;
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array(<em>$result</em>)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;tr&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;id&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;/tr&gt;\n&quot;;
+}
+echo&nbsp;&quot;&lt;/table&gt;\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    ※SQL文を、"<ems>select * from namelist where id>900000</ems>" など適当に変えてみよう！
+  </p>
+  <br>
+  <br>
+  <div align="center">
+    <img src="./html_table.gif">
+    <br>
+    <br>
+    <b>（参考）HTMLのテーブル表記</b>
+  </div>
+
+
+
+
+  <h4>(3) <a name="003">フォームの利用</a></h4>
+  <p>
+    <a href="./PHP/sample_form.php">
+      sample_form.php
+    </a>（フォームの記述例）
+    <!--
+<html>
+<body>
+<form action="sample_form_lib.php">
+Input KEY {A,B,C}:
+<input name="select" type="text" size="3">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;form&nbsp;action=&quot;<em>sample_form_sub.php</em>&quot;&gt;
+Input&nbsp;KEY&nbsp;{A,B,C}:
+&lt;input&nbsp;name=&quot;<ems><u>select</u></ems>&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;3&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    <em>sample_form_sub.php</em>
+    <!--
+<?php
+$s = $_GET['select'];
+if($s == "A"){
+  echo "-- A --\n";
+}else if($s == "B"){
+  echo "-- B --\n";
+}else if($s == "C"){
+  echo "-- C --\n";
+}else{
+  echo "Error?\n";
+}
+?>
+-->
+  </p>
+  <pre class=c>
+&lt;?php
+$s&nbsp;=&nbsp;$_GET['<ems><u>select</u></ems>'];
+if($s&nbsp;==&nbsp;&quot;A&quot;){
+&nbsp;&nbsp;echo&nbsp;&quot;--&nbsp;A&nbsp;--\n&quot;;
+}else&nbsp;if($s&nbsp;==&nbsp;&quot;B&quot;){
+&nbsp;&nbsp;echo&nbsp;&quot;--&nbsp;B&nbsp;--\n&quot;;
+}else&nbsp;if($s&nbsp;==&nbsp;&quot;C&quot;){
+&nbsp;&nbsp;echo&nbsp;&quot;--&nbsp;C&nbsp;--\n&quot;;
+}else{
+&nbsp;&nbsp;echo&nbsp;&quot;Error?\n&quot;;
+}
+?&gt;
+</pre>
+  <p>
+    本講義では、各種フォームへの入力値を用いて SQL 文を生成し、MySQL データベースを操作する方法を示す。その基本的な処理の流れは、下図のようになる。
+  </p>
+  <br>
+  <br>
+  <div align="center">
+    <img src="./01.gif">
+  </div>
+  <br>
+  <br>
+
+
+  <h4>(4) <a name="004">フォーム入力による条件付検索</a></h4>
+  <br>
+  <br>
+  <div align="center">
+    <img src="./02.gif">
+    <br>
+    <br>
+    <b>
+      処理の流れ（要点のみ）
+    </b>
+  </div>
+  <br>
+  <p>
+    <a href="./PHP/sample_mysql_where.php">
+      sample_mysql_where.php
+    </a>
+    <!--
+<html>
+<body>
+<form action="sample_mysql_where_sub.php">
+Input KEY(id):
+<input name="key" type="text" size="10">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;form&nbsp;<em>action=&quot;sample_mysql_where_sub.php&quot;</em>&gt;
+Input&nbsp;KEY(id):
+&lt;input&nbsp;<em>name=&quot;key&quot;</em>&nbsp;type=&quot;text&quot;&nbsp;size=&quot;10&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <p>
+    sample_mysql_where_sub.php
+    <!--
+<html>
+<body>
+
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s = $_GET['key'];
+$result = mysql_query("select * from namelist where id like \"%".$s."%\" ");
+
+echo "<table>";
+echo "<tr>";
+echo "<td> ID   </td>";
+echo "<td> NAME </td>";
+echo "</tr>";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<tr>";
+  echo "<td>".$row["id"]."</td>";
+  echo "<td>".$row["name"]."</td>";
+  echo "</tr>";
+}
+echo "</table>";
+
+mysql_close($link);
+?>
+
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+<em>$s&nbsp;=&nbsp;$_GET['key'];</em>
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;namelist&nbsp;where&nbsp;id&nbsp;like&nbsp;<em>'</em><b>%</b>&quot;.$s.&quot;<b>%</b><em>'</em>&nbsp;&quot;);
+echo&nbsp;&quot;&lt;table&gt;&quot;;
+echo&nbsp;&quot;&lt;tr&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;ID&nbsp;&nbsp;&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;NAME&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;tr&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;id&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+}
+echo&nbsp;&quot;&lt;/table&gt;&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+<div align="center">
+<img src="./03.gif">
+<b>SQL文の生成と情報取得</b>　<ems>※区切文字「\&quot;」の代わりに「'」を使用可能</ems>
+</div>
+</pre>
+  <p>
+    ※サンプルコード提供（日本語非対応、一部のみ）：<a href="./p12srcpack.tar.gz">p12srcpack.tar.gz</a>（解凍： tar xzvf p12srcpack.tar.gz）、<a
+      href="./p12srcpack.zip">ZIP版</a>
+  </p>
+  <br>
+  <br>
+
+
+  <h4>(5) <a name="05">利用可能な文字コードの確認</a></h4>
+  <p>
+  </p>
+  <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p -u iwak
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 62481
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+  <pre class=c>
+mysql> show character set;
++----------+-----------------------------+---------------------+--------+
+| Charset  | Description                 | Default collation   | Maxlen |
++----------+-----------------------------+---------------------+--------+
+| big5     | Big5 Traditional Chinese    | big5_chinese_ci     |      2 | 
+| dec8     | DEC West European           | dec8_swedish_ci     |      1 | 
+| cp850    | DOS West European           | cp850_general_ci    |      1 | 
+| hp8      | HP West European            | hp8_english_ci      |      1 | 
+| koi8r    | KOI8-R Relcom Russian       | koi8r_general_ci    |      1 | 
+| latin1   | cp1252 West European        | latin1_swedish_ci   |      1 | 
+| latin2   | ISO 8859-2 Central European | latin2_general_ci   |      1 | 
+| swe7     | 7bit Swedish                | swe7_swedish_ci     |      1 | 
+| ascii    | US ASCII                    | ascii_general_ci    |      1 | 
+| ujis     | EUC-JP Japanese             | ujis_japanese_ci    |      3 | 
+| sjis     | Shift-JIS Japanese          | sjis_japanese_ci    |      2 | 
+| hebrew   | ISO 8859-8 Hebrew           | hebrew_general_ci   |      1 | 
+| tis620   | TIS620 Thai                 | tis620_thai_ci      |      1 | 
+| euckr    | EUC-KR Korean               | euckr_korean_ci     |      2 | 
+| koi8u    | KOI8-U Ukrainian            | koi8u_general_ci    |      1 | 
+| gb2312   | GB2312 Simplified Chinese   | gb2312_chinese_ci   |      2 | 
+| greek    | ISO 8859-7 Greek            | greek_general_ci    |      1 | 
+| cp1250   | Windows Central European    | cp1250_general_ci   |      1 | 
+| gbk      | GBK Simplified Chinese      | gbk_chinese_ci      |      2 | 
+| latin5   | ISO 8859-9 Turkish          | latin5_turkish_ci   |      1 | 
+| armscii8 | ARMSCII-8 Armenian          | armscii8_general_ci |      1 | 
+| utf8     | UTF-8 Unicode               | utf8_general_ci     |      3 | 
+| ucs2     | UCS-2 Unicode               | ucs2_general_ci     |      2 | 
+| cp866    | DOS Russian                 | cp866_general_ci    |      1 | 
+| keybcs2  | DOS Kamenicky Czech-Slovak  | keybcs2_general_ci  |      1 | 
+| macce    | Mac Central European        | macce_general_ci    |      1 | 
+| macroman | Mac West European           | macroman_general_ci |      1 | 
+| cp852    | DOS Central European        | cp852_general_ci    |      1 | 
+| latin7   | ISO 8859-13 Baltic          | latin7_general_ci   |      1 | 
+| cp1251   | Windows Cyrillic            | cp1251_general_ci   |      1 | 
+| cp1256   | Windows Arabic              | cp1256_general_ci   |      1 | 
+| cp1257   | Windows Baltic              | cp1257_general_ci   |      1 | 
+| binary   | Binary pseudo charset       | binary              |      1 | 
+| geostd8  | GEOSTD8 Georgian            | geostd8_general_ci  |      1 | 
+| cp932    | SJIS for Windows Japanese   | cp932_japanese_ci   |      2 | 
+| eucjpms  | UJIS for Windows Japanese   | eucjpms_japanese_ci |      3 | 
++----------+-----------------------------+---------------------+--------+
+36 rows in set (0.00 sec)
+</pre>
+
+
+  <h4>(6) <a name="06">文字コードの設定状態確認</a></h4>
+  <p>
+    <!--
+-->
+  </p>
+  <pre class=c>
+mysql> show global variables like 'character\_set\_%';
++--------------------------+--------+
+| Variable_name            | Value  |
++--------------------------+--------+
+| character_set_client     | utf8   | 
+| character_set_connection | utf8   | 
+| character_set_database   | utf8   | 
+| character_set_filesystem | binary | 
+| character_set_results    | utf8   | 
+| character_set_server     | utf8   | 
+| character_set_system     | utf8   | 
++--------------------------+--------+
+7 rows in set (0.00 sec)
+</pre>
+
+  <pre class=c>
+mysql> show session variables like 'character\_set\_%';
++--------------------------+--------+
+| Variable_name            | Value  |
++--------------------------+--------+
+| character_set_client     | utf8   | 
+| character_set_connection | utf8   | 
+| character_set_database   | utf8   | 
+| character_set_filesystem | binary | 
+| character_set_results    | utf8   | 
+| character_set_server     | utf8   | 
+| character_set_system     | utf8   | 
++--------------------------+--------+
+7 rows in set (0.00 sec)
+</pre>
+
+
+  <h4>(7) <a name="07">漢字対応のテーブル準備</a></h4>
+  <p>
+  </p>
+  <pre class=c>
+mysql> use iwak;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+</pre>
+  <pre class=c>
+mysql> create table jlist(
+    -> id int auto_increment not null primary key,
+    -> name varchar(32) <ems>character set utf8</ems>,
+    -> info varchar(64) <ems>character set utf8</ems>
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+</pre>
+
+
+  <h4>(8) <a name="08">日本語ページ作成（例：レコードの追加）</a></h4>
+  <p>
+    ※漢字コードUTF-8を用いた日本語ファイルの作成法が分からない場合、次項を参照
+  </p>
+  <p>
+    <a href="./PHP/sample_mysqlinsertj.php">sample_mysqlinsertj.php</a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<form action="sample_mysqlinsertj_sub.php">
+MySQL 追加<br>
+氏名: <input name="name" type="text" size="20">
+備考: <input name="info" type="text" size="20">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+<ems>&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;</ems>
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form&nbsp;action=&quot;sample_mysqlinsertj_sub.php&quot;&gt;
+MySQL&nbsp;追加&lt;br&gt;
+氏名:&nbsp;&lt;input&nbsp;name=&quot;name&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+備考:&nbsp;&lt;input&nbsp;name=&quot;info&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqlinsertj_sub.php
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s2 = @$_GET['name'];
+$s3 = @$_GET['info'];
+$qs = "insert into jlist set name='".$s2."', info='".$s3."'";
+mysql_query($qs) or die("Error!\n");
+print "OK!\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+<ems>&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;</ems>
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$s2&nbsp;=&nbsp;@$_GET['name'];
+$s3&nbsp;=&nbsp;@$_GET['info'];
+$qs&nbsp;=&nbsp;&quot;insert&nbsp;into&nbsp;jlist&nbsp;set&nbsp;name='&quot;.$s2.&quot;',&nbsp;info='&quot;.$s3.&quot;'&quot;;
+mysql_query($qs)&nbsp;or&nbsp;die(&quot;Error!\n&quot;);
+print&nbsp;&quot;OK!\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+
+  <h4>(9) <a name="09">漢字コードUTF-8（Unicode）の使用法</a></h4>
+  <p>
+    文字コードが UTF-8 でない日本語ファイルがすでにある場合（SJIS、JIS、EUCなどの文字コードで書かれているため文字化けする場合）、その文字コードを UTF-8 に変換することができます。ここでは、NKF(Nihongo
+    Kanji Filter)というソフトウェアを用いる変換手順について示しておきます。
+  </p>
+  <p>
+    一時ファイルを利用する手順（原稿を残さない例）<BR>
+    <!--
+-->
+  </p>
+  <pre class=c>
+ <em>nkf -w</em> text.php <em>></em> utf8.txt
+ <em>mv</em> utf8.txt text.php
+
+（変換例１）
+　[iwak@cmwww15 ~]$  nkf -w sample_mysqlinsertj.php > utf8.txt
+　[iwak@cmwww15 ~]$  mv utf8.txt sample_mysqlinsertj.php
+
+（変換例２）
+　[iwak@cmwww15 ~]$  nkf -w sample_mysqlinsertj_sub.php > utf8.txt
+　[iwak@cmwww15 ~]$  mv utf8.txt sample_mysqlinsertj_sub.php
+
+</pre>
+  <p>
+    別ファイル（euctext.php）として作成し、変換する手順（原稿を残す例）
+    <!--
+-->
+  </p>
+  <pre class=c>
+<em>nkf -w</em> euctext.php <em>></em> utf8text.php
+</pre>
+  <br><br>
+  <p>
+    <b>（ 参 考 ）</b>
+  </p>
+  <p>
+    Emacsの日本語入力モードを UTF-8に変更する方法： 「 <em>C-x、[Enter]、f</em> 」の順にキー入力（操作）するとミニバッファ（エコー）領域で、「 Coding system for visited
+    file (default, nil): 」と問い合わせてくるので、「 <em>utf-8</em> 」を入力する。モードライン上の文字コード記号（E,S,Jなど）が「 <em>u</em>
+    」になったことを確認する。この状態でファイルを保存すると、作成した日本語ファイルの文字コードは、「UTF-8」になる（<em>操作を失敗した場合は、C-g</em>で操作を取り消し、最初からやり直すこと！）。
+  </p>
+  <div align="center">
+    <img src="./emacs1.gif">
+    <br><br>
+    <b>
+      emacs（Linux環境）の文字コード変更
+    </b>
+  </div>
+  <br>
+  <p>
+    そのほかにも、下の図のように<em>UTF-8（Unicode）をサポートした日本語エディタ</em>は数多くあるので、開発環境に応じて適切なものを使用すればよい。
+  </p>
+  <br>
+  <div align="center">
+    <img src="./gedit.gif">
+    <br><br>
+    <b>
+      gedit（Linux環境）の文字コード指定保存（例）
+    </b>
+    <br><br>
+    <br>
+    <img src="./TeraPad.png">
+    <br><br>
+    <b>
+      TeraPad（Windows環境）の文字コード指定保存（例）
+    </b>
+    <br><br>
+  </div>
+
+
+  <br>
+
+
+
+  <h4>(10) <a name="10">日本語版あいまい検索（SELECT文）</a></h4>
+  <p>
+    <a href="./PHP/sample_mysqlsearchj.php">sample_mysqlsearchj.php</a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<form action="sample_mysqlsearchj_sub.php">
+MySQL 検索<br>
+番号: <input name="id"   type="text" size="10">
+氏名: <input name="name" type="text" size="20">
+備考: <input name="info" type="text" size="20">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;<em>charset=UTF-8</em>&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form&nbsp;action=&quot;sample_mysqlsearchj_sub.php&quot;&gt;
+MySQL&nbsp;検索&lt;br&gt;
+番号:&nbsp;&lt;input&nbsp;name=&quot;id&quot;&nbsp;&nbsp;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;10&quot;&gt;
+氏名:&nbsp;&lt;input&nbsp;name=&quot;name&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+備考:&nbsp;&lt;input&nbsp;name=&quot;info&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqlsearchj_sub.php
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s1 = @$_GET['id'];
+$s2 = @$_GET['name'];
+$s3 = @$_GET['info'];
+$ks = " id like \"%".$s1."%\" and name like \"%".$s2."%\" and info like \"%".$s3."%\" ";
+$result = mysql_query("select * from jlist where ".$ks);
+echo "<table>";
+echo "<tr>";
+echo "<td> 番号 </td>";
+echo "<td> 氏名 </td>";
+echo "<td> 備考 </td>";
+echo "</tr>";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<tr>";
+  echo "<td>".$row["id"]."</td>";
+  echo "<td>".$row["name"]."</td>";
+  echo "<td>".$row["info"]."</td>";
+  echo "</tr>";
+}
+echo "</table>";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;<em>charset=UTF-8</em>&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$s1&nbsp;=&nbsp;@$_GET['id'];
+$s2&nbsp;=&nbsp;@$_GET['name'];
+$s3&nbsp;=&nbsp;@$_GET['info'];
+$ks&nbsp;=&nbsp;&quot;&nbsp;id&nbsp;like&nbsp;'%&quot;.$s1.&quot;%'&nbsp;and&nbsp;name&nbsp;like&nbsp;'%&quot;.$s2.&quot;%'&nbsp;and&nbsp;info&nbsp;like&nbsp;'%&quot;.$s3.&quot;%'&nbsp;&quot;;
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;jlist&nbsp;where&nbsp;&quot;.$ks);
+echo&nbsp;&quot;&lt;table&gt;&quot;;
+echo&nbsp;&quot;&lt;tr&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;番号&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;氏名&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;備考&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;tr&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;id&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;info&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+}
+echo&nbsp;&quot;&lt;/table&gt;&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <br>
+
+
+  <h4>(11) <a name="11">日本語版レコードの更新（UPDATE文）</a></h4>
+  <p>
+    <a href="./PHP/sample_mysqlupdatej.php">sample_mysqlupdatej.php</a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<form action="sample_mysqlupdatej_sub.php">
+MySQL 更新<br>
+レコード指定<br>
+番号: <input name="id"  type="text" size="10">
+<br>
+<br>
+更新内容<br>
+氏名: <input name="up_name" type="text" size="20">
+備考: <input name="up_info" type="text" size="20">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form&nbsp;action=&quot;sample_mysqlupdatej_sub.php&quot;&gt;
+MySQL&nbsp;更新&lt;br&gt;
+レコード指定&lt;br&gt;
+番号:&nbsp;&lt;input&nbsp;name=&quot;id&quot;&nbsp;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;10&quot;&gt;
+&lt;br&gt;
+&lt;br&gt;
+更新内容&lt;br&gt;
+氏名:&nbsp;&lt;input&nbsp;name=&quot;up_name&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+備考:&nbsp;&lt;input&nbsp;name=&quot;up_info&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqlupdatej_sub.php
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s1 = @$_GET['id'];
+$u1 = @$_GET['id'];
+$u2 = @$_GET['up_name'];
+$u3 = @$_GET['up_info'];
+$qs = "update jlist set id='".$u1."', name='".$u2."', info='".$u3."' where id='".$s1."'";
+mysql_query($qs) or die("Error!\n");
+print "OK!\n";
+mysql_close($link);
+?>
+
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=<span class="src_doublequotation">&quot;Content-Type&quot;</span>&nbsp;content=<span class="src_doublequotation">&quot;text/html;charset=UTF-8&quot;</span>&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード入&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$s1&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'id'</span>];
+$u1&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'id'</span>];
+$u2&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'up_name'</span>];
+$u3&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'up_info'</span>];
+$qs&nbsp;=&nbsp;<span class="src_doublequotation">&quot;update&nbsp;jlist&nbsp;set&nbsp;id='&quot;</span>.$u1.<span class="src_doublequotation">&quot;',&nbsp;name='&quot;</span>.$u2.<span class="src_doublequotation">&quot;',&nbsp;info='&quot;</span>.$u3.<span class="src_doublequotation">&quot;'&nbsp;where&nbsp;id='&quot;</span>.$s1.<span class="src_doublequotation">&quot;'&quot;</span>;
+mysql_query($qs)&nbsp;or&nbsp;die(<span class="src_doublequotation">&quot;Error!\n&quot;</span>);
+print&nbsp;<span class="src_doublequotation">&quot;OK!\n&quot;</span>;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <h4>(12) <a name="012">レコードの削除（DELETE文）</a></h4>
+  <p>
+    <a href="./PHP/sample_mysqldelete.php">
+      sample_mysqldelete.php
+    </a>
+    <!--
+<html>
+<body>
+<form action="sample_mysqldelete_sub.php">
+MySQL Delete<br>
+id  : <input name="key_id"   type="text" size="10">
+name: <input name="key_name" type="text" size="20">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;form&nbsp;<em>action=&quot;sample_mysqldelete_sub.php&quot;</em>&gt;
+MySQL&nbsp;Delete&lt;br&gt;
+id&nbsp;&nbsp;:&nbsp;&lt;input&nbsp;<em>name=&quot;key_id&quot;</em>&nbsp;&nbsp;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;10&quot;&gt;
+name:&nbsp;&lt;input&nbsp;<em>name=&quot;key_name&quot;</em>&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqldelete_sub.php
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s1 = $_GET['key_id'];
+$s2 = $_GET['key_name'];
+$qs = "delete from namelist where id='".$s1."' and name='".$s2."'";
+mysql_query($qs) or die("Error!\n");
+print "OK!\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+<em>$s1&nbsp;=&nbsp;$_GET['key_id'];</em>
+<em>$s2&nbsp;=&nbsp;$_GET['key_name'];</em>
+$qs&nbsp;=&nbsp;&quot;delete&nbsp;from&nbsp;namelist&nbsp;where&nbsp;id='&quot;<em>.$s1.</em>&quot;'&nbsp;and&nbsp;name='&quot;<em>.$s2.</em>&quot;'&quot;;
+mysql_query($qs)&nbsp;or&nbsp;die(&quot;Error!\n&quot;);
+print&nbsp;&quot;OK!\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+  <h4>(13) <a name="13">日本語版レコードの削除（処理内容の確認有り）</a></h4>
+  <p>
+    <a href="./PHP/sample_mysqldeletej.php">sample_mysqldeletej.php</a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<form action="sample_mysqldeletej_sub.php">
+MySQL 削除<br>
+番号: <input name="id"   type="text" size="10">
+氏名: <input name="name" type="text" size="20">
+備考: <input name="info" type="text" size="20">
+<input name="button" type="submit" value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form&nbsp;action=&quot;sample_mysqldeletej_sub.php&quot;&gt;
+MySQL&nbsp;削除&lt;br&gt;
+番号:&nbsp;&lt;input&nbsp;name=&quot;id&quot;&nbsp;&nbsp;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;10&quot;&gt;
+氏名:&nbsp;&lt;input&nbsp;name=&quot;name&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+備考:&nbsp;&lt;input&nbsp;name=&quot;info&quot;&nbsp;type=&quot;text&quot;&nbsp;size=&quot;20&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqldeletej_sub.php
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s1 = @$_GET['id'];
+$s2 = @$_GET['name'];
+$s3 = @$_GET['info'];
+$ks = " id like \"%".$s1."%\" and name like \"%".$s2."%\" and info like \"%".$s3."%\" ";
+$result = mysql_query("select * from jlist where ".$ks);
+echo "<table>";
+echo "<tr>";
+echo "<td> 番号 </td>";
+echo "<td> 氏名 </td>";
+echo "<td> 備考 </td>";
+echo "</tr>";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<tr>";
+  echo "<td>".$row["id"]."</td>";
+  echo "<td>".$row["name"]."</td>";
+  echo "<td>".$row["info"]."</td>";
+  echo "</tr>";
+}
+echo "</table>";
+mysql_close($link);
+?>
+<form action="sample_mysqldeleteja_sub.php">
+削除してもよいですか？
+<input type="hidden" name="id"   value="<?php echo $s1;?>">
+<input type="hidden" name="name" value="<?php echo $s2;?>">
+<input type="hidden" name="info" value="<?php echo $s3;?>">
+<input name="button" type="submit"   value="Query">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$s1&nbsp;=&nbsp;@$_GET['id'];
+$s2&nbsp;=&nbsp;@$_GET['name'];
+$s3&nbsp;=&nbsp;@$_GET['info'];
+$ks&nbsp;=&nbsp;&quot;&nbsp;id&nbsp;like&nbsp;'%&quot;.$s1.&quot;%'&nbsp;and&nbsp;name&nbsp;like&nbsp;'%&quot;.$s2.&quot;%'&nbsp;and&nbsp;info&nbsp;like&nbsp;'%&quot;.$s3.&quot;%'&nbsp;&quot;;
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;jlist&nbsp;where&nbsp;&quot;.$ks);
+echo&nbsp;&quot;&lt;table&gt;&quot;;
+echo&nbsp;&quot;&lt;tr&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;番号&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;氏名&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;備考&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;tr&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;id&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;info&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+}
+echo&nbsp;&quot;&lt;/table&gt;&quot;;
+mysql_close($link);
+?&gt;
+&lt;form&nbsp;action=&quot;sample_mysqldeleteja_sub.php&quot;&gt;
+削除してもよいですか？
+&lt;input&nbsp;type=&quot;hidden&quot;&nbsp;name=&quot;id&quot;&nbsp;&nbsp;&nbsp;value=&quot;&lt;?php&nbsp;echo&nbsp;$s1;?&gt;&quot;&gt;
+&lt;input&nbsp;type=&quot;hidden&quot;&nbsp;name=&quot;name&quot;&nbsp;value=&quot;&lt;?php&nbsp;echo&nbsp;$s2;?&gt;&quot;&gt;
+&lt;input&nbsp;type=&quot;hidden&quot;&nbsp;name=&quot;info&quot;&nbsp;value=&quot;&lt;?php&nbsp;echo&nbsp;$s3;?&gt;&quot;&gt;
+&lt;input&nbsp;name=&quot;button&quot;&nbsp;type=&quot;submit&quot;&nbsp;&nbsp;&nbsp;value=&quot;Query&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_mysqldeleteja_sub.php
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$s1 = @$_GET['id'];
+$s2 = @$_GET['name'];
+$s3 = @$_GET['info'];
+$ks = " id like \"%".$s1."%\" and name like \"%".$s2."%\" and info like \"%".$s3."%\" ";
+$qs = "delete from jlist where ".$ks;
+mysql_query($qs) or die("Error!\n");
+print "OK!\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$s1&nbsp;=&nbsp;@$_GET['id'];
+$s2&nbsp;=&nbsp;@$_GET['name'];
+$s3&nbsp;=&nbsp;@$_GET['info'];
+$ks&nbsp;=&nbsp;&quot;&nbsp;id&nbsp;like&nbsp;'%&quot;.$s1.&quot;%'&nbsp;and&nbsp;name&nbsp;like&nbsp;'%&quot;.$s2.&quot;%'&nbsp;and&nbsp;info&nbsp;like&nbsp;'%&quot;.$s3.&quot;%'&nbsp;&quot;;
+$qs&nbsp;=&nbsp;&quot;delete&nbsp;from&nbsp;jlist&nbsp;where&nbsp;&quot;.$ks;
+mysql_query($qs)&nbsp;or&nbsp;die(&quot;Error!\n&quot;);
+print&nbsp;&quot;OK!\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+
+  <h4>(14) <a name="14">日本語版メニューページの作成例</a></h4>
+  <p>
+    <a href="./PHP/sample_mysqlmenuj.php">sample_mysqlmenuj.php</a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<a href="./sample_mysqlsearchj.php"> [検索] </a>
+<a href="./sample_mysqlinsertj.php"> [追加] </a>
+<a href="./sample_mysqlupdatej.php"> [更新] </a>
+<a href="./sample_mysqldeletej.php"> [削除] </a>
+<br>
+<br>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$result = mysql_query("select * from jlist");
+echo "<table>";
+echo "<tr>";
+echo "<td> 番号 </td>";
+echo "<td> 氏名 </td>";
+echo "<td> 備考 </td>";
+echo "</tr>";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<tr>";
+  echo "<td>".$row["id"]."</td>";
+  echo "<td>".$row["name"]."</td>";
+  echo "<td>".$row["info"]."</td>";
+  echo "</tr>";
+}
+echo "</table>";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;a&nbsp;href=&quot;./sample_mysqlsearchj.php&quot;&gt;&nbsp;[検索]&nbsp;&lt;/a&gt;
+&lt;a&nbsp;href=&quot;./sample_mysqlinsertj.php&quot;&gt;&nbsp;[追加]&nbsp;&lt;/a&gt;
+&lt;a&nbsp;href=&quot;./sample_mysqlupdatej.php&quot;&gt;&nbsp;[更新]&nbsp;&lt;/a&gt;
+&lt;a&nbsp;href=&quot;./sample_mysqldeletej.php&quot;&gt;&nbsp;[削除]&nbsp;&lt;/a&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;jlist&quot;);
+echo&nbsp;&quot;&lt;table&gt;&quot;;
+echo&nbsp;&quot;&lt;tr&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;番号&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;氏名&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;td&gt;&nbsp;備考&nbsp;&lt;/td&gt;&quot;;
+echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;tr&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;id&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;td&gt;&quot;.$row[&quot;info&quot;].&quot;&lt;/td&gt;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;/tr&gt;&quot;;
+}
+echo&nbsp;&quot;&lt;/table&gt;&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+  <h4>(15) <a name="15">フォームの活用</a></h4>
+
+  <div align="center">
+    <table cellpadding=15>
+      <tr>
+        <td bgcolor="powderblue">
+          <form action="./PHP/sample_forms.php">
+
+            単一行テキスト <input type="text" name="key1" size="20" value="短い文字列">
+            <br><br>
+
+            非表示テキスト <input type="password" name="pass" size="20" value="非表示入力">
+            （入力内容を隠す）
+            <br><br>
+
+            複数行テキスト（自動改行なし）<br>
+            <textarea name="key2" rows="3" cols="40">長い文字列</textarea>
+            <br><br>
+
+            ラジオボタン
+            <input type="radio" name="key3" value="1"> 候補１
+            <input type="radio" name="key3" value="2"> 候補２
+            <input type="radio" name="key3" value="3" checked> 候補３
+            <input type="radio" name="key3" value="4"> 候補４
+            <br><br>
+
+            チェックボックス<!-- $chk=$_REQUEST["key4"]; 値が配列$chkに格納される -->
+            <input type="checkbox" name="key4[]" value="1" checked> 候補１
+            <input type="checkbox" name="key4[]" value="2"> 候補２
+            <input type="checkbox" name="key4[]" value="3"> 候補３
+            <input type="checkbox" name="key4[]" value="4" checked> 候補４
+            <br><br>
+
+            プルダウンメニュー
+            <select name="key5">
+              <option value="1"> 候補１
+              <option value="2"> 候補２
+              <option value="3" selected> 候補３
+              <option value="4"> 候補４
+              <option value="5"> 候補５
+            </select>
+            <br><br>
+
+            リストボックス
+            <select name="key6" size="3">
+              <option value="1"> 候補１
+              <option value="2"> 候補２
+              <option value="3" selected> 候補３
+              <option value="4"> 候補４
+              <option value="5"> 候補５
+            </select>
+            <br><br>
+
+            隠れフィールド値（特定の値をサブプログラムに渡す）
+            <input type="hidden" name="key7" value="非表示の値">
+            <br><br>
+
+            リセットボタン
+            <input type="reset" value="初期化">
+            <br><br>
+
+            送信ボタン
+            <input type="submit" value="実行">
+
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br><br>
+
+  <p>
+    <a href="./PHP/sample_forms.html">
+      sample_forms.html
+    </a>
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+<form action="./sample_forms.php">
+単一行テキスト <input type="text" name="key1" size="20" value="短い文字列">
+<br><br>
+非表示テキスト <input type="password" name="pass" size="20" value="非表示入力">
+（入力内容を隠す）
+<br><br>
+複数行テキスト（自動改行なし）<br>
+<textarea name="key2" rows="3"    cols="40">長い文字列</textarea>
+<br><br>
+ラジオボタン
+<input type="radio" name="key3" value="1"        > 候補１
+<input type="radio" name="key3" value="2"        > 候補２
+<input type="radio" name="key3" value="3" checked> 候補３
+<input type="radio" name="key3" value="4"        > 候補４
+<br><br>
+チェックボックス
+<input type="checkbox" name="key4[]" value="1" checked> 候補１
+<input type="checkbox" name="key4[]" value="2"        > 候補２
+<input type="checkbox" name="key4[]" value="3"        > 候補３
+<input type="checkbox" name="key4[]" value="4" checked> 候補４
+<br><br>
+プルダウンメニュー
+<select name="key5">
+<option value="1"         > 候補１
+<option value="2"         > 候補２
+<option value="3" selected> 候補３
+<option value="4"         > 候補４
+<option value="5"         > 候補５
+</select>
+<br><br>
+リストボックス
+<select name="key6" size="3">
+<option value="1"         > 候補１
+<option value="2"         > 候補２
+<option value="3" selected> 候補３
+<option value="4"         > 候補４
+<option value="5"         > 候補５
+</select>
+<br><br>
+隠れフィールド値（特定の値をサブプログラムに渡す）
+<input type="hidden" name="key7" value="非表示の値">
+<br><br>
+リセットボタン
+<input type="reset"  value="初期化">
+<br><br>
+送信ボタン
+<input type="submit" value="実行">
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;form&nbsp;action=&quot;./sample_forms.php&quot;&gt;
+
+単一行テキスト&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;name=&quot;key1&quot;&nbsp;size=&quot;20&quot;&nbsp;value=&quot;短い文字列&quot;&gt;
+&lt;br&gt;&lt;br&gt;
+
+非表示テキスト&nbsp;&lt;input&nbsp;type=&quot;password&quot;&nbsp;name=&quot;pass&quot;&nbsp;size=&quot;20&quot;&nbsp;value=&quot;非表示入力&quot;&gt;
+（入力内容を隠す）
+&lt;br&gt;&lt;br&gt;
+
+複数行テキスト（自動改行なし）&lt;br&gt;
+&lt;textarea&nbsp;name=&quot;key2&quot;&nbsp;rows=&quot;3&quot;&nbsp;&nbsp;&nbsp;&nbsp;cols=&quot;40&quot;&gt;長い文字列&lt;/textarea&gt;
+&lt;br&gt;&lt;br&gt;
+
+ラジオボタン
+&lt;input&nbsp;type=&quot;radio&quot;&nbsp;name=&quot;key3&quot;&nbsp;value=&quot;1&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補１
+&lt;input&nbsp;type=&quot;radio&quot;&nbsp;name=&quot;key3&quot;&nbsp;value=&quot;2&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補２
+&lt;input&nbsp;type=&quot;radio&quot;&nbsp;name=&quot;key3&quot;&nbsp;value=&quot;3&quot;&nbsp;checked&gt;&nbsp;候補３
+&lt;input&nbsp;type=&quot;radio&quot;&nbsp;name=&quot;key3&quot;&nbsp;value=&quot;4&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補４
+&lt;br&gt;&lt;br&gt;
+
+チェックボックス&lt;!--&nbsp;$chk=$_REQUEST[&quot;key4&quot;];&nbsp;値が配列$chkに格納される&nbsp;--&gt;
+&lt;input&nbsp;type=&quot;checkbox&quot;&nbsp;name=&quot;key4[]&quot;&nbsp;value=&quot;1&quot;&nbsp;checked&gt;&nbsp;候補１
+&lt;input&nbsp;type=&quot;checkbox&quot;&nbsp;name=&quot;key4[]&quot;&nbsp;value=&quot;2&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補２
+&lt;input&nbsp;type=&quot;checkbox&quot;&nbsp;name=&quot;key4[]&quot;&nbsp;value=&quot;3&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補３
+&lt;input&nbsp;type=&quot;checkbox&quot;&nbsp;name=&quot;key4[]&quot;&nbsp;value=&quot;4&quot;&nbsp;checked&gt;&nbsp;候補４
+&lt;br&gt;&lt;br&gt;
+
+プルダウンメニュー
+&lt;select&nbsp;name=&quot;key5&quot;&gt;
+&lt;option&nbsp;value=&quot;1&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補１
+&lt;option&nbsp;value=&quot;2&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補２
+&lt;option&nbsp;value=&quot;3&quot;&nbsp;selected&gt;&nbsp;候補３
+&lt;option&nbsp;value=&quot;4&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補４
+&lt;option&nbsp;value=&quot;5&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補５
+&lt;/select&gt;
+&lt;br&gt;&lt;br&gt;
+
+リストボックス
+&lt;select&nbsp;name=&quot;key6&quot;&nbsp;size=&quot;3&quot;&gt;
+&lt;option&nbsp;value=&quot;1&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補１
+&lt;option&nbsp;value=&quot;2&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補２
+&lt;option&nbsp;value=&quot;3&quot;&nbsp;selected&gt;&nbsp;候補３
+&lt;option&nbsp;value=&quot;4&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補４
+&lt;option&nbsp;value=&quot;5&quot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;候補５
+&lt;/select&gt;
+&lt;br&gt;&lt;br&gt;
+
+隠れフィールド値（特定の値をサブプログラムに渡す）
+&lt;input&nbsp;type=&quot;hidden&quot;&nbsp;name=&quot;key7&quot;&nbsp;value=&quot;非表示の値&quot;&gt;
+&lt;br&gt;&lt;br&gt;
+
+リセットボタン
+&lt;input&nbsp;type=&quot;reset&quot;&nbsp;&nbsp;value=&quot;初期化&quot;&gt;
+&lt;br&gt;&lt;br&gt;
+
+送信ボタン
+&lt;input&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;実行&quot;&gt;
+
+&lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_forms.php
+    <!--
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body>
+
+<?php
+$key1 = @$_GET['key1'];
+$pass = @$_GET['pass'];
+$key2 = @$_GET['key2'];
+$key3 = @$_GET['key3'];
+$key4 = @$_GET['key4'];
+$key5 = @$_GET['key5'];
+$key6 = @$_GET['key6'];
+$key7 = @$_GET['key7'];
+
+// 「ヒアドキュメント」
+print <<<EOD
+key1 = $key1<br>
+pass = $pass<br>
+key2 = $key2<br>
+key3 = $key3<br>
+EOD;
+
+echo "key4 = ";
+if(is_array($key4))foreach($key4 as $idx){
+  echo $idx.",";
+}
+echo "<br>\n";
+
+// 「ヒアドキュメント」
+print <<<EOD
+key5 = $key5<br>
+key6 = $key6<br>
+key7 = $key7<br>
+EOD;
+?>
+
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta&nbsp;http-equiv=<span class="src_doublequotation">&quot;Content-Type&quot;</span>&nbsp;content=<span class="src_doublequotation">&quot;text/html;charset=UTF-8&quot;</span>&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;?php
+$key1&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key1'</span>];
+$pass&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'pass'</span>];
+$key2&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key2'</span>];
+$key3&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key3'</span>];
+$key4&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key4'</span>];
+$key5&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key5'</span>];
+$key6&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key6'</span>];
+$key7&nbsp;=&nbsp;@$_GET[<span class="src_singlequotation">'key7'</span>];
+
+<span class="src_singlelinecomment">//&nbsp;「ヒアドキュメント」</span>
+print&nbsp;&lt;&lt;&lt;EOD
+key1&nbsp;=&nbsp;$key1&lt;br&gt;
+pass&nbsp;=&nbsp;$pass&lt;br&gt;
+key2&nbsp;=&nbsp;$key2&lt;br&gt;
+key3&nbsp;=&nbsp;$key3&lt;br&gt;
+EOD;
+
+echo&nbsp;<span class="src_doublequotation">&quot;key4&nbsp;=&nbsp;&quot;</span>;
+<span class="src_keyword">if</span>(is_array($key4))foreach($key4&nbsp;as&nbsp;$idx){
+&nbsp;&nbsp;echo&nbsp;$idx.<span class="src_doublequotation">&quot;,&quot;</span>;
+}
+echo&nbsp;<span class="src_doublequotation">&quot;&lt;br&gt;\n&quot;</span>;
+
+<span class="src_singlelinecomment">//&nbsp;「ヒアドキュメント」</span>
+print&nbsp;&lt;&lt;&lt;EOD
+key5&nbsp;=&nbsp;$key5&lt;br&gt;
+key6&nbsp;=&nbsp;$key6&lt;br&gt;
+key7&nbsp;=&nbsp;$key7&lt;br&gt;
+EOD;
+?&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+<ems>※is_array(変数名)は、配列変数かどうかチェックする関数</ems>
+</pre>
+
+  <h4>(16) <a name="16">リストボックスの活用例</a></h4>
+  <div align="center">
+    <img src="./listbox.gif">
+  </div>
+  <p>
+    <a href="./PHP/sample_select_list.php">sample_select_list.php</a>
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$result = mysql_query("select * from namelist");
+echo "<form action=\"sample_select_list_sub.php\">\n";
+echo "<select name=\"list\" size=5>\n";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<option value=\"".$row["id"]."\" >".$row["name"]."\n";
+}
+echo "</select><br><br>\n";
+echo "<input type=\"submit\" value=\"query\">";
+echo "</form>\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;namelist&quot;);
+echo&nbsp;&quot;&lt;form&nbsp;action='sample_select_list_sub.php'&gt;\n&quot;;
+echo&nbsp;&quot;&lt;select&nbsp;name='list'&nbsp;size=5&gt;\n&quot;;
+<em>while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;option&nbsp;value=<u>'</u>&quot;.$row[&quot;id&quot;].&quot;<u>'</u>&nbsp;&gt;&quot;.$row[&quot;name&quot;].&quot;\n&quot;;
+}</em>
+echo&nbsp;&quot;&lt;/select&gt;&lt;br&gt;&lt;br&gt;\n&quot;;
+echo&nbsp;&quot;&lt;input&nbsp;type='submit'&nbsp;value='query'&gt;&quot;;
+echo&nbsp;&quot;&lt;/form&gt;\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_select_list_sub.php
+    <!--
+<html>
+<body>
+<?php
+$list = @$_GET['list'];
+print <<<EOD
+list = $list<br>
+EOD;
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$list&nbsp;=&nbsp;@$_GET['list'];
+print&nbsp;&lt;&lt;&lt;EOD
+list&nbsp;=&nbsp;$list&lt;br&gt;
+EOD;
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <h4>(17) <a name="17">チェックボックスの活用例</a></h4>
+  <p>
+    <a href="./PHP/sample_select_check.php">sample_select_check.php</a>
+    <!--
+<html>
+<body>
+<?php
+$link = mysql_connect("home.nda.ac.jp","ユーザ名","パスワード");
+mysql_select_db("データベース名");
+$result = mysql_query("select * from namelist");
+echo "<form action=\"sample_select_check_sub.php\">\n";
+while ( $row = mysql_fetch_array($result) ){
+  echo "<input type=\"checkbox\" name=\"list[]\" ";
+  echo "value=\"".$row["id"]."\">".$row["name"]."<br>\n"; 
+}
+echo "<input type=\"reset\"  value=\"reset\">";
+echo "<input type=\"submit\" value=\"query\"><br>";
+echo "</form>\n";
+mysql_close($link);
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$link&nbsp;=&nbsp;mysql_connect(<span class="src_doublequotation">&quot;home.nda.ac.jp&quot;</span>,<span class="src_doublequotation">&quot;ユーザ名&quot;</span>,<span class="src_doublequotation">&quot;パスワード&quot;</span>);
+mysql_select_db(<span class="src_doublequotation">&quot;データベース名&quot;</span>);
+$result&nbsp;=&nbsp;mysql_query(&quot;select&nbsp;*&nbsp;from&nbsp;namelist&quot;);
+echo&nbsp;&quot;&lt;form&nbsp;action='sample_select_check_sub.php'&gt;\n&quot;;
+<em>while&nbsp;(&nbsp;$row&nbsp;=&nbsp;mysql_fetch_array($result)&nbsp;){
+&nbsp;&nbsp;echo&nbsp;&quot;&lt;input&nbsp;type=<u>'</u>checkbox<u>'</u>&nbsp;name=<u>'</u>list[]<u>'</u>&nbsp;&quot;;
+&nbsp;&nbsp;echo&nbsp;&quot;value=<u>'</u>&quot;.$row[&quot;id&quot;].&quot;<u>'</u>&gt;&quot;.$row[&quot;name&quot;].&quot;&lt;br&gt;\n&quot;;&nbsp;
+}</em>
+echo&nbsp;&quot;&lt;input&nbsp;type='reset'&nbsp;&nbsp;value='reset'&gt;&quot;;
+echo&nbsp;&quot;&lt;input&nbsp;type='submit'&nbsp;value='query'&gt;&lt;br&gt;&quot;;
+echo&nbsp;&quot;&lt;/form&gt;\n&quot;;
+mysql_close($link);
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    sample_select_check_sub.php
+    <!--
+<html>
+<body>
+<?php
+echo "Check!<br>\n";
+$list = @$_GET['list'];
+if(is_array($list))foreach($list as $str){
+  echo $str."<br>\n";
+}
+?>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+echo&nbsp;&quot;Check!&lt;br&gt;\n&quot;;
+$list&nbsp;=&nbsp;@$_GET['list'];
+if(is_array($list))foreach($list&nbsp;as&nbsp;$str){
+&nbsp;&nbsp;echo&nbsp;$str.&quot;&lt;br&gt;\n&quot;;
+}
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+  <h4>(参考) <a name="a0">GETメソッドとPOSTメソッド</a></h4>
+  <p>
+    フォームに入力された値をCGI(Common Gateway Interface)を通じてサーバに渡す仕組みに、<a
+      href="http://www.google.co.jp/search?q=get+post+method">GETとPOSTの二つの方法</a>があります。それぞれ、GETメソッド、POSTメソッドと呼ばれています。GETメソッドでは、要求するページデータのURL部分に追記する形でサーバに値を渡します（URLの末尾に「?」、各変数値を「&」で区切りながら列挙）。POSTメソッドでは、符号化した値をURLに続いて送信される本文データとしてサーバに渡します。
+  </p>
+  <p>
+    本講義では、データのやり取りをわかりやすくするために、GETメソッドのみを用いてます（特に、method を指定しない場合、標準的な
+    GETメソッドが採用）。GETメソッドは、引数付きのURLを記述したい場合に便利ですが、当然、伝送する値が読める形でブラウザなどに表示されます。
+  </p>
+  <p>
+    <a href="./PHP/sample_func_abs_get.php">
+      sample_func_abs_get.php
+    </a>
+    <!--
+<html>
+<body>
+<form action="sample_func_abs_get.php">
+A=
+<input type="text" name="r">
+<input type="submit" value="Query">
+<br>
+<?php
+  $r = @$_GET['r']; // @：エラー抑制演算子
+  print "A=".$r.",Abs(A)=".abs($r);
+?>
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+<em>&lt;form&nbsp;action=&quot;sample_func_abs_get.php&quot;&gt;</em>
+A=
+<em>&lt;input&nbsp;type=&quot;text&quot;&nbsp;name=&quot;r&quot;&gt;</em>
+<em>&lt;input&nbsp;type=&quot;submit&quot;&nbsp;value=&quot;Query&quot;&gt;</em>
+&lt;br&gt;
+&lt;?php
+&nbsp;&nbsp;$r&nbsp;=&nbsp;@<em>$_GET['r']</em>; // @：エラー抑制演算子
+&nbsp;&nbsp;print&nbsp;&quot;A=&quot;.$r.&quot;,Abs(A)=&quot;.abs($r);
+?&gt;
+<em>&lt;/form&gt;</em>
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+  <p>
+    人目につきにくいという程度の対策ですが、もしパスワードなどの値を渡したい場合には、POSTメソッドを用いることが望ましいです。ただし、POSTメソッドを用いたとしても、本文部分は簡単に復号できるので万全ではないことに注意が必要です。暗号などを用いた高度なセキュリティ技術の実装法については、本講義で触れませんが、興味を持った学生は調べてみてください。
+  </p>
+  <p>
+    <a href="./PHP/sample_func_abs_post.php">
+      sample_func_abs_post.php
+    </a>
+    （POSTメソッドを用いたフォームの記述例）
+    <!--
+<html>
+<body>
+<form method="post" action="sample_func_abs_post.php">
+A=
+<input type="text" name="r">
+<input type="submit" value="Query">
+<br>
+<?php
+  $r = @$_POST['r']; // @：エラー抑制演算子
+  print "A=".$r.",Abs(A)=".abs($r);
+?>
+</form>
+</body>
+</html>
+-->
+  </p>
+  <pre class=c>
+&lt;html&gt;
+&lt;body&gt;
+&lt;form&nbsp;<em>method=<span class="src_doublequotation">&quot;post&quot;</span></em>&nbsp;action=<span class="src_doublequotation">&quot;sample_func_abs_post.php&quot;</span>&gt;
+A=
+&lt;input&nbsp;type=<span class="src_doublequotation">&quot;text&quot;</span>&nbsp;name=<span class="src_doublequotation">&quot;r&quot;</span>&gt;<br>
+&lt;input&nbsp;type=<span class="src_doublequotation">&quot;submit&quot;</span>&nbsp;value=<span class="src_doublequotation">&quot;Query&quot;</span>&gt;
+&lt;br&gt;
+&lt;?php
+&nbsp;&nbsp;$r&nbsp;=&nbsp;@<em>$_POST[<span class="src_singlequotation">'r'</span>]</em>; // @：エラー抑制演算子
+&nbsp;&nbsp;print&nbsp;<span class="src_doublequotation">&quot;A=&quot;</span>.$r.<span class="src_doublequotation">&quot;,Abs(A)=&quot;</span>.abs($r);
+?&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+  <br>
+  <br>
+
+  <h4>(参考) <a name="a0">ステータスコード（303 See Other）の利用</a></h4>
+  <p>
+    <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">ステータスコード（Hypertext Transfer Protocol --
+      HTTP/1.1）</a>は、閲覧用ソフトウェア（ブラウザ）に自動処理させるための３桁の符号です。例えば、閲覧ページを自動転送（HTTP
+    リダイレクト）させたい場合は、次のように記述するだけで、ブラウザが自動的にダウンロードページを変更します。この例では、日本語版メニューページを強制的に閲覧させています（バックボタンで復帰）。
+  </p>
+  <p>
+    <a href="./PHP/seeother.php">
+      seeother.php
+    </a>
+    <!--
+<?php
+header('HTTP/1.1 303 See Other');
+header('Location: ./sample_mysqlmenu.php');
+exit();
+?>
+-->
+  </p>
+  <pre class=c>
+&lt;?php
+header(<span class="src_singlequotation">'HTTP/1.1&nbsp;303&nbsp;See&nbsp;Other'</span>);
+header(<span class="src_singlequotation">'Location:&nbsp;./sample_mysqlmenu.php'</span>);
+exit();
+?&gt;
+</pre>
+
+
+</body>
+
+</html>

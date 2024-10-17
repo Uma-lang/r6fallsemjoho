@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">
+            外部からのレコード読み込み
+    </h2>
+
+
+    <h4>(1) <a name="01">ファイルからの読み込み</a></h4>
+    <p>
+        今回は、皆様おなじみ（？）のダウンロードツール <em>wget</em> 等を用いて、データファイルを入手します。次の手順に従って、データファイル <a
+            href="http://home.nda.ac.jp/~iwak/J3DB/data/list1a.csv">list1a.csv</a> をダウンロードし、その内容を確認してください。下の例は、wget
+        コマンドを用いたダウンロード手順を示したものです。※ <a
+            href="http://home.nda.ac.jp/~iwak/J3DB/data/">ここ</a>を開いて、右クリックメニューなどで保存してもよい（機能しないブラウザもある）
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ <em>wget http://home.nda.ac.jp/~iwak/J3DB/data/list1a.csv</em>
+--16:06:53--  http://home.nda.ac.jp/~iwak/J3DB/data/list1a.csv
+home.nda.ac.jp をDNSに問いあわせています... 10.0.0.44
+home.nda.ac.jp|10.0.0.44|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+長さ: 66 [text/plain]
+Saving to: `list1a.csv'
+
+100%[=======================================>] 66          --.-K/s   in 0s
+
+16:06:53 (7.87 MB/s) - `list1a.csv' を保存しました [66/66]
+
+[iwak@cmwww15 ~]$ <em>ls -l list1a.csv</em>
+-rw-r--r-- 1 iwak 4300 66 10月 26 11:00 list1a.csv
+</pre>
+    <p>
+        CSV形式のテキストファイルには、区切りや改行の符号の違いによってさまざまな種類があります。今回配布した list1a.csv は、区切り符号に <em>","</em>，改行符号に
+        <em>"LF"</em>（改行のみ）を用いています（改行に復帰符号 "CR" が追加される場合もあるので要注意）。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ <em>cat list1a.csv</em>
+30,m30,a30
+31,m31,a31
+32,m32,a32
+33,m33,a33
+34,m34,a34
+35,m35,a35
+</pre>
+    <br>
+    <p>
+        本講義では、MySQLクライアントツールの一つの <em>mysqlimport</em> コマンドを用います。これは、<em>mysql</em>
+        と同様に、データベースを操作するためのクライアントソフトウェアツール群（ほかにも便利なソフトウェアが多数準備されている）の中の一つです。
+    </p>
+    <p>
+        <em>mysqlimport</em>を使う前に、まず、<em>mysql</em>クライアントを用いて、コマンドシェルから直接データベース内にデータ挿入先のテーブルを作成します。下の例は、mysqlクライアントの対話的な操作ではなく、コマンドとして直接実行する場合のものです（コマンドプロンプトに示した命令文は、<em>一行</em>で書くこと）。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p <em>--execute="</em>use iwak;
+    create table list1a(cid INT, cname varchar(16), cadd varchar(32));<em>"</em>
+<em>※区切りの空白を必ず入れ、コマンドラインには一行で書くこと（以下、同様）</em>
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p <em>--execute="</em>use iwak; show tables;<em>"</em>
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
++----------------+
+</pre>
+    <p>
+        最初の命令では、データベース iwak 上に、新しいテーブル list1a
+        を作成しています。次の命令で、テーブルを正しく作成できたかどうか確認しています。このやり方は、これまでと少し違った操作感（直接的な対話感ではない）があると思います。いかがでしょうか。実は、この感じが後に登場する PHP
+        との連携処理に近い（？）ものです。
+    </p>
+    <p>
+        もちろん、テーブルを作成するだけならば、前回のように mysql クライアントを用いて、対話的に処理してもよいです。
+    </p>
+    <p>
+        それでは、今回新しく作成したテーブル list1a にデータファイル list1a.csv の内容を読み込みましょう。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -h home.nda.ac.jp <em>-L</em> -p <em>--fields-terminated-by=","</em>
+    <em>--lines-terminated-by="\n"</em> iwak list1a.csv
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | a30  |
+|   31 | m31   | a31  |
+|   32 | m32   | a32  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
++------+-------+------+
+</pre>
+    <p>
+        実は、この処理では、list1a.csv
+        の<em>拡張子（.csv）を除く、ファイル名</em>がレコードを読み込ませたい<em>テーブル名と一致</em>していなければなりません。今回は、その準備がすでに整っていたというわけです。実際に、この方法で別のデータファイル（レコード）を読み込ませる際には、注意してください。
+    </p>
+    <p>
+        オプション <em>-L</em> は、ローカルシステム（-L: Local system, MySQLサーバが動作しているシステム）上での操作を意味します。　<em>--fields-terminated-by</em>
+        と <em>--lines-terminated-by</em>
+        は、それぞれ、フィールド（列）とレコード（行）の<em>区切記号を指定</em>するためのものです。任意の記号を指定できますが、不適切なものを用いると意図しないところで分割されます。無指定の場合には、「タブ」と「改行」で区切られます。
+        <em>iwak</em> は、レコードを読み込ませるテーブルを持つデータベース名です。
+    </p>
+    <p>
+        もし、先頭の指定行数を読み飛ばして、読み込ませたい場合には、<em>--ignore-lines</em> オプションを用います。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -h home.nda.ac.jp -L -p --fields-terminated-by=","
+    --lines-terminated-by="\n" <em>--ignore-lines=3</em> iwak list1a.csv
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | a30  |
+|   31 | m31   | a31  |
+|   32 | m32   | a32  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
+<ems>|   33 | m33   | a33  |</ems>
+<ems>|   34 | m34   | a34  |</ems>
+<ems>|   35 | m35   | a35  |</ems>
++------+-------+------+
+</pre>
+
+    <p>
+        読み込み先フィールドを変えたい場合には、<em>--columns</em> オプションを用いて指定します。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -h home.nda.ac.jp -L -p --fields-terminated-by=","
+    --lines-terminated-by="\n" <em>--columns=cid,cname</em> iwak list1a.csv
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | a30  |
+|   31 | m31   | a31  |
+|   32 | m32   | a32  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
+|   30 | m30   | <ems>NULL</ems> |
+|   31 | m31   | <ems>NULL</ems> |
+|   32 | m32   | <ems>NULL</ems> |
+|   33 | m33   | <ems>NULL</ems> |
+|   34 | m34   | <ems>NULL</ems> |
+|   35 | m35   | <ems>NULL</ems> |
++------+-------+------+
+</pre>
+    <p>
+        <em>--delete</em>を加えると、テーブル上の<em>全レコードを削除した後</em>に、ファイルからデータを読み込みます。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -L -h home.nda.ac.jp -p <em>--delete</em> --fields-terminated-by=","
+    --lines-terminated-by="\n" <em>--columns=cid,cname</em> iwak list1a.csv
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | NULL |
+|   31 | m31   | NULL |
+|   32 | m32   | NULL |
+|   33 | m33   | NULL |
+|   34 | m34   | NULL |
+|   35 | m35   | NULL |
++------+-------+------+
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -L -h home.nda.ac.jp -p --fields-terminated-by=","
+    --lines-terminated-by="\n" <em>--columns=cid,cadd</em> iwak list1a.csv
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | NULL |
+|   31 | m31   | NULL |
+|   32 | m32   | NULL |
+|   33 | m33   | NULL |
+|   34 | m34   | NULL |
+|   35 | m35   | NULL |
+|   30 | NULL  | <ems>m30</ems>  |
+|   31 | NULL  | <ems>m31</ems>  |
+|   32 | NULL  | <ems>m32</ems>  |
+|   33 | NULL  | <ems>m33</ems>  |
+|   34 | NULL  | <ems>m34</ems>  |
+|   35 | NULL  | <ems>m35</ems>  |
++------+-------+------+
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysqlimport -L -h home.nda.ac.jp -p <em>--delete</em> --fields-terminated-by=","
+    --lines-terminated-by="\n" iwak list1a.csv
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p --execute="use iwak; select * from list1a;"
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | a30  |
+|   31 | m31   | a31  |
+|   32 | m32   | a32  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
++------+-------+------+
+</pre>
+
+
+    <h4>(2) <a name="02"> テーブルからの読み込み
+            <br>
+        </a></h4>
+    <p>
+        テーブルのレコードを読み込むには、mysqlクライアント上で、<em>INSERT INTO</em>コマンドを用います。読み込むレコードは、SELECTコマンドにより指定できます。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak <em>-D iwak</em> -p
+※ユーザ名とデータベースを指定（<em>-D</em>）して、mysqlクライアントを実行
+ process in the mysql client operation.)
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
++----------------+
+2 rows in set (0.00 sec)
+</pre>
+    <br>
+    <pre class=c>
+mysql> insert into list1a <em>select * from list1</em>;
+mysql> select * from list1a;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|   30 | m30   | a30  |
+|   31 | m31   | a31  |
+|   32 | m32   | a32  |
+|   33 | m33   | a33  |
+|   34 | m34   | a34  |
+|   35 | m35   | a35  |
+<ems>|    1 | M1    | a1   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   20 | m20   | a20  |
+|   19 | m19   | a19  |
+|   18 | m18   | a18  |
+|   17 | m17   | a17  |</ems>
++------+-------+------+
+21 rows in set (0.00 sec)
+</pre>
+    <p>
+        ここで、新しいテーブル list1b を作成し、SELECT文を用いた<em>フィールド指定読み込み</em>の具体例を示します。簡単な応用構文なので、わかりやすいと思います。
+    </p>
+    <pre class=c>
+mysql> create table list1b(cid INT, cname varchar(16), cadd varchar(32));
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
+| list1b         |
++----------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from list1b;
+Empty set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> insert into <em>list1b(cid,cname)</em> select <em>cid,cname</em> from list1;
+mysql> select * from list1b;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | M1    | NULL |
+|    3 | m3    | NULL |
+|    4 | m4    | NULL |
+|    5 | m5    | NULL |
+|    6 | m6    | NULL |
+|    7 | m7    | NULL |
+|    8 | m8    | NULL |
+|    9 | m9    | NULL |
+|   10 | m10   | NULL |
+|   11 | m11   | NULL |
+|   12 | m12   | NULL |
+|   20 | m20   | NULL |
+|   19 | m19   | NULL |
+|   18 | m18   | NULL |
+|   17 | m17   | NULL |
++------+-------+------+
+</pre>
+    <pre class=c>
+mysql> delete from list1b where <em>cname not like "%1"</em>;
+mysql> select * from list1b;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | M1    | NULL |
+|   11 | m11   | NULL |
++------+-------+------+
+</pre>
+    <pre class=c>
+mysql> insert into list1b(cid,<em>cname</em>) select cid,<em>cadd</em> from list1;
+mysql> select * from list1b order by cid asc;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | M1    | NULL |
+|    1 | <ems>a1</ems>    | NULL |
+|    3 | <ems>a3</ems>    | NULL |
+|    4 | <ems>a4</ems>    | NULL |
+|    5 | <ems>a5</ems>    | NULL |
+|    6 | <ems>a6</ems>    | NULL |
+|    7 | <ems>a7</ems>    | NULL |
+|    8 | <ems>a8</ems>    | NULL |
+|    9 | <ems>a9</ems>    | NULL |
+|   10 | <ems>a10</ems>   | NULL |
+|   11 | m11   | NULL |
+|   11 | <ems>a11</ems>   | NULL |
+|   12 | <ems>a12</ems>   | NULL |
+|   17 | <ems>a17</ems>   | NULL |
+|   18 | <ems>a18</ems>   | NULL |
+|   19 | <ems>a19</ems>   | NULL |
+|   20 | <ems>a20</ems>   | NULL |
++------+-------+------+
+17 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> delete from list1b;
+Query OK, 17 rows affected (0.00 sec)
+
+mysql> select * from list1b;
+Empty set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into list1b(cid,<em>cname</em>) select cid,<em>cname</em>
+    -> from list1 where cname <em>like "%1"</em>;
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into list1b(cid,<em>cadd</em>)  select cid,<em>cname</em>
+    -> from list1 where cname <em>like "%1"</em>;
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from list1b;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | M1    | NULL |
+|   11 | m11   | NULL |
+|    1 | NULL  | <ems>M1</ems>   |
+|   11 | NULL  | <ems>m11</ems>  |
++------+-------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+</body>
+
+</html>

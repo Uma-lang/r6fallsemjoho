@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">
+            フィールド定義の操作
+    </h2>
+
+
+    <h4>(1) <a name="01">フィールドの追加<br></a></h4>
+    <p>
+        フィールドの変更するためのコマンドが、<em>ALTER</em>です。フィールドを追加するには、<em>ALTER TABLE ... ADD 新フィールド名 データ型</em> 構文を用います。
+    </p>
+    <pre class=c>
+mysql> <em>alter table</em> list1b <em>add</em> cage int;
+mysql> show columns from list1b;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| cid   | int(11)     | YES  |     | NULL    |       |
+| cname | varchar(16) | YES  |     | NULL    |       |
+| cadd  | varchar(32) | YES  |     | NULL    |       |
+| <ems>cage</ems>  | int(11)     | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1b;
++------+-------+------+------+
+| cid  | cname | cadd | <ems>cage</ems> |
++------+-------+------+------+
+|    1 | M1    | NULL | NULL |
+|   11 | m11   | NULL | NULL |
+|    1 | NULL  | M1   | NULL |
+|   11 | NULL  | m11  | NULL |
++------+-------+------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+
+    <h4>(2) <a name="02">フィールド名の変更</a></h4>
+    <p>
+        フィールド名を変更したい場合、<em>ALTER TABLE ... CHANGE 旧フィールド名 新フィールド名 データ型 </em>構文を用います。
+    </p>
+    <pre class=c>
+mysql> alter table list1b <em>change</em> cadd cname2 varchar(16);
+mysql> show columns from list1b;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| cid    | int(11)     | YES  |     | NULL    |       |
+| cname  | varchar(16) | YES  |     | NULL    |       |
+| <ems>cname2</ems> | <ems>varchar(16)</ems> | YES  |     | NULL    |       |
+| cage   | int(11)     | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1b;
++------+-------+--------+------+
+| cid  | cname | <ems>cname2</ems> | cage |
++------+-------+--------+------+
+|    1 | M1    | NULL   | NULL |
+|   11 | m11   | NULL   | NULL |
+|    1 | NULL  | M1     | NULL |
+|   11 | NULL  | m11    | NULL |
++------+-------+--------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+
+    <h4>(3) <a name="03">フィールド定義の変更</a></h4>
+    <p>
+        フィールドの定義（データ型や属性）を変更したい場合にも、<em>ALTER TABLE ... CHANGE 指定フィールド名 指定フィールド名 データ型
+        </em>構文を用います。ようするに、定義を変えたいフィールドを、同じ名前で更新（上書き）することになります。
+    </p>
+    <pre class=c>
+mysql> alter table list1b change cname cname varchar(32);
+mysql> show columns from list1b;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| cid    | int(11)     | YES  |     | NULL    |       |
+| cname  | varchar(<ems>32</ems>) | YES  |     | NULL    |       |
+| cname2 | varchar(16) | YES  |     | NULL    |       |
+| cage   | int(11)     | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1b;
++------+-------+--------+------+
+| cid  | cname | cname2 | cage |
++------+-------+--------+------+
+|    1 | M1    | NULL   | NULL |
+|   11 | m11   | NULL   | NULL |
+|    1 | NULL  | M1     | NULL |
+|   11 | NULL  | m11    | NULL |
++------+-------+--------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+
+
+    <h4>(4) <a name="04">フィールドの削除</a></h4>
+
+    <p>
+        フィールドを削除したい場合、<em>ALTER TABLE ... DROP フィールド名</em> 構文を用います。
+    </p>
+    <pre class=c>
+mysql> alter table list1b <em>drop</em> cname2;
+mysql> select * from list1b;
++------+-------+------+
+| cid  | cname | cage |
++------+-------+------+
+|    1 | M1    | NULL |
+|   11 | m11   | NULL |
+|    1 | NULL  | NULL |
+|   11 | NULL  | NULL |
++------+-------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+
+</body>
+
+</html>

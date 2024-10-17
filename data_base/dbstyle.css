@@ -1,0 +1,113 @@
+/* グローバルスタイル */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #e6f0ff; /* 淡い青背景 */
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+center {
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+}
+
+/* テーブルのスタイル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+td {
+    padding: 15px;
+    border: 1px solid #b0c4de; /* 青系のボーダー */
+    vertical-align: top;
+}
+
+/* 講義セルのスタイル */
+td[bgcolor="powderblue"] {
+    background-color: #87cefa; /* 空色 */
+    font-weight: bold;
+    text-align: center;
+}
+
+td[bgcolor="aquamarine"] {
+    background-color: #b0e0e6; /* 淡い青緑 */
+}
+
+td[bgcolor="floralwhite"] {
+    background-color: #f0f8ff; /* アリスブルー */
+    text-align: center;
+    font-style: italic;
+}
+
+/* リンクのスタイル */
+a {
+    color: #1e90ff; /* ドッジャーブルー */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #104e8b; /* 濃い青 */
+}
+
+/* 見出しのスタイル */
+b {
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* <pre class="c"> のスタイル */
+pre.c {
+    background-color: #2b3e50; /* 濃い青背景 */
+    color: #cfd8dc; /* テキストカラー */
+    font-family: 'Courier New', Courier, monospace; /* プログラミングフォント */
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    line-height: 1.5;
+}
+
+/* シンタックスハイライト */
+pre.c .keyword {
+    color: #4fc3f7; /* 明るい青 */
+}
+
+pre.c .string {
+    color: #81d4fa; /* 水色 */
+}
+
+pre.c .comment {
+    color: #a1c4e8; /* 薄い青 */
+    font-style: italic;
+}
+
+pre.c .number {
+    color: #b3e5fc; /* 薄い青 */
+}
+
+pre.c .function {
+    color: #4db6ac; /* 青緑 */
+}
+
+pre.c .operator {
+    color: #00bcd4; /* シアン */
+}
+
+/* メディアクエリでレスポンシブ対応 */
+@media (max-width: 768px) {
+    table {
+        font-size: 0.9em;
+    }
+
+    td {
+        padding: 10px;
+    }
+}

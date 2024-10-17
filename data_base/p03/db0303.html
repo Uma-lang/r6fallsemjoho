@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+    <h2>
+        <height=19 width=18 alt="">
+            出力形式の変更
+    </h2>
+
+    <h4>(1) <a name="01">フィールド名の付替（エリアス）表示</a></h4>
+    <p>
+        フィールド名に、<em>AS</em> 指定を行うことにより、フィールド名の付け替えができます。この別に付けられた名前のことを、エリアスと呼びます（UNIXコマンドの alias
+        と同じ感覚ですね）。後述のテーブル結合にも、このエリアスを用いることができます。
+    </p>
+    <pre class=c>
+mysql> select <em>cid as No</em>, <em>cname as Name</em>, <em>cadd as Address</em> from list1;
++------+------+---------+
+| <ems>No</ems>   | <ems>Name</ems> | <ems>Address</ems> |
++------+------+---------+
+|    1 | m1   | a1      |
+|    2 | m2   | a2      |
+|    3 | m3   | a3      |
+|    4 | m4   | a4      |
+|    5 | m5   | a5      |
+|    6 | m6   | a6      |
+|    7 | m7   | a7      |
+|    8 | m8   | a8      |
+|    9 | m9   | a9      |
+|   10 | m10  | a10     |
+|   11 | m11  | a11     |
+|   12 | m12  | a12     |
+|   13 | m13  | NULL    |
+|   14 | NULL | a14     |
++------+------+---------+
+14 rows in set (0.00 sec)
+</pre>
+
+
+
+
+    <h4>(2) <a name="02">並べ替え表示</a></h4>
+    <p>
+        検索したレコードを抽出表示する際に、その出力順を <em>ORDER BY ... </em> 指定により、昇順（<em>ASC</em>: ASCending order）もしくは降順（<em>DESC</em>:
+        DESCending
+        order）に並べ替えることができます。数値はもちろん、アルファベットや文字（コード）を用いた処理もできます。ただし、データの型によっては、期待通りの結果が得られないこともあります（文字コードの相違により）。
+    </p>
+    <pre class=c>
+mysql> insert into list1 set cid=20, cname="m20", cadd="a20";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=19, cname="m19", cadd="a19";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=18, cname="m18", cadd="a18";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=17, cname="m17", cadd="a17";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=16, cname="m16", cadd="a16";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=15, cname="m15", cadd="a15";
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1;
++------+-------+------+
+| <ems>cid</ems>  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    2 | m2    | a2   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   13 | m13   | NULL |
+|   14 | NULL  | a14  |
+|   20 | m20   | a20  |
+|   19 | m19   | a19  |
+|   18 | m18   | a18  |
+|   17 | m17   | a17  |
+|   16 | m16   | a16  |
+|   15 | m15   | a15  |
++------+-------+------+
+20 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 <em>order by</em> cid <em>asc</em>;
++------+-------+------+
+| <ems>cid</ems>  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    2 | m2    | a2   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   13 | m13   | NULL |
+|   14 | NULL  | a14  |
+|   15 | m15   | a15  |
+|   16 | m16   | a16  |
+|   17 | m17   | a17  |
+|   18 | m18   | a18  |
+|   19 | m19   | a19  |
+|   20 | m20   | a20  |
++------+-------+------+
+20 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 <em>order by</em> cid <em>desc</em>;
++------+-------+------+
+| <ems>cid</ems>  | cname | cadd |
++------+-------+------+
+|   20 | m20   | a20  |
+|   19 | m19   | a19  |
+|   18 | m18   | a18  |
+|   17 | m17   | a17  |
+|   16 | m16   | a16  |
+|   15 | m15   | a15  |
+|   14 | NULL  | a14  |
+|   13 | m13   | NULL |
+|   12 | m12   | a12  |
+|   11 | m11   | a11  |
+|   10 | m10   | a10  |
+|    9 | m9    | a9   |
+|    8 | m8    | a8   |
+|    7 | m7    | a7   |
+|    6 | m6    | a6   |
+|    5 | m5    | a5   |
+|    4 | m4    | a4   |
+|    3 | m3    | a3   |
+|    2 | m2    | a2   |
+|    1 | m1    | a1   |
++------+-------+------+
+20 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1 order by <em>cname</em> asc;
++------+-------+------+
+| cid  | <ems>cname</ems> | cadd |
++------+-------+------+
+|   14 | NULL  | a14  |
+|    1 | m1    | a1   |
+|   10 | m10   | a10  |
+|   11 | m11   | a11  |
+|   12 | m12   | a12  |
+|   13 | m13   | NULL |
+|   15 | m15   | a15  |
+|   16 | m16   | a16  |
+|   17 | m17   | a17  |
+|   18 | m18   | a18  |
+|   19 | m19   | a19  |
+|    2 | m2    | a2   |
+|   20 | m20   | a20  |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
++------+-------+------+
+20 rows in set (0.00 sec)
+</pre>
+
+
+</body>
+
+</html>

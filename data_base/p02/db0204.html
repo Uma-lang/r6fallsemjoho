@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+<title>データベース論（岩切准教授）</title>
+<link rel="stylesheet" href="../dbstyle.css">
+<style type="text/css">
+</style>
+</head>
+<body>
+
+
+<h2><height=19 width=18 alt="">データベース利用の準備</h2>
+
+<h4>(1) <a name="01">利用登録</a></h4>
+<p>
+防衛大学校では、home.nda.ac.jp上で、<a href="https://www.mysql.com/jp/">MySQL</a>（リレーショナルデータベースの一種）サーバを使用できます。ただし、その利用開始（および停止）には、特別な操作が必要です。その操作手順は、次のとおりです。</p>
+<br>
+<ol class=x type=a>
+<li><div class=b><a href="http://www2.nda.ac.jp">校内専用ポータルサイト</a> PANDA に接続</div>
+<br>
+<li><div class=b>利用開始</div>
+<div style="text-indent:1em;">校内専用ポータルサイト（PANDA）に接続後、図のように「Topページ」から「共同利用システム（または「規則・リンク」）」のタブを開き、「MySQLデータベース管理」を選択します。「<a href="http://scmvcgi01.nda.ac.jp/tools/mysql/index.cgi">MySQLデータベース領域管理</a>」のページで作成を選択し、ユーザ認証に成功すると、データベース領域が自動的に作成されます。この際、<em>「接続パスワード」は、講義中に見られる可能性があるため、必ず実習専用のものを設定し、忘れないように気を付けてください。</em></div>
+<br>
+
+<div align="center">
+<img src="./fig0203/01.gif">
+<br>
+「共同利用システム」のメニュー（例）
+<br><br>
+<img src="./fig0203/01b.gif">
+<br>
+「規則・リンク」のメニュー（例）
+<br><br>
+<img src="./fig0203/02.gif">
+<br>
+データベース領域の作成手順
+</div>
+<br><br>
+
+<li><div class=b>利用停止</div>
+<div style="text-indent:1em;">「MySQLデータベース領域管理」のページで、データベース領域を「削除」すれば、MySQLサーバを利用できなくなります。</div>
+</ol>
+
+<h4>(2) <a name="03">MySQLクライアントの起動と終了</a></h4>
+<p>
+対話的にMySQLサーバ（home.nda.ac.jpで動作）を利用する最も基本的な手段は、MySQLクライアントを用いることです。MySQLクライアント（コマンド： mysql）は、防衛大学校内の各電算機講義室のLinuxシステム（IPアドレス：<em>10.0.0.145</em>および<em>10.0.0.146</em>）にインストールされています。
+</p>
+<p>
+ログインした端末（<a href="https://ja.osdn.net/projects/ttssh2/">TeraTerm</a> <a href="./teraterm-4.105.zip">※</a> 等）上で次の命令を実行して MySQLクライアントを起動し、MySQLサーバに接続します。接続の際、利用者認証のためのパスワード入力を求められます。各学生の認証用パスワードを入力してログインください。※データベースへの接続パスワードは変更すること（初期状態ではログインパスワードと同じ）
+</p>
+<pre class=c>
+<em>mysql</em> <em><b>-h home.nda.ac.jp</b> -u</em> iwak <em>-p</em>
+（または、<em>/usr/bin/mysql</em> <em><b>-h home.nda.ac.jp</b> -u</em> iwak <em>-p</em>）
+</pre>
+<p>
+次の命令を実行すると、クライアントを終了できます（端末のシェルに戻る）。
+</p>
+</p>
+<pre class=c>
+mysql> <em>quit</em>
+</pre>
+<p>
+※ mysql>　の部分は、MySQLクライアントのコマンドプロンプトです（以降、同様）
+</p>
+
+<h4>(3) <a name="04">MySQLサーバに接続</a></h4>
+<p>
+実は、MySQLクライアントの起動に成功した段階で、すでにサーバへの接続を完了しています。よって、すぐにデータベースシステムを利用できる状態にあります。それでは、さっそく、データベースシステムにアクセスしてみましょう。
+</p>
+<p>
+まず、接続したサーバで、どのようなデータベースを利用できるのか（保存されているのか）確認します。
+</p>
+<pre class=c>
+mysql> <em>show databases;</em>
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| iwak               |
++--------------------+
+3 rows in set (0.00 sec)
+
+※セミコロン（<em>;</em>）を忘れやすいので、注意してください
+</pre>
+<p>
+この例では、<em>show databases;</em> の実行結果が、
+</p>
+<pre class=c>
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| iwak               |
++--------------------+
+</pre>
+<pn>
+であることを示しています。以下、同様の表記を用いますので、ご注意ください。
+</pn>
+<p>
+つぎに、データベース <em>information_schema</em> にどのようなリレーション（関連表）が含まれているのかを<em>SHOW</em>コマンドで確認します。
+</p>
+<pre class=c>
+mysql> <em>show tables from</em> information_schema;
++---------------------------------------+
+| Tables_in_information_schema          |
++---------------------------------------+
+| CHARACTER_SETS                        |
+| COLLATIONS                            |
+| COLLATION_CHARACTER_SET_APPLICABILITY |
+| COLUMNS                               |
+| COLUMN_PRIVILEGES                     |
+| KEY_COLUMN_USAGE                      |
+| PROFILING                             |
+| ROUTINES                              |
+| SCHEMATA                              |
+| SCHEMA_PRIVILEGES                     |
+| STATISTICS                            |
+| TABLES                                |
+| TABLE_CONSTRAINTS                     |
+| TABLE_PRIVILEGES                      |
+| TRIGGERS                              |
+| USER_PRIVILEGES                       |
+| VIEWS                                 |
++---------------------------------------+
+17 rows in set (0.00 sec)
+</pre>
+<p>
+この結果から、データベース <em>information_schema</em> には、複数の表（リレーション）が含まれていることがわかります。これらの各表について詳細を知りたい場合は、次の資料を参照してください。
+<br>
+<br>
+＜参考資料＞<br>
+「<a href="https://dev.mysql.com/doc/refman/8.0/en/information-schema.html">INFORMATION_SCHEMA データベース</a>」※要は、データベースを管理するためのデータベース（メタデータベースとも呼ばれる）
+</p>
+
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+  <title>データベース論（岩切准教授）</title>
+  <link rel="stylesheet" href="../dbstyle.css">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+
+  <h2>
+    <height=19 width=18 alt="">
+      テーブル作成とレコード挿入（追加）
+  </h2>
+
+
+  <h4>(1) <a name="01">データベースの利用開始</a></h4>
+  <p>
+    利用できるデータベースの一覧を確認するには、前回示した SHOW コマンドを用います（これは、もう大丈夫ですね）。
+  </p>
+  <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2896
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+
+  <pre class=c>
+mysql> <em>show databases;</em>
++--------------------+
+| Database           |
++--------------------+
+| information_schema | 
+| iwak               | 
+| test               |
++--------------------+
+3 rows in set (0.00 sec)
+</pre>
+  <p>
+    データベース（教官の場合、iwak）を使用する際は、まず、<em>USE</em> コマンドを用います。
+  </p>
+  <pre class=c>
+mysql> <em>use</em> iwak;
+</pre>
+
+
+
+  <h4>(2) <a name="02">テーブルの追加（作成）</a></h4>
+  <p>
+    リレーショナルデータベースに格納される情報は、すべて表形式（関係表、関連表）にまとめられます。そのため、リレーションのことを一般的にテーブル（表）と呼ぶようです。実際に、MySQLのコマンド（SQL）でも、TABLEという表記を用います。以下、リレーショナルデータベース内のリレーション（関係表）のことを、単にテーブルと表記します。※リレーショナルデータベースの表は、無作為に情報を羅列したものではなく、値それぞれの間に関連性がある点を忘れないこと
+  </p>
+  <p>
+    さっそく、現在のテーブル一覧（空の状態）を SHOW コマンドで確認し、新しいテーブルを、CREATE コマンドを用いて作成します。
+  </p>
+  <pre class=c>
+mysql> <em>show tables;</em>
+Empty set (0.00 sec)
+</pre>
+  <pre class=c>
+mysql> <em>create table</em> list1(cid int, cname varchar(16), cadd varchar(32));
+Query OK, 0 rows affected (0.05 sec)
+</pre>
+  <p>
+    この例では、テーブル名を<em>list1</em>とし、その中に、属性情報（フィールド名、カラム名などとも呼ぶ）として、<em>cid</em>、<em>cname</em>、<em>cadd</em> を含むように設定しました。
+  </p>
+  <p>
+    また、各データの型として、<em>INT</em>（整数）、<em>VARCHAR</em>（全角文字）の16文字または32文字、としました。細かい設定については後述しますが、デフォルト（特別な指定なし）の状態で、各定義は「NULLを許す」「主キーではない」になっています。
+  </p>
+  <p>
+    テーブルが正常に追加されたかどうか確認します。
+  </p>
+  <pre class=c>
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| <ems>list1</ems>          | 
++----------------+
+1 row in set (0.00 sec)
+</pre>
+  <p>
+    もしデータベース名を指定したい場合には、次のように from を用います。
+  </p>
+  <pre class=c>
+mysql> show tables <em>from</em> iwak;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
++----------------+
+</pre>
+  <p>
+    また、SHOWコマンドにはテーブルの各フィールド（カラム）名やそのデータ型などを調べる機能もあります。
+  </p>
+  <pre class=c>
+mysql> show columns from list1;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| cid   | int(11)     | YES  |     | NULL    |       | 
+| cname | varchar(16) | YES  |     | NULL    |       | 
+| cadd  | varchar(32) | YES  |     | NULL    |       | 
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+</pre>
+  <p>
+    表示を縦方向に展開したい場合は、末尾に<em>\G</em>を付記すればよいです。
+  </p>
+  <pre class=c>
+mysql> show columns from list1<em>\G;</em>
+*************************** 1. row ***************************
+  Field: cid
+   Type: int(11)
+   Null: YES
+    Key: 
+Default: NULL
+  Extra: 
+*************************** 2. row ***************************
+  Field: cname
+   Type: varchar(16)
+   Null: YES
+    Key: 
+Default: NULL
+  Extra: 
+*************************** 3. row ***************************
+  Field: cadd
+   Type: varchar(32)
+   Null: YES
+    Key: 
+Default: NULL
+  Extra: 
+3 rows in set (0.00 sec)
+</pre>
+
+
+
+  <h4>(3) <a name="03">レコード挿入（データ追記）</a></h4>
+  <p>
+    準備したテーブルにレコード（データ）を挿入するには、次のように<em>INSERT</em>コマンドを用います。
+  </p>
+  <pre class=c>
+mysql> <em>insert into</em> list1 set cid=1, cname="m1", cadd="a1";
+Query OK, 1 row affected (0.00 sec)
+</pre>
+  <p>
+    各レコードがどこのフィールドに挿入されるのかは、この例から容易に理解できると思います。同様の手順を次のように繰り返して、レコードを挿入することができます。※mysql
+    クライアントでは、<em>カーソルキーの上下（↑↓）</em>でコマンド履歴を参照して再利用可能
+  </p>
+  <pre class=c>
+mysql> insert into list1 set cid=2, cname="m2", cadd="a2";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=3, cname="m3", cadd="a3";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=4, cname="m4", cadd="a4";
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into list1 set cid=5, cname="m5", cadd="a5";
+Query OK, 1 row affected (0.00 sec)
+</pre>
+  <p>
+    また、次のように一度にまとめてレコードを挿入することもできます。※セミコロンで文末を示す
+  </p>
+  <pre class=c>
+mysql> insert into list1 <em>(cid, cname, cadd) values</em>
+    -> (6, "m6", "a6"),
+    -> (7, "m7", "a7"),
+    -> (8, "m8", "a8"),
+    -> (9, "m9", "a9"),
+    -> (10, "m10", "a10")<em>;</em>
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+</pre>
+
+
+
+  <h4>(4) <a name="04">レコード抽出（基本）</a></h4>
+  <p>
+    SQLでは、テーブルとしてデータベースに記録されたレコードの抽出に
+    <em>SELECT文</em>を用います。SELECTは、さまざまな使い方ができる重要なコマンドなので、十分に使いこなしてください。ここでは、最も基本的な全抽出の一例を示します。
+  </p>
+  <pre class=c>
+mysql> <em>select * from</em> list1;
++------+-------+------+
+| cid  | cname | cadd |
++------+-------+------+
+|    1 | m1    | a1   |
+|    2 | m2    | a2   |
+|    3 | m3    | a3   |
+|    4 | m4    | a4   |
+|    5 | m5    | a5   |
+|    6 | m6    | a6   |
+|    7 | m7    | a7   |
+|    8 | m8    | a8   |
+|    9 | m9    | a9   |
+|   10 | m10   | a10  |
++------+-------+------+
+10 rows in set (0.00 sec)
+</pre>
+  <p>
+    この結果を見ると、先ほどのINSERTコマンドにより、テーブルの中にレコードが的確に挿入されていることがわかります。ここで、<em>*</em> はすべてのフィールドを、<em>from</em>
+    は対象テーブルを指定するために用います。
+  </p>
+
+  <h4>(参考) <a name="xx">データベース領域の作成と削除</a></h4>
+  <p>
+    新しいデータベース領域の作成には、<em>CREATE DATABASE</em>コマンドを用います。
+  </p>
+  <p>
+    2008年10月以降、利用登録時に自動的に登録ユーザ専用のデータベース領域が作成されるようになったので、<em>この操作は基本的に不要となりました</em>。すでに確認したとおり、ユーザＩＤと同じ名前のデータベースができているので、本講義ではこの操作を省略します。
+  </p>
+
+  <pre class=c>
+mysql> <em>create database</em> iwak2;
+Query OK, 1 row affected (0.00 sec)
+</pre>
+
+  <pre class=c>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| iwak               |
+| <ems>iwak2</ems>              |
+| test               |
++--------------------+
+4 rows in set (0.00 sec)
+</pre>
+  <p>
+    CREATE DATABASEコマンドを用いて作成したデータベース領域は、<em>DROP DATABASE</em>コマンドを用いて削除できます。
+  </p>
+  <pre class=c>
+mysql> <em>drop database</em> iwak2;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+
+  <pre class=c>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| iwak               |
+| test               |
++--------------------+
+3 rows in set (0.00 sec)
+</pre>
+  <p>
+    <em>これらデータベース領域の作成および削除のコマンドは、重要なので覚えておきましょう！</em>。
+  </p>
+
+</body>
+
+</html>

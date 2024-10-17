@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>データベース論（岩切准教授）</title>
+<link rel="stylesheet" href="../dbstyle.css">
+<style type="text/css">
+</style>
+</head>
+<body>
+
+<h4><a name="03">フォームの活用（投票システム）</a></h4>
+
+<p>
+次のプログラムを参考に、データベースを用いて投票結果（回答）を収集するように修正せよ。
+</p>
+
+<p><a href="./PHPJS/form.html">form.html</a></p><pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;form action=&quot;fsub.php&quot;&gt;
+好きな色は？：
+
+&lt;input
+ type=&quot;submit&quot;
+ name=&quot;a&quot;
+ value=&quot;1&quot;
+ style=&quot;color:white;background-color:red;&quot;
+&gt;
+
+&lt;input
+ type=&quot;submit&quot;
+ name=&quot;a&quot;
+ value=&quot;2&quot;
+ style=&quot;color:white;background-color:blue;&quot;
+&gt;
+
+&lt;input
+ type=&quot;submit&quot;
+ name=&quot;a&quot;
+ value=&quot;3&quot;
+ style=&quot;color:white;background-color:green;&quot;
+&gt;
+
+&lt;input
+ type=&quot;submit&quot;
+ name=&quot;a&quot;
+ value=&quot;4&quot;
+ style=&quot;color:white;background-color:orange;&quot;
+&gt;
+
+&lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre><p>fsub.php</p><pre class=c>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=UTF-8&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;?php
+$a = @$_GET[&#039;a&#039;];
+echo $a.&quot;&lt;br&gt;&quot;;
+file_put_contents(&quot;data&quot;,$a,FILE_APPEND|LOCK_EX);
+$b = file_get_contents(&quot;data&quot;);
+echo $b.&quot;&lt;br&gt;&quot;;
+echo &quot;1:&quot;.substr_count($b, &quot;1&quot;).&quot;&lt;br&gt;&quot;;
+echo &quot;2:&quot;.substr_count($b, &quot;2&quot;).&quot;&lt;br&gt;&quot;;
+echo &quot;3:&quot;.substr_count($b, &quot;3&quot;).&quot;&lt;br&gt;&quot;;
+echo &quot;4:&quot;.substr_count($b, &quot;4&quot;).&quot;&lt;br&gt;&quot;;
+?&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</body>
+</html>

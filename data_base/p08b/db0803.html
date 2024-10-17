@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">主キーと外部キーの利用
+    </h2>
+
+
+
+    <h4>(1) <a name="01">主キー</a></h4>
+    <p>
+        主キーは、すでに学んだとおり、<em>レコードを唯一に識別できる値</em>を含むフィールドもしくはフィールドの組です。つまり、同じキー値を持つレコードが複数存在すると、レコードを唯一識別できなるくなります。これでは、主キーとしての条件を満たせなくなります。膨大なレコードを管理するデータベースにレコードを追加する際、<em>主キー重複</em>がないことを毎回手作業でチェックするのは困難です。MySQLは、そのチェックを自動的に行う機能があり、それを特定のフィールド（主キー）に対して有効にできます。
+    </p>
+    <p>
+        下の例では、主キーとしたフィールド userid に対して、<em>auto_increment</em>（自動加算） と <em>not null</em>（空値拒否）、<em>primary
+            key</em>（主キー）の属性オプションを有効にしています。auto_increment（自動加算）は、レコードを追加するとまだ使われていない一つ大きな値をフィールド値として挿入する機能です（not null
+        については説明不要でしょう）。 <em>primary key と定義されているフィールドには、重複した値の挿入ができません。</em>
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -p -u iwak
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 41937
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+    <pre class=c>
+mysql> use iwak;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+</pre>
+    <pre class=c>
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| j4age          |
+| list1          |
+| list1a         |
++----------------+
+3 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> create table uid(
+    -> <em>userid int auto_increment not null primary key, </em>
+    -> username varchar(32) not null
+    -> );
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| j4age          |
+| list1          |
+| list1a         |
+| uid            |
++----------------+
+3 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> show columns from uid;
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| userid   | int(11)     | NO   | <ems>PRI</ems> | NULL    | <ems>auto_increment</ems> | 
+| username | varchar(32) | NO   |     |         |                | 
++----------+-------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+</pre>
+    <p>
+        それでは、さっそくレコードをいくつか追加してみます。
+    </p>
+    <pre class=c>
+mysql> insert into uid (username) values
+    -> ("A"),("B"),("C"),("D"),("E"),("F"),("G"),("H");
+Query OK, 8 rows affected (0.00 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
+|      7 | G        |
+|      8 | H        |
++--------+----------+
+8 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid (username) values ("I"),("J");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
+|      7 | G        |
+|      8 | H        |
+|      9 | <ems>I</ems>        |
+|     10 | <ems>J</ems>        |
++--------+----------+
+10 rows in set (0.00 sec)
+</pre>
+    <p>
+        このように、usernameのフィールドにレコードを追加するだけで、useridが自動的に定義されていることがわかります。もし、<em>すでに使用されている主キーの値</em>を持つレコードを追加しようとすると、次のようにエラーが発生し、操作を拒否されます。
+    </p>
+    <pre class=c>
+mysql> insert into uid (userid,username) values <em>(5,"X")</em>;
+ERROR 1062 (23000): Duplicate entry '5' for key 1
+</pre>
+    <p>
+        また、重複がない場合には、特定の主キー値を持つレコードを追加できます。ただし、それ以降のレコード追加では、すでに使用されている主キー値の最大値の次の値が新しい主キー値として自動的に定義されます。これは、auto_increment
+        オプションによるものです。auto_incrementしていない場合には、重複のない主キー値を手作業で見つけ、それを主キーとしたレコードを追加することになります。
+    </p>
+    <pre class=c>
+mysql> insert into uid (userid,username) values <em>(100,"X")</em>;
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
+|      7 | G        |
+|      8 | H        |
+|      9 | I        |
+|     10 | J        |
+|    100 | X        |
++--------+----------+
+11 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid (username) values ("Y"),("Z");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
+|      7 | G        |
+|      8 | H        |
+|      9 | I        |
+|     10 | J        |
+|    100 | X        |
+|    <ems>101</ems> | Y        |
+|    <ems>102</ems> | Z        |
++--------+----------+
+13 rows in set (0.00 sec)
+</pre>
+    <br>
+    <br>
+
+
+    <h4>(2) <a name="02">外部キーと外部キー制約</a></h4>
+    <p>
+        <em>MySQL
+            4.0以降</em>には、親テーブルの主キー値が変更されると、子テーブルの外部キー値が自動的に更新されるような外部キーの機能が導入されています。これを利用すると、容易に更新時異状の問題をいくつか解消できます。
+    </p>
+    <p>
+        まず、MySQLの場合、外部キーを使用するためには、データベースのストレージエンジンとして「<em>InnoDB</em>」を用いなければなりません。ストレージエンジンとは、実際にデータそのものを記録するファイルシステムのことです。ストレージエンジンによって、使用できるデータベース管理の機能が異なるので、必要に応じて使い分ける必要があります（通常のデータベース操作には、あまり関係ありませんが・・・）。
+    </p>
+    <p>
+        ここで、実習用の親テーブル uid2 を作成します。例にあるとおり、ストレージエンジンとして InnoDB を指定していることに注意します。
+    </p>
+    <pre class=c>
+mysql> create table uid2(
+    -> userid int auto_increment not null primary key,
+    -> username varchar(32) not null
+    -> ) <em>engine=InnoDB</em>;
+Query OK, 0 rows affected (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid2 (username) values
+    -> ("A"),("B"),("C"),("D"),("E"),("F"),("G"),("H");
+Query OK, 8 rows affected (0.00 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      6 | F        |
+|      7 | G        |
+|      8 | H        |
++--------+----------+
+8 rows in set (0.00 sec)
+</pre>
+    <p>
+        次に、親テーブル uid2 の主キーに関連付けられた外部キーを持つ子テーブル score を作成します。ここでも、ストレージエンジンとして、InnoDBを用います。また、フィールド値のオプションが、「<em>on
+            update cascade</em>」になっています。これは、参照先フィールド（uid2(userid)）の変化に合わせて、<em>自動更新</em>させるための定義です。
+    </p>
+    <pre class=c>
+mysql> create table score (
+    -> id int,
+    -> score int,
+    -> index key_id (id),
+    -> <em>foreign key (id) references uid2(userid) on update cascade</em>
+    -> ) <em>engine=InnoDB</em>;
+Query OK, 0 rows affected (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> show columns from score;
++-------+---------+------+-----+---------+-------+
+| Field | Type    | Null | Key | Default | Extra |
++-------+---------+------+-----+---------+-------+
+| id    | int(11) | YES  | <ems>MUL</ems> | NULL    |       | 
+| score | int(11) | YES  |     | NULL    |       | 
++-------+---------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into score (id,score) values (1,80),(2,70),(3,95);
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 | 
+|    2 |    70 | 
+|    3 |    95 | 
++------+-------+
+3 rows in set (0.00 sec)
+</pre>
+    <p>
+        ここで、もし</em>親テーブルにない主キー値</em>を、<em>子テーブルの外部キー値</em>として使用すると、操作が拒否されます。このように、外部キーとして定義されたフィールド値が親テーブルの主キー値の定義域（ドメイン）の制約を受けることを「<em>外部キー制約</em>」と呼びます。下の例では、<em>(9,22)のレコード</em>に問題がありますので、親テーブルの主キー値をよく確認してください。
+    </p>
+    <pre class=c>
+mysql> insert into score (id,score) values
+    -> (6,55),(7,44),(8,33),<ems>(9,22)</ems>;
+ERROR 1452 (23000):
+Cannot add or update a child row:
+a foreign key constraint fails 
+(`iwak/score`,
+  CONSTRAINT `score_ibfk_1`
+  FOREIGN KEY (`id`) REFERENCES `uid2` (`userid`)
+  ON UPDATE CASCADE)
+</pre>
+    <p>
+        また、親テーブルの主キー値を変更すると、それに<em>関連する子テーブルの外部キー値が自動的に更新</em>されます。これは、先にも述べたオプション on update cascade により有効になった機能です。
+    </p>
+    <pre class=c>
+mysql> insert into score (id,score) values
+    -> (4,88),(5,77),(6,55),(7,44),(8,33);
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 | 
+|    2 |    70 | 
+|    3 |    95 | 
+|    4 |    88 | 
+|    5 |    77 | 
+|    6 |    55 | 
+|    7 |    44 | 
+|    8 |    33 | 
++------+-------+
+8 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> update uid2 set <em>userid=99 where userid=6</em>;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+|    3 |    95 |
+|    4 |    88 |
+|    5 |    77 |
+|   <ems>99</ems> |    55 |
+|    7 |    44 |
+|    8 |    33 |
++------+-------+
+8 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      7 | G        |
+|      8 | H        |
+|     99 | F        |
++--------+----------+
+8 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+|    3 |    95 |
+|    4 |    88 |
+|    5 |    77 |
+|   99 |    55 |
+|    7 |    44 |
+|    8 |    33 |
++------+-------+
+8 rows in set (0.00 sec)
+</pre>
+
+
+    <p>
+        また、オプション on update cascade を有効した場合、<em>子テーブルが参照している主キー値を含むレコードを削除</em>しようとすると<em>操作拒否</em>されます。次の例は、子テーブル score
+        の外部キー id が、親テーブル uid2 の userid=5 の主キー値を参照しているために操作拒否されたときのものです。
+    </p>
+    <pre class=c>
+mysql> delete from uid2 where <em>userid=5</em>;
+ERROR 1451 (23000):
+Cannot delete or update a parent row:
+a foreign key constraint fails
+ (`iwak/score`,
+   CONSTRAINT `score_ibfk_1`
+   FOREIGN KEY (`id`)
+   REFERENCES `uid2` (`userid`)
+   ON UPDATE CASCADE)
+</pre>
+
+    <p>
+        次に、子テーブル score を、親テーブルの<em>主キー値が失われたレコードを自動削除</em>するように作り直します。この機能を実現するためには、<em>on delete cascade</em>
+        オプションを用います。on delete cascade は、on update cascadeとの<em>併用</em>ができます（自動更新、自動削除）。下の例では、親テーブル uid2 から、userid=5
+        のレコードが削除されると同時に、子テーブル score から、id=5 のレコードが自動的に取り除かれています。
+    </p>
+    <pre class=c>
+mysql> drop table score;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> create table score (
+    -> id int,
+    -> score int,
+    -> index key_id (id),
+    -> foreign key (id) references uid2(userid) 
+    ->   <ems>on update cascade</ems>
+    ->   <ems>on delete cascade</ems>
+    -> ) engine=InnoDB;
+Query OK, 0 rows affected (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> insert into score (id,score) values
+    -> (1,80),(2,70),(3,95),(4,88),(5,77);
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 | 
+|    2 |    70 | 
+|    3 |    95 | 
+|    4 |    88 | 
+|    5 |    77 | 
++------+-------+
+5 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      5 | E        |
+|      7 | G        |
+|      8 | H        |
+|     99 | F        |
++--------+----------+
+8 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> delete from uid2 where userid=5;
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      7 | G        |
+|      8 | H        |
+|     99 | F        |
++--------+----------+
+7 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 | 
+|    2 |    70 | 
+|    3 |    95 | 
+|    4 |    88 | 
++------+-------+
+4 rows in set (0.00 sec)
+</pre>
+
+    <p>
+        また、外部キーのフィールド値が失われても、<em>ほかのフィールド値を残したい場合</em>もあるでしょう。このようなときには、<em>on delete set null</em>を用います。これも、on update
+        cascadeとの併用ができます。例では、削除された主キー値を外部キーとして持っていたレコードが、失われた<em>外部キー値を NULL</em> として残されていることがわかります。
+    </p>
+    <pre class=c>
+mysql> drop table score;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> create table score (
+    -> id int,
+    -> score int,
+    -> index key_id (id),
+    -> foreign key (id) references uid2(userid)
+    ->   on update cascade
+    ->   <ems>on delete set null</ems>
+    -> ) engine=InnoDB;
+Query OK, 0 rows affected (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> insert into score (id,score) values
+    -> (1,80),(2,70),(3,95),(4,88);
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+|    3 |    95 |
+|    4 |    88 |
++------+-------+
+4 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      4 | D        |
+|      7 | G        |
+|      8 | H        |
+|     99 | F        |
++--------+----------+
+7 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> delete from uid2 where <em>userid=4</em>;
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | C        |
+|      7 | G        |
+|      8 | H        |
+|     99 | F        |
++--------+----------+
+6 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+|    3 |    95 |
+| <ems>NULL</ems> |    88 |
++------+-------+
+4 rows in set (0.00 sec)
+</pre>
+    <p>
+        「on delete set null」と似た機能として、<em>主キー値が更新されたときに、外部キー値を自動更新せず NULL に置き換える</em>こともできます。オプションとして、「on update set
+        null」を指定します。当然ながら、「on update cascade」との<em>併用はできません</em>。
+    </p>
+    <pre class=c>
+mysql> drop table score;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> create table score (
+    -> id int,
+    -> score int,
+    -> index key_id (id),
+    -> foreign key (id) references uid2(userid)
+    ->   <ems>on update set null</ems>
+    -> ) engine=InnoDB;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into score (id,score) values
+    -> (1,80),(2,70),(3,95);
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+|    3 |    95 |
++------+-------+
+3 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> update uid2 set userid=33 where userid=3;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      7 | G        |
+|      8 | H        |
+|     33 | C        |
+|     99 | F        |
++--------+----------+
+6 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+| <ems>NULL</ems> |    95 |
++------+-------+
+3 rows in set (0.00 sec)
+</pre>
+    <p>
+        これまでに示した外部キーを用いた機能とも共通しますが、親テーブルの<em>主キー以外のフィールド</em>を更新しても、特に子テーブルに影響しませんし、操作に関する制約もありません。
+    </p>
+    <pre class=c>
+mysql> update uid2 set <em>username="K"</em> where userid=2;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | <ems>K</ems>        |
+|      7 | G        |
+|      8 | H        |
+|     33 | C        |
+|     99 | F        |
++--------+----------+
+6 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
+| NULL |    95 |
++------+-------+
+3 rows in set (0.00 sec)
+</pre>
+    <p>
+        これまでに、外部キーのオプションを紹介してきました。最後にこれらをまとめると、基本的な構文は、<em>on</em> ( <em>update</em> | <em>delete</em> ) (restrict |
+        <em>cascade</em> | <em>set null</em> | no action) になります。各機能は、restrict（拒否）、cascade（連動）、set null（空値にする）、no
+        action（エラーを返す）を意味します（括弧内は、機能の説明）。<em>何も指定しない場合、restrict（拒否）</em>になります。次の、update を restrict
+        にした場合の例のように親テーブルの更新が拒否されています。
+    </p>
+    <pre class=c>
+mysql> drop table score;
+Query OK, 0 rows affected (0.04 sec)
+</pre>
+    <pre class=c>
+mysql> create table score (
+    -> id int,
+    -> score int,
+    -> index key_id (id),
+    -> foreign key (id) references uid2(userid)
+    ->   on update <ems>restrict</ems>
+    -> ) engine=InnoDB;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into score (id,score) values (1,80),(2,70);
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from score;
++------+-------+
+| id   | score |
++------+-------+
+|    1 |    80 |
+|    2 |    70 |
++------+-------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from uid2;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | K        |
+|      7 | G        |
+|      8 | H        |
+|     33 | C        |
+|     99 | F        |
++--------+----------+
+6 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> update uid2 set userid=22 where userid=2;
+ERROR 1451 (23000):
+Cannot delete or update a parent row:
+ a foreign key constraint fails
+ (`iwak/score`,
+   CONSTRAINT `score_ibfk_1`
+   FOREIGN KEY (`id`)
+   REFERENCES `uid2` (`userid`))
+</pre>
+
+    <h4>(3) <a name="03">その他のフィールド定義（参考）</a></h4>
+    <p>
+        テーブルのフィールドには、いくつかのオプション定義ができます。先に示した、auto_increment、not null、primary keyなどもその一つです。ここでは、これら以外の定義について説明します。
+    </p>
+    <p>
+        まず、初期値 <em>default</em> です。これは、特に値の定義がない場合の初期値を指定したい場合に用います。
+    </p>
+    <pre class=c>
+mysql> create table uid3(
+    -> userid int not null primary key,
+    -> username varchar(32) <em>default "No one"</em>
+    -> ) engine=InnoDB;
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> show columns from uid3;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| userid   | int(11)     |      | PRI | 0       |       |
+| username | varchar(32) | YES  |     | <ems>No one</ems>  |       |
++----------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid3 (userid,username) values
+    -> (1,"A"),(2,"B");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid3;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
++--------+----------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid3 (userid) values <em>(3),(4)</em>;
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid3;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | <ems>No one</ems>   |
+|      4 | <ems>No one</ems>   |
++--------+----------+
+4 rows in set (0.00 sec)
+</pre>
+    <p>
+        この例の場合、レコードを追加した時点で、主キー値が取得されています。よって、同じ主キー値のレコードを追加することはできません。よって、レコードを修正したい場合、主キー以外の部分を更新します。
+    </p>
+    <pre class=c>
+mysql> insert into uid3 (userid,username) values (3,"C");
+ERROR 1062 (23000): Duplicate entry '3' for key 1
+</pre>
+    <pre class=c>
+mysql> update uid3 set <ems>username="C" where userid=3;</ems>
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid3;
++--------+----------+
+| userid | username |
++--------+----------+
+|      1 | A        |
+|      2 | B        |
+|      3 | <ems>C</ems>        |
+|      4 | No one   |
++--------+----------+
+4 rows in set (0.00 sec)
+</pre>
+    <p>
+        他にも、<em>zerofill</em>（空白をゼロで埋める）や <em>unsigned</em>（正のみ）などがあります。int unsigned
+        のフィールドに負の値を定義しようとすると、MySQL4.0では、<em>ゼロの値</em>が挿入されます。<em>MySQL5.0では、エラー</em>になります。unsigned については、Ｃ言語などの
+        unisigned int とは書式が異なるので注意が必要です。仮に、unsigned int
+        と書くと、値の型宣言に誤りがあるとしてエラーになります。※使用できる値の型については、MySQLのオンラインマニュアルを参照すること
+    </p>
+    <pre class=c>
+mysql> create table uid4(
+    -> <ems>userid int zerofill</ems>,
+    -> username varchar(32)
+    -> );
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid4 (userid,username) values (1,"A"),(2,"B");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from uid4;
++------------+----------+
+| userid     | username |
++------------+----------+
+| <ems>0000000001</ems> | A        |
+| <ems>0000000002</ems> | B        |
++------------+----------+
+2 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> create table uid5(
+    -> <ems>userid int unsigned</ems>,
+    -> username varchar(32)
+    -> );
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> insert into uid5 (userid,username) values <ems>(-1,"A")</ems>,(2,"B");
+Query OK, 2 rows affected, 1 warning (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 1
+</pre>
+    <pre class=c>
+mysql> select * from uid5;
++--------+----------+
+| userid | username |
++--------+----------+
+|      <ems>0</ems> | <ems>A</ems>        |
+|      2 | B        |
++--------+----------+
+2 rows in set (0.00 sec)
+</pre>
+    <p>
+        unsigned については、<em>Ｃ言語などの unisigned int とは書式が異なる</em>ので注意が必要です。仮に、unsigned int
+        と書くと、値の型宣言に誤りがあるとしてエラーになります。※使用できる値の型については、MySQLのオンラインマニュアルを参照すること
+    </p>
+    <pre class=c>
+mysql> create table uid6(
+    -> userid <ems>unsigned int</ems>, 
+    -> username varchar(32)
+    -> );
+ERROR 1064 (42000):
+ You have an error in your SQL syntax;
+ check the manual that corresponds to your MySQL server version
+  for the right syntax to use near
+  'unsigned int, username varchar(32))' at line 2
+</pre>
+
+    <br>
+    <br>
+
+</body>
+
+</html>

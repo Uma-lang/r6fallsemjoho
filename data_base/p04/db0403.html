@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">
+            テーブル定義の操作
+    </h2>
+
+    <h4>(1) <a name="01">テーブル名の変更</a></h4>
+    <p>
+        テーブル名を変更したい場合、<em>ALTER TABLE 旧テーブル名 RENAME AS 新テーブル名</em> 構文を用います。
+    </p>
+    <pre class=c>
+mysql> alter table list1b <em>rename as</em> list1x;
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
+| <ems>list1x</ems>         |
++----------------+
+3 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from list1x;
++------+-------+------+
+| cid  | cname | cage |
++------+-------+------+
+|    1 | M1    | NULL |
+|   11 | m11   | NULL |
+|    1 | NULL  | NULL |
+|   11 | NULL  | NULL |
++------+-------+------+
+4 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(2) <a name="02">テーブルの削除</a></h4>
+    <p>
+        テーブルを削除したい場合、<em>DROP TABLE テーブル名</em> を用います。
+    </p>
+    <pre class=c>
+mysql> </em>drop table</em> list1x;
+mysql> show tables;
++----------------+
+| Tables_in_iwak |
++----------------+
+| list1          |
+| list1a         |
++----------------+
+2 rows in set (0.00 sec)
+</pre>
+
+
+</body>
+
+</html>

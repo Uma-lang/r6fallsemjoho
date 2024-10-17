@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+  <title>データベース論（岩切准教授）</title>
+  <link rel="stylesheet" href="../dbstyle.css">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+
+  <h2>
+    <height=19 width=18 alt="">テーブルの分割（第２正規形と第３正規形）
+  </h2>
+
+  <h4> <a name="01">更新時異状</a></h4>
+  <p>
+    第１正規形の表は、単純に重複するデータを分けて記述したものです。そのため。情報の追加や更新をすると、不適切な空値（NULL）の発生や情報の喪失、レコードの修正漏れなどを生じやすいです。これらの望ましくない問題発生を更新時異状と呼びます。一般的な更新時異状として、次の３項目が挙げられます。
+  <ul>
+    <li>レコード挿入時異状</li>
+    <li>レコード削除時異状</li>
+    <li>レコード修正時異状</li>
+  </ul>
+  </p>
+  <p>
+    <em>レコード挿入時異状</em>は、新しいレコードを追加する際に、不確定な情報が存在するために発生します。特に、空値の存在を認めないフィールドが存在すると、その値が確定するまで、レコードを追加できません。たとえば、フィールド「番号」が空値を認めないとした場合、<em>学生が転入してきても、固有番号が決まってなければレコードを追加できない状態</em>になります。もし、主キーなどの値が空のままレコードを挿入すると、レコードを唯一に特定できなくなる可能性がでてきます。下の例は、同姓同名の学生（学生名３）が二人存在すると仮定した場合のレコード挿入時異状です。
+  </p>
+
+  <table border=1 align=center>
+    <caption>履修科目成績</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名４</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <table border=1 align=center>
+    <caption>レコード挿入時異状</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5003</td>
+      <td align=center><em>学生名３</em></td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right><em>NULL</em></td>
+      <td align=center><em>学生名３</em></td>
+      <td align=center><em>NULL</em></td>
+      <td align=center><em>NULL</em></td>
+      <td align=center><em>NULL</em></td>
+      <td align=center><em>NULL</em></td>
+    </tr>
+  </table>
+  <p>
+    <em>レコード削除時異状</em>は、<em>レコードを削除することにより、そのレコードのみしか持たない情報が失われる</em>ことです。たとえば、「学生名２」が「科目名４」の科目を選択しなかったため、そのレコードを削除すると、「科目名４」の「担当教官、教官所属」に関する情報も失われてしまいます。この問題は、後に示す表の正規化によってうまく解消できます。
+  </p>
+
+
+  <table border=1 align=center>
+    <caption>履修科目成績</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right bgcolor=lightgray>5002</td>
+      <td align=center bgcolor=lightgray>学生名２</td>
+      <td align=center bgcolor=lightgray>科目名４</td>
+      <td align=center bgcolor=lightgray>教官名１</td>
+      <td align=center bgcolor=lightgray>Ａ学科</td>
+      <td align=center bgcolor=lightgray>Ｂ</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <table border=1 align=center>
+    <caption>レコード削除時異状</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+  </table>
+  <p>
+    <em>レコード修正時異状</em>は、レコードの一部を修正する際に、<em>関連する情報の全てを修正しなかった場合に発生</em>します。たとえば、「科目１」の担当教官を「教官名３」に修正する際に、一部のレコードのみを修正すると、「科目１」の担当教官が「教官名１」と「教官名３」の二人存在することになります。この問題も、後に示す表の正規化によってある程度解消できます。
+  </p>
+
+
+  <table border=1 align=center>
+    <caption>履修科目成績</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center bgcolor=lightgray>科目名１</td>
+      <td align=center bgcolor=lightgray>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名４</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <table border=1 align=center>
+    <caption>レコード修正時異状</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center><em>科目名１</em></td>
+      <td align=center><em>教官名３</em></td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center><em>科目名１</em></td>
+      <td align=center><em>教官名１</em></td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名４</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+  </table>
+  <br>
+  <br>
+
+
+  <h4> <a name="02">情報の損失分解と無損失分解</a></h4>
+  <p>
+    更新時異状の発生は、<em>一つのテーブルに二つの異なる事象に関する情報を格納しない</em>ようにすると避けることができます。
+  </p>
+  <p>
+    テーブルの情報を無損失に分解する考え方の理解をやさしくするために、まず<em>情報損失分解</em>の例を示します。下表は、成績一覧のテーブル（履修科目成績）を同じフィールド数で２分割した例です。
+  </p>
+
+
+  <table border=1 align=center>
+    <caption>履修科目成績</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名４</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+  </table>
+
+  <br>
+  <br>
+  <center>
+    情報損失分解の一例
+  </center>
+  <table border=0 cellspacing=10 align=center>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>選択科目</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>科目</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名１</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名２</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名３</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名１</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名４</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>担当教官</td>
+            <td align=center bgcolor=lightblue>教官所属</td>
+            <td align=center bgcolor=lightblue><em>成績</em></td>
+          </tr>
+          <tr>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center bgcolor=lightgray>Ａ</td>
+          </tr>
+          <tr>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center bgcolor=lightgray>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center bgcolor=lightgray>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center bgcolor=lightgray>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center bgcolor=lightgray>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>
+    このような分解をすると、<b>各学生の各科目の成績がわからない状態</b>になります。これは、情報損失分解の典型的な一例といえます。このように、テーブルを分解した際に、もともと含まれていた情報を失う、もしくは余計な情報を生じるような分解は望ましくありません。
+  </p>
+  <p>
+    一方、次の例のように、成績一覧を学生、成績、担当科目、教官所属のテーブルに分割して記録すると、もともと持っていた情報を失わなわず、更新時異状も生じにくいことがわかります。
+  </p>
+
+  <table border=1 align=center>
+    <caption>履修科目成績</caption>
+    <tr>
+      <td align=center bgcolor=lightblue>番号</td>
+      <td align=center bgcolor=lightblue>氏名</td>
+      <td align=center bgcolor=lightblue>科目</td>
+      <td align=center bgcolor=lightblue>担当教官</td>
+      <td align=center bgcolor=lightblue>教官所属</td>
+      <td align=center bgcolor=lightblue>成績</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ａ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名２</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｃ</td>
+    </tr>
+    <tr>
+      <td align=right>5001</td>
+      <td align=center>学生名１</td>
+      <td align=center>科目名３</td>
+      <td align=center>教官名２</td>
+      <td align=center>Ｂ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名１</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｄ</td>
+    </tr>
+    <tr>
+      <td align=right>5002</td>
+      <td align=center>学生名２</td>
+      <td align=center>科目名４</td>
+      <td align=center>教官名１</td>
+      <td align=center>Ａ学科</td>
+      <td align=center>Ｂ</td>
+    </tr>
+  </table>
+
+  <br>
+  <br>
+  <center>
+    情報無損失分解の一例
+  </center>
+
+  <table border=0 cellspacing=10 align=center>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>学生</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+          </tr>
+          <tr>
+            <td align=right>5003</td>
+            <td align=center>学生名３</td>
+          </tr>
+          <tr>
+            <td align=right>5004</td>
+            <td align=center>学生名４</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>科目</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名２</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名３</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ｄ</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1 width=150>
+          <caption>担当科目</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>科目</td>
+            <td align=center bgcolor=lightblue>担当教官</td>
+          </tr>
+          <tr>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+          </tr>
+          <tr>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+          </tr>
+          <tr>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+          </tr>
+          <tr>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1 width=150>
+          <caption>教官所属</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>担当教官</td>
+            <td align=center bgcolor=lightblue>教官所属</td>
+          </tr>
+          <tr>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+          </tr>
+          <tr>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+          </tr>
+          <tr>
+            <td align=center>教官名３</td>
+            <td align=center>Ａ学科</td>
+          </tr>
+          <tr>
+            <td align=center>教官名４</td>
+            <td align=center>Ｃ学科</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <p>
+    <em>情報無損失分解</em>とは、「情報を減らさない」かつ「情報を増やさない」状態を保ったまま、テーブルを分割する処理です。本講義では、情報無損失のまま第１正規形のテーブルを分解する方法として、正規化の処理とその考え方について説明します。
+  </p>
+  <br>
+  <br>
+
+  <h4> <a name="03">第２正規形</a></h4>
+  <p>
+    第２正規形は、全ての非キーフィールドが、各候補キー（主キー含む）に対して完全に関数従属している状態です。もし、<em>非キーフィールドのいずれかが、候補キーの一部に対して、部分的に関数従属している場合には、第２正規形の表に分解できます。</em>
+  </p>
+  <table border=0 cellspacing=30 align=center bgcolor=floralwhite>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>課外活動状況（第１正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>課外活動</td>
+            <td align=center bgcolor=lightblue>参加状況</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=left>Ａ部</td>
+            <td align=center>○</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｂ部</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>×</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=left>Ｃ研究会</td>
+            <td align=center>○</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績一覧（第１正規形）</caption>
+          <tr>
+            <td align=center bgcolor=lightblue>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+            <td align=center bgcolor=lightblue>科目</td>
+            <td align=center bgcolor=lightblue>担当教官</td>
+            <td align=center bgcolor=lightblue>教官所属</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <p>
+    次は、第１正規形の表をフィールド「<em>番号</em>」（主キーまたはその一部として扱う）に注目し、共通フィールドを抜き出した（複数の表に分解した）例です。
+  </p>
+
+  <table border=0 cellspacing=30 align=center>
+    <tr>
+      <td>
+        <table border=1 width=150>
+          <caption>学生（第２正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1 width=150>
+          <caption>課外活動（第２正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=Lime>課外活動</td>
+            <td align=center bgcolor=lightblue>参加状況</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=left>Ａ部</td>
+            <td align=center>○</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｂ部</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>×</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｃ研究会</td>
+            <td align=center>○</td>
+          </tr>
+        </table>
+      </td>
+      <td align=center bgcolor=aliceblue>
+        <table border=1>
+          <caption>成績一覧２（<ems>第１正規形</ems>）<em>※分解不十分</em></caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=Lime><em>科目</em></td>
+            <td align=center bgcolor=lightblue><em>担当教官</em></td>
+            <td align=center bgcolor=lightblue><em>教官所属</em></td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+        <ems>
+          主キーフィールドの一部にそれ以外の<br>
+          フィールドの一部が従属している状態<br>
+          → 第２正規形に分解可能
+        </ems>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan=3>
+        <p>
+          分解不十分なテーブル「成績一覧２」は、主キーの一部「科目」に対して、「担当教官、教官所属」が部分的に関数従属するので、第１正規形となります。すなわち、テーブル「成績一覧２」は、複数の第２正規形のテーブルに再度分解できます（下の分解例：「成績」「教官」）。
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+      </td>
+      <td align=center bgcolor=aliceblue>
+        <table border=1>
+          <caption>成績（第２正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=Lime>科目</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名２</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名３</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名４</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+      <td align=center bgcolor=aliceblue>
+        <table border=1>
+          <caption>教官（第２正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>科目</td>
+            <td align=center bgcolor=lightblue><em>担当教官</em></td>
+            <td align=center bgcolor=lightblue><em>教官所属</em></td>
+          </tr>
+          <tr>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+          </tr>
+          <tr>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+          </tr>
+          <tr>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+          </tr>
+          <tr>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+          </tr>
+        </table>
+        <ems>
+          主キー以外のフィールド内に<br>
+          従属関係がある状態<br>
+          → 第３正規形に分解可能
+        </ems>
+      </td>
+    </tr>
+
+  </table>
+  <p>
+    この分解（第２正規形化）によって、キーとして「科目名」を指定する際には、それに対応する「教官名、学科名」の入力が不要になります。すなわち、更新操作やプログラムチェックが容易になり、入力誤り（更新時異状発生）を防ぐことができます。
+  </p>
+  <br>
+  <br>
+
+
+  <h4> <a name="04">第３正規形</a></h4>
+  <p>
+    第３正規形は、<em>「主キー」以外の属性間に推移的な関数従属性がない状態</em>の表です。この推移的な関数従属性とは、「主キー」に従属する（従属しないものを分解すると、唯一識別性が失われるので不可）、<em>あるフィールド値（主キー以外）が、関数的に他のフィールド値を決定</em>する性質です。
+  </p>
+  <p>
+    先に示したテーブル「教官」（第２正規形）には、<em>「科目名」によって「教官名」</em>が定まり、<em>「教官名」によって「学科名」</em>が<em>推移的に定まる</em>という関係があります。よって、テーブル「教官」（第２正規形）は、<em>第３正規形の表「担当科目」と「教官所属」</em>に分解できることになります。
+  </p>
+  <table border=0 cellspacing=30 align=center>
+    <tr>
+      <td>
+        <table border=1>
+          <caption>学生</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=lightblue>氏名</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>学生名１</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>学生名２</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1 width=150>
+          <caption>課外活動</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=Lime>課外活動</td>
+            <td align=center bgcolor=lightblue>参加状況</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=left>Ａ部</td>
+            <td align=center>○</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｂ部</td>
+            <td align=center>△</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｂ同好会</td>
+            <td align=center>×</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=left>Ｃ研究会</td>
+            <td align=center>○</td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table border=1>
+          <caption>成績</caption>
+          <tr>
+            <td align=center bgcolor=Lime>番号</td>
+            <td align=center bgcolor=Lime>科目</td>
+            <td align=center bgcolor=lightblue>成績</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ａ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名２</td>
+            <td align=center>Ｃ</td>
+          </tr>
+          <tr>
+            <td align=right>5001</td>
+            <td align=center>科目名３</td>
+            <td align=center>Ｂ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名１</td>
+            <td align=center>Ｄ</td>
+          </tr>
+          <tr>
+            <td align=right>5002</td>
+            <td align=center>科目名４</td>
+            <td align=center>Ｂ</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+      </td>
+      <td align=center bgcolor=aliceblue>
+        <table border=1 width=150>
+          <caption>担当科目（第３正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>科目</td>
+            <td align=center bgcolor=lightblue>担当教官</td>
+          </tr>
+          <tr>
+            <td align=center>科目名１</td>
+            <td align=center>教官名１</td>
+          </tr>
+          <tr>
+            <td align=center>科目名２</td>
+            <td align=center>教官名２</td>
+          </tr>
+          <tr>
+            <td align=center>科目名３</td>
+            <td align=center>教官名２</td>
+          </tr>
+          <tr>
+            <td align=center>科目名４</td>
+            <td align=center>教官名１</td>
+          </tr>
+        </table>
+      </td>
+      <td align=center bgcolor=aliceblue>
+        <table border=1 width=150>
+          <caption>教官所属（第３正規形）</caption>
+          <tr>
+            <td align=center bgcolor=Lime>担当教官</td>
+            <td align=center bgcolor=lightblue>教官所属</td>
+          </tr>
+          <tr>
+            <td align=center>教官名１</td>
+            <td align=center>Ａ学科</td>
+          </tr>
+          <tr>
+            <td align=center>教官名２</td>
+            <td align=center>Ｂ学科</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+  </table>
+  <p>
+    これによって、既存の教官が新規開講科目を担当することになったとしても、「担当科目」にその情報を追加するだけでよくなります。すなわち、これらの関係表では、新しいレコードを追加する際に、教官所属の情報を再入力しなくてもよいです。これには、入力誤りによるテーブル間の不整合性発生を防ぐ効果があります。
+  </p>
+
+</body>
+
+</html>

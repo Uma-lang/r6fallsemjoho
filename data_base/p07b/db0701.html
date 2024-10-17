@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">
+            テーブルの結合
+    </h2>
+
+    <p>
+        データベースが持つ複数のテーブルを活用する際、通常は、必要な情報を抽出して正しい組を作り、加工して出力する必要があります。
+    </p>
+    <p>
+        本講義では、次の手順により分解された状態のテーブル（コンピュータが管理しやすいデータ形式）を、利用者が活用しやすいテーブルに結合する代表的な手法について実習します。
+    </p>
+    <h4><a name="00">実習準備</a></h4>
+    <p>
+        ここでは、すでにデータベースが持つ表を分割する処理について、復習を兼ねながら実習します。 具体的には、テーブル j4age
+        から必要なフィールド値をコピーする（同じ属性のテーブルを作成し、そこにレコードを読み込む）という手順の繰り返しになります。
+    </p>
+    <pre class=c>
+[iwak@cmwww15 ~]$ <b>mysql -h home.nda.ac.jp -u iwak -p</b>
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 45286
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+    <pre class=c>
+mysql> <b>use iwak;</b>
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+</pre>
+    <pre class=c>
+mysql> <b>show tables;</b>
++----------------+
+| Tables_in_iwak |
++----------------+
+| j4age          |
+| list1          |
+| list1a         |
+| score          |
+| uid            |
+| uid2           |
++----------------+
+6 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>create table <ems>namelist</ems>(id varchar(8), name varchar(32))</b>
+    -> <b>select <ems>id, name</ems> from j4age;</b>
+Query OK, 200 rows affected (0.01 sec)
+Records: 200  Duplicates: 0  Warnings: 0
+</pre>
+
+
+    <pre class=c>
+mysql> <b>select * from namelist;</b>
++--------+-----------------------+
+| id     | name                  |
++--------+-----------------------+
+| 811001 | Nozawa Katsuhiko      | 
+| 802002 | Shiraki Sae           | 
+| 215003 | Kawana Fumiko         | 
+| 025004 | Kimura Keiichi        | 
+| 647005 | Okazaki Manami        | 
+    :
+| 678198 | Fujii Nene            | 
+| 765199 | Endou Katsuhiko       | 
+| 843200 | Taki Rika             | 
++--------+-----------------------+
+200 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>create table <ems>bloodtype</ems>(id varchar(8), type varchar(2))</b>
+    -> <b>select <ems>id, <u>bloodtype as type</u></ems> from j4age;</b>
+Query OK, 200 rows affected (0.01 sec)
+Records: 200  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> <b>select * from bloodtype;</b>
++--------+------+
+| id     | type |
++--------+------+
+| 811001 | A    | 
+| 802002 | AB   | 
+| 215003 | A    | 
+| 025004 | O    | 
+| 647005 | O    | 
+    :
+| 678198 | O    | 
+| 765199 | A    | 
+| 843200 | A    | 
++--------+------+
+200 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>create table <ems>typename</ems>(type varchar(2), name varchar(16));</b>
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>insert into typename(<ems>type, name</ems>) values</b>
+    -> <b>(<ems>"A","Type A Blood"</ems>),(<ems>"B","Type B Blood"</ems>),</b>
+    -> <b>(<ems>"AB","Type AB Blood"</ems>),(<ems>"O","Type O Blood"</ems>);</b>
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> <b>select * from typename;</b>
++------+---------------+
+| type | name          |
++------+---------------+
+| A    | Type A Blood  | 
+| B    | Type B Blood  | 
+| AB   | Type AB Blood | 
+| O    | Type O Blood  | 
++------+---------------+
+4 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>create table <ems>typename2</ems>(type varchar(2), name varchar(16));</b>
+Query OK, 0 rows affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> <b>insert into typename2(<ems>type, name</ems>) values</b>
+    -> <b>(<ems>"AA","Type AA Blood"</ems>),(<ems>"AO","Type AO Blood"</ems>),</b>
+    -> <b>(<ems>"BB","Type BB Blood"</ems>),(<ems>"BO","Type BO Blood"</ems>);</b>
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> <b>select * from typename2;</b>
++------+---------------+
+| type | name          |
++------+---------------+
+| AA   | Type AA Blood | 
+| AO   | Type AO Blood | 
+| BB   | Type BB Blood | 
+| BO   | Type BO Blood | 
++------+---------------+
+4 rows in set (0.00 sec)
+</pre>
+    <br>
+    今後の実習に備えて、外部からテーブルを一つ追加で読み込みます。
+    <br>
+    <pre class=c>
+mysql> <b>create table <ems>j4team</ems>(id varchar(8),name varchar(32),pid varchar(8));</b>
+Query OK, 0 rows affected (0.00 sec)
+mysql> <b>quit</b>
+Bye
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ <b>wget http://home.nda.ac.jp/~iwak/J3DB/data/j4team.csv</b>
+
+--08:22:49--  http://home.nda.ac.jp/~iwak/J3DB/data/j4team.csv
+home.nda.ac.jp をDNSに問いあわせています... 10.0.0.44
+home.nda.ac.jp|10.0.0.44|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+長さ: 591 [text/plain]
+Saving to: `j4team.csv'
+
+100%[=======================================>] 591         --.-K/s   in 0s     
+
+08:22:49 (70.5 MB/s) - `j4team.csv' を保存しました [591/591]
+</pre>
+    <pre class=c>
+EDE1C01% <b>mysqlimport -h home.nda.ac.jp -L -p
+              --fields-terminated-by=","
+              --lines-terminated-by="\n"
+              --ignore-lines=1 iwak j4team.csv</b>
+Enter password: 
+iwak.j4team: Records: 20  Deleted: 0  Skipped: 0  Warnings: 0
+</pre>
+    <pre class=c>
+[iwak@cmwww15 ~]$ <b>mysql -h home.nda.ac.jp -u iwak -p</b>
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 45291
+Server version: 5.0.45 Source distribution
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</pre>
+    <pre class=c>
+mysql> <b>use iwak;</b>
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+</pre>
+    <pre class=c>
+mysql> <b>select * from j4team;</b>
++--------+--------------------+--------+
+| <ems>id</ems>     | <ems>name</ems>               | <ems>pid</ems>    |
++--------+--------------------+--------+
+| 811001 | Nozawa Katsuhiko   | 782011 | 
+| 802002 | Shiraki Sae        | 358012 | 
+| 215003 | Kawana Fumiko      | 370013 | 
+| 025004 | Kimura Keiichi     | 921014 | 
+| 647005 | Okazaki Manami     | 991015 | 
+| 800006 | Tanikuchi Satomi   | 885016 | 
+| 951007 | Fushimi Yoshio     | 053017 | 
+| 324008 | Kazama Kanae       | 413018 | 
+| 578009 | Osaka Mako         | 249019 | 
+| 502010 | Ishikawa Maho      | 419020 | 
+| 782011 | Niimura Ran        | 811001 | 
+| 358012 | Kokubu Yoshinobu   | 802002 | 
+| 370013 | Yamaoka Katsuzou   | 215003 | 
+| 921014 | Kagawa Akiko       | 025004 | 
+| 991015 | Sugihara Fumiyasu  | 647005 | 
+| 885016 | Tachibana Nariyasu | 800006 | 
+| 053017 | Kitahara Shiho     | 951007 | 
+| 413018 | Iwasaki Ichika     | 324008 | 
+| 249019 | Komno Chouhei      | 578009 | 
+| 419020 | Miyashita Miyuu    | 502010 | 
++--------+--------------------+--------+
+20 rows in set (0.00 sec)
+</pre>
+    <br>
+    以上の手順で作成されたテーブルの一覧を確認します。
+    <br>
+    <pre class=c>
+mysql> <b>show tables;</b>
++----------------+
+| Tables_in_iwak |
++----------------+
+| <ems>bloodtype</ems>      |
+| cityage        |
+| j4age          |
+| <ems>j4team</ems>         |
+| list1          |
+| list1a         |
+| <ems>namelist</ems>       |
+| <ems>typename</ems>       |
+| <ems>typename2</ems>      |
++----------------+
+9 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(1) <a name="01">交差結合(Cross join)</a></h4>
+    <p>
+        対応（関連）条件なしの結合です。二つの表から得られる<em>すべての組み合わせ</em>が網羅できます。すべての組を作成して、その中からなんらかのパターンを得たい場合などに利用しますが、あまり使われないです。
+    </p>
+    <div align="center">
+        <img src="./cj.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from <em>namelist</em>,<em>typename</em>;
++--------+-----------------------+------+---------------+
+| id     | name                  | type | name          |
++--------+-----------------------+------+---------------+
+| 811001 | Nozawa Katsuhiko      | A    | Type A Blood  | 
+| 811001 | Nozawa Katsuhiko      | B    | Type B Blood  | 
+| 811001 | Nozawa Katsuhiko      | AB   | Type AB Blood | 
+| 811001 | Nozawa Katsuhiko      | O    | Type O Blood  | 
+| 802002 | Shiraki Sae           | A    | Type A Blood  | 
+    :
+| 174081 | Tsuboi Shouji         | O    | Type O Blood  | 
+| 764082 | Kanou Rio             | A    | Type A Blood  | 
+| 764082 | Kanou Rio             | B    | Type B Blood  | 
+| 764082 | Kanou Rio             | AB   | Type AB Blood | 
+| 764082 | Kanou Rio             | O    | Type O Blood  | 
+| 152083 | Oobuchi Masaichi      | A    | Type A Blood  | 
+    :
+| 765199 | Endou Katsuhiko       | O    | Type O Blood  | 
+| 843200 | Taki Rika             | A    | Type A Blood  | 
+| 843200 | Taki Rika             | B    | Type B Blood  | 
+| 843200 | Taki Rika             | AB   | Type AB Blood | 
+| 843200 | Taki Rika             | O    | Type O Blood  | 
++--------+-----------------------+------+---------------+
+800 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from bloodtype,typename;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 811001 | A    | B    | Type B Blood  | 
+| 811001 | A    | AB   | Type AB Blood | 
+| 811001 | A    | O    | Type O Blood  | 
+| 802002 | AB   | A    | Type A Blood  | 
+    :
+| 174081 | A    | O    | Type O Blood  | 
+| 764082 | O    | A    | Type A Blood  | 
+| 764082 | O    | B    | Type B Blood  | 
+| 764082 | O    | AB   | Type AB Blood | 
+| 764082 | O    | O    | Type O Blood  | 
+| 152083 | O    | A    | Type A Blood  | 
+    :
+| 765199 | A    | O    | Type O Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
+| 843200 | A    | B    | Type B Blood  | 
+| 843200 | A    | AB   | Type AB Blood | 
+| 843200 | A    | O    | Type O Blood  | 
++--------+------+------+---------------+
+800 rows in set (0.00 sec)
+</pre>
+    <p>
+        交差結合は、条件指定することにより、必要な情報のみ含むテーブルを作成できます（後述の各種結合と同等の処理）。ただし、下の例の type
+        のように二つのテーブルに<em>同じフィールド名</em>が存在する場合には、<em>ピリオド（.）</em>で区切った識別子を付け加えなければなりません（<em>テーブル名.フィールド名</em>の書式）。
+    </p>
+    <pre class=c>
+mysql> select * from bloodtype, typename where <em>bloodtype.type</em>=<em>typename.type</em>;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 802002 | AB   | AB   | Type AB Blood | 
+| 215003 | A    | A    | Type A Blood  | 
+| 025004 | O    | O    | Type O Blood  | 
+| 647005 | O    | O    | Type O Blood  | 
+| 800006 | B    | B    | Type B Blood  | 
+| 951007 | A    | A    | Type A Blood  | 
+    :
+| 094195 | O    | O    | Type O Blood  | 
+| 548196 | A    | A    | Type A Blood  | 
+| 360197 | O    | O    | Type O Blood  | 
+| 678198 | O    | O    | Type O Blood  | 
+| 765199 | A    | A    | Type A Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
++--------+------+------+---------------+
+200 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(2) <a name="02">自己結合(Self join)</a></h4>
+    <p>
+        自己結合は、特定のフィールドに<em>関連するフィールドが同じテーブル上に存在</em>するときに、それらの関連を得るときに用います。たとえば、ある競技チームのパートナーを示すテーブル「j4team」には、相棒の id
+        番号（pid）のみ示されています。
+    </p>
+
+    <div align="center">
+        <img src="./sj.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from j4team;
++--------+--------------------+--------+
+| id     | name               | pid    |
++--------+--------------------+--------+
+| 811001 | Nozawa Katsuhiko   | 782011 | 
+| 802002 | Shiraki Sae        | 358012 | 
+| 215003 | Kawana Fumiko      | 370013 | 
+| 025004 | Kimura Keiichi     | 921014 | 
+| 647005 | Okazaki Manami     | 991015 | 
+| 800006 | Tanikuchi Satomi   | 885016 | 
+| 951007 | Fushimi Yoshio     | 053017 | 
+| 324008 | Kazama Kanae       | 413018 | 
+| 578009 | Osaka Mako         | 249019 | 
+| 502010 | Ishikawa Maho      | 419020 | 
+| 782011 | Niimura Ran        | 811001 | 
+| 358012 | Kokubu Yoshinobu   | 802002 | 
+| 370013 | Yamaoka Katsuzou   | 215003 | 
+| 921014 | Kagawa Akiko       | 025004 | 
+| 991015 | Sugihara Fumiyasu  | 647005 | 
+| 885016 | Tachibana Nariyasu | 800006 | 
+| 053017 | Kitahara Shiho     | 951007 | 
+| 413018 | Iwasaki Ichika     | 324008 | 
+| 249019 | Komno Chouhei      | 578009 | 
+| 419020 | Miyashita Miyuu    | 502010 | 
++--------+--------------------+--------+
+20 rows in set (0.00 sec)
+</pre>
+    <p>
+        このテーブルを自己結合させると、相手の氏名を表示できるので、直感的にわかりやすくなります。
+        自己結合の要点は、<em>テーブルに別名（エイリアス）</em>を付け、一つの命令文の中で、同じテーブルを別のテーブルを扱うように記述する点です。
+    </p>
+    <pre class=c>
+mysql> select j4team.name,al_j4team.name from j4team, <em>j4team al_j4team</em>
+    -> where j4team.pid=<em>al_j4team</em>.id;
++--------------------+--------------------+
+| name               | name               |
++--------------------+--------------------+
+| Niimura Ran        | Nozawa Katsuhiko   | 
+| Kokubu Yoshinobu   | Shiraki Sae        | 
+| Yamaoka Katsuzou   | Kawana Fumiko      | 
+| Kagawa Akiko       | Kimura Keiichi     | 
+| Sugihara Fumiyasu  | Okazaki Manami     | 
+| Tachibana Nariyasu | Tanikuchi Satomi   | 
+| Kitahara Shiho     | Fushimi Yoshio     | 
+| Iwasaki Ichika     | Kazama Kanae       | 
+| Komno Chouhei      | Osaka Mako         | 
+| Miyashita Miyuu    | Ishikawa Maho      | 
+| Nozawa Katsuhiko   | Niimura Ran        | 
+| Shiraki Sae        | Kokubu Yoshinobu   | 
+| Kawana Fumiko      | Yamaoka Katsuzou   | 
+| Kimura Keiichi     | Kagawa Akiko       | 
+| Okazaki Manami     | Sugihara Fumiyasu  | 
+| Tanikuchi Satomi   | Tachibana Nariyasu | 
+| Fushimi Yoshio     | Kitahara Shiho     | 
+| Kazama Kanae       | Iwasaki Ichika     | 
+| Osaka Mako         | Komno Chouhei      | 
+| Ishikawa Maho      | Miyashita Miyuu    | 
++--------------------+--------------------+
+20 rows in set (0.00 sec)
+</pre>
+
+
+
+    <h4>(3) <a name="03">左外部結合(Left join)</a></h4>
+    <p>
+        左外部結合は、二つのテーブルを左右に並べて結合する際に、<em>左側のレコードがすべて表示</em>される結合法です。
+    </p>
+
+    <div align="center">
+        <img src="./lj.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from <em>namelist</em> left join <em>bloodtype</em> on namelist.id=bloodtype.id;
++--------+-----------------------+--------+------+
+| id     | name                  | id     | type |
++--------+-----------------------+--------+------+
+| 811001 | Nozawa Katsuhiko      | 811001 | A    | 
+| 802002 | Shiraki Sae           | 802002 | AB   | 
+| 215003 | Kawana Fumiko         | 215003 | A    | 
+| 025004 | Kimura Keiichi        | 025004 | O    | 
+| 647005 | Okazaki Manami        | 647005 | O    | 
+    :
+| 678198 | Fujii Nene            | 678198 | O    | 
+| 765199 | Endou Katsuhiko       | 765199 | A    | 
+| 843200 | Taki Rika             | 843200 | A    | 
++--------+-----------------------+--------+------+
+200 rows in set (0.01 sec)
+</pre>
+    <pre class=c>
+mysql> select * from bloodtype left join typename on bloodtype.type=typename.type;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 802002 | AB   | AB   | Type AB Blood | 
+| 215003 | A    | A    | Type A Blood  | 
+| 025004 | O    | O    | Type O Blood  | 
+| 647005 | O    | O    | Type O Blood  | 
+    :
+| 678198 | O    | O    | Type O Blood  | 
+| 765199 | A    | A    | Type A Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
++--------+------+------+---------------+
+200 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(4) <a name="04">右外部結合(Right join)</a></h4>
+    <p>
+        右外部結合は、左外部結合とは逆に、二つのテーブルを左右に並べて結合する際に、<em>右側のレコードがすべて表示</em>される結合法です。
+    </p>
+
+    <div align="center">
+        <img src="./rj.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from <em>bloodtype</em> right join <em>typename</em> on bloodtype.type=typename.type;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 215003 | A    | A    | Type A Blood  | 
+    :
+| 765199 | A    | A    | Type A Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
+| 800006 | B    | B    | Type B Blood  | 
+| 782011 | B    | B    | Type B Blood  | 
+    :
+| 727183 | B    | B    | Type B Blood  | 
+| 620187 | B    | B    | Type B Blood  | 
+| 802002 | AB   | AB   | Type AB Blood | 
+| 419020 | AB   | AB   | Type AB Blood | 
+    :
+| 107191 | AB   | AB   | Type AB Blood | 
+| 441192 | AB   | AB   | Type AB Blood | 
+| 025004 | O    | O    | Type O Blood  | 
+| 647005 | O    | O    | Type O Blood  | 
+    :
+| 360197 | O    | O    | Type O Blood  | 
+| 678198 | O    | O    | Type O Blood  | 
++--------+------+------+---------------+
+200 rows in set (0.00 sec)
+</pre>
+    <p>
+        右側のテーブルに<em>対応するレコードが無い場合</em>、左側のテーブルのレコードが<em>空値（NULL）</em>になります。
+    </p>
+    <pre class=c>
+mysql> insert into typename(<ems>type, name</ems>) values (<ems>"X","Type X Blood"</ems>);
+Query OK, 1 row affected (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from typename;
++------+---------------+
+| type | name          |
++------+---------------+
+| A    | Type A Blood  | 
+| B    | Type B Blood  | 
+| AB   | Type AB Blood | 
+| O    | Type O Blood  | 
+<ems>| X    | Type X Blood  | </ems>
++------+---------------+
+5 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from <em>bloodtype</em> right join <em>typename</em> 
+    -> on bloodtype.type=typename.type;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 215003 | A    | A    | Type A Blood  | 
+    :
+| 765199 | A    | A    | Type A Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
+| 800006 | B    | B    | Type B Blood  | 
+| 782011 | B    | B    | Type B Blood  | 
+    :
+| 727183 | B    | B    | Type B Blood  | 
+| 620187 | B    | B    | Type B Blood  | 
+| 802002 | AB   | AB   | Type AB Blood | 
+| 419020 | AB   | AB   | Type AB Blood | 
+    :
+| 107191 | AB   | AB   | Type AB Blood | 
+| 441192 | AB   | AB   | Type AB Blood | 
+| 025004 | O    | O    | Type O Blood  | 
+| 647005 | O    | O    | Type O Blood  | 
+    :
+| 360197 | O    | O    | Type O Blood  | 
+| 678198 | O    | O    | Type O Blood  | 
+<ems>| NULL   | NULL | X    | Type X Blood  | </ems>
++--------+------+------+---------------+
+201 rows in set (0.00 sec)
+</pre>
+    <p>
+        また、最初に述べたとおり、結合は、使いやすいテーブルを得るための処理です。通常、<em>必要なフィールドのみ選択（selectで指定）して表示</em>します。
+    </p>
+    <pre class=c>
+mysql> select bloodtype.id,bloodtype.type,typename.name
+    -> from bloodtype right join typename on bloodtype.type=typename.type;
++--------+------+---------------+
+| id     | type | name          |
++--------+------+---------------+
+| 811001 | A    | Type A Blood  | 
+| 215003 | A    | Type A Blood  | 
+    :
+| 765199 | A    | Type A Blood  | 
+| 843200 | A    | Type A Blood  | 
+| 800006 | B    | Type B Blood  | 
+| 782011 | B    | Type B Blood  | 
+    :
+| 727183 | B    | Type B Blood  | 
+| 620187 | B    | Type B Blood  | 
+| 802002 | AB   | Type AB Blood | 
+| 419020 | AB   | Type AB Blood | 
+    :
+| 107191 | AB   | Type AB Blood | 
+| 441192 | AB   | Type AB Blood | 
+| 025004 | O    | Type O Blood  | 
+| 647005 | O    | Type O Blood  | 
+    :
+| 360197 | O    | Type O Blood  | 
+| 678198 | O    | Type O Blood  | 
+| NULL   | NULL | Type X Blood  | 
++--------+------+---------------+
+201 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(5) <a name="05">内部結合(Inner join)</a></h4>
+    <p>
+        内部結合とは、二つのテーブルを結合した際に、<em>空値のレコードが現れない</em>ようにする結合法です。
+    </p>
+
+    <div align="center">
+        <img src="./ij.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from <em>bloodtype</em> inner join <em>typename</em>
+    -> on bloodtype.type=typename.type;
++--------+------+------+---------------+
+| id     | type | type | name          |
++--------+------+------+---------------+
+| 811001 | A    | A    | Type A Blood  | 
+| 802002 | AB   | AB   | Type AB Blood | 
+| 215003 | A    | A    | Type A Blood  | 
+| 025004 | O    | O    | Type O Blood  | 
+| 647005 | O    | O    | Type O Blood  | 
+| 800006 | B    | B    | Type B Blood  | 
+| 951007 | A    | A    | Type A Blood  | 
+| 324008 | A    | A    | Type A Blood  | 
+| 578009 | O    | O    | Type O Blood  | 
+    :
+| 094195 | O    | O    | Type O Blood  | 
+| 548196 | A    | A    | Type A Blood  | 
+| 360197 | O    | O    | Type O Blood  | 
+| 678198 | O    | O    | Type O Blood  | 
+| 765199 | A    | A    | Type A Blood  | 
+| 843200 | A    | A    | Type A Blood  | 
++--------+------+------+---------------+
+200 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select bloodtype.id,typename.name from bloodtype
+    -> inner join typename on bloodtype.type=typename.type;
++--------+---------------+
+| id     | name          |
++--------+---------------+
+| 811001 | Type A Blood  | 
+| 802002 | Type AB Blood | 
+| 215003 | Type A Blood  | 
+| 025004 | Type O Blood  | 
+| 647005 | Type O Blood  | 
+| 800006 | Type B Blood  | 
+| 951007 | Type A Blood  | 
+| 324008 | Type A Blood  | 
+    :
+| 548196 | Type A Blood  | 
+| 360197 | Type O Blood  | 
+| 678198 | Type O Blood  | 
+| 765199 | Type A Blood  | 
+| 843200 | Type A Blood  | 
++--------+---------------+
+200 rows in set (0.00 sec)
+</pre>
+
+
+    <h4>(6) <a name="06">和結合(Union)</a></h4>
+    <p>
+        二つのテーブルを<em>縦積みする結合</em>です。同じ構成のフィールドを持つテーブルのレコードを合わせたい場合に利用できます。同じ構成でない場合でも、フィールド名の対応を指定することにより、和結合できます。
+    </p>
+
+    <div align="center">
+        <img src="./un.gif">
+    </div>
+
+    <pre class=c>
+mysql> select * from typename;
++------+---------------+
+| type | name          |
++------+---------------+
+| A    | Type A Blood  | 
+| B    | Type B Blood  | 
+| AB   | Type AB Blood | 
+| O    | Type O Blood  | 
+| X    | Type X Blood  | 
++------+---------------+
+5 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from typename2;
++------+---------------+
+| type | name          |
++------+---------------+
+| AA   | Type AA Blood | 
+| AO   | Type AO Blood | 
+| BB   | Type BB Blood | 
+| BO   | Type BO Blood | 
++------+---------------+
+4 rows in set (0.00 sec)
+</pre>
+    <pre class=c>
+mysql> select * from typename <em>union</em> select * from typename2;
++------+---------------+
+| type | name          |
++------+---------------+
+| A    | Type A Blood  | 
+| B    | Type B Blood  | 
+| AB   | Type AB Blood | 
+| O    | Type O Blood  | 
+| X    | Type X Blood  | 
+| AA   | Type AA Blood | 
+| AO   | Type AO Blood | 
+| BB   | Type BB Blood | 
+| BO   | Type BO Blood | 
++------+---------------+
+9 rows in set (0.01 sec)
+</pre>
+    <p>
+        また、<em>対応を無視して和結合</em>すると、フィールド値が定義の順番どおりに（不適切に）割り当てられて出力されます。
+    </p>
+    <pre class=c>
+mysql> select * from typename union select * from bloodtype;
++--------+---------------+
+| type   | name          |
++--------+---------------+
+| A      | Type A Blood  | 
+| B      | Type B Blood  | 
+| AB     | Type AB Blood | 
+| O      | Type O Blood  | 
+| X      | Type X Blood  | 
+| 811001 | A             | 
+| 802002 | AB            | 
+| 215003 | A             | 
+| 025004 | O             | 
+| 647005 | O             | 
+| 800006 | B             | 
+| 951007 | A             | 
+    :
+| 548196 | A             | 
+| 360197 | O             | 
+| 678198 | O             | 
+| 765199 | A             | 
+| 843200 | A             | 
++--------+---------------+
+205 rows in set (0.00 sec)
+</pre>
+
+    <p>
+        結合したテーブルは、次のように<b>サブクエリ（入れ子型処理）</b>としてエリアス指定することで、便利に活用できます。
+    </p>
+    <pre class=c>
+mysql> select * from
+    -> (select * from typename union all select * from typename2) <b>utypename</b>
+    ->  where <b>utypename.type</b>='X';
++------+--------------+
+| type | name         |
++------+--------------+
+| X    | Type X Blood |
++------+--------------+
+1 row in set (0.00 sec)
+</pre>
+    <p>
+        サブクエリにエリアス指定しなかった場合、次のエラーが出ます。エリアス指定は、忘れがちなので注意しましょう。
+    </p>
+    <pre class=c>
+mysql> select * from 
+    -> (select * from typename union all select * from typename2) 
+    ->  where type='X';
+ERROR 1248 (42000): <ems>Every derived table must have its own alias</ems>
+</pre>
+    <br>
+    <br>
+
+</body>
+
+</html>

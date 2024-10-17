@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+    <title>データベース論（岩切准教授）</title>
+    <link rel="stylesheet" href="../dbstyle.css">
+    <style type="text/css">
+    </style>
+</head>
+
+<body>
+
+
+    <h2>
+        <height=19 width=18 alt="">
+            入れ子型処理とテーブル操作
+    </h2>
+
+
+    <h4>(1) <a name="01">サブクエリ構文</a></h4>
+    <p>
+        MySQL4.1以降では、
+        <em>SQLの実行結果を用いた処理（サブクエリの処理）</em>ができます。サブクエリの値は、<em>１カラム（一つの値）</em>でなければなりません。また、外部ステートメントによって、<em>変更される</em>テーブルをサブクエリから参照することはできません（処理の一貫性が失われる可能性があるため）。
+    </p>
+    <pre class=c>
+mysql> select
+    -> <em>(select count(age) from j4age where age>=60)</em> as A,
+    -> <em>(select count(age) from j4age where age<60 )</em> as B;
++------+------+
+| A    | B    |
++------+------+
+|   38 |  162 | 
++------+------+
+1 row in set (0.00 sec)
+</pre>
+    <p>
+        WHERE構文の条件式にサブクエリを用いることもできます。
+    </p>
+    <pre class=c>
+mysql> select id,name,age from j4age where age>(<em>select max(age) from j4age</em>)-5;
++--------+-------------------+------+
+| id     | name              | age  |
++--------+-------------------+------+
+| 159054 | Nishijima Hikaru  |   69 | 
+| 416058 | Tazaki Hayato     |   68 | 
+| 909074 | Yokokawa Takashi  |   65 | 
+| 198077 | Tsubota Sakiko    |   65 | 
+| 844085 | Takahata Masafumi |   65 | 
+| 287087 | Itagaki Hideo     |   65 | 
+| 586088 | Nakasawa Masahiro |   69 | 
+| 481130 | Oonishi Kenzou    |   68 | 
+| 142132 | Abe Takeo         |   67 | 
+| 170138 | Kodama Kunihiko   |   67 | 
+| 691142 | Umehara Akiko     |   65 | 
+| 918147 | Ikemoto Ginzou    |   65 | 
+| 474157 | Matsuo Kyouichi   |   68 | 
+| 368166 | Nihei Manami      |   68 | 
+| 115169 | Kitajima Rina     |   67 | 
+| 441172 | Asakura Yoshio    |   66 | 
+| 427182 | Kusaka Hiroshi    |   68 | 
++--------+-------------------+------+
+17 rows in set (0.00 sec)
+</pre>
+    <p>
+        条件を満たす人数のみを知りたい場合には、すでに示したとおり COUNT関数を用います。
+    </p>
+    <pre class=c>
+mysql> select <em>count(id)</em> from j4age where age>(select max(age) from j4age)-5;
++-----------+
+| count(id) |
++-----------+
+|        17 | 
++-----------+
+1 row in set (0.00 sec)
+</pre>
+
+
+    <h4>(2) <a name="02">演算結果のレコード化</a></h4>
+    <p>
+        SQLでは、演算処理や関数処理によって得られた結果をフィールドの値として入力できます。ここで使う構文は、すでに学んだ <em>UPDATE</em> コマンドです。値を入力（SET）する部分の記述に、計算式を用いるだけです。
+
+    </p>
+    <pre class=c>
+mysql> <em>alter table</em> j4age <em>add</em> oldage int;
+Query OK, 200 rows affected (0.01 sec)
+Records: 200  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> <em>update</em> j4age <em>set</em> oldage=(age>=60);
+Query OK, 200 rows affected (0.00 sec)
+Rows matched: 200  Changed: 200  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from j4age;
++------+--------+-------------+-----------+-----------------------+------+--------+
+| no   | id     | city        | bloodtype | name                  | age  | <ems>oldage</ems> |
++------+--------+-------------+-----------+-----------------------+------+--------+
+|    1 | 811001 | bunkyouku   | A         | Nozawa Katsuhiko      |   39 |      0 |
+|    2 | 802002 | ootaku      | AB        | Shiraki Sae           |   40 |      0 |
+|    3 | 215003 | shinagawaku | A         | Kawana Fumiko         |   22 |      0 |
+|    4 | 025004 | edogawaku   | O         | Kimura Keiichi        |   22 |      0 |
+|    5 | 647005 | chuuouku    | O         | Okazaki Manami        |   31 |      0 |
+|    6 | 800006 | suginamiku  | B         | Tanikuchi Satomi      |   42 |      0 |
+|    7 | 951007 | chuuouku    | A         | Fushimi Yoshio        |   25 |      0 |
+|    8 | 324008 | nerimaku    | A         | Kazama Kanae          |   23 |      0 |
+|    9 | 578009 | chiyodaku   | O         | Osaka Mako            |   37 |      0 |
+|   10 | 502010 | ootaku      | A         | Ishikawa Maho         |   64 |      <ems>1</ems> |
+|   11 | 782011 | setagayaku  | B         | Niimura Ran           |   35 |      0 |
+ :
+ :
+ :
+|  197 | 360197 | taitouku    | O         | Akatsuka Kokomi       |   58 |      0 |
+|  198 | 678198 | minatoku    | O         | Fujii Nene            |   41 |      0 |
+|  199 | 765199 | edogawaku   | A         | Endou Katsuhiko       |   29 |      0 |
+|  200 | 843200 | bunkyouku   | A         | Taki Rika             |   44 |      0 |
++------+--------+-------------+-----------+-----------------------+------+--------+
+200 rows in set (0.01 sec)
+</pre>
+
+
+
+    <h4>(3) <a name="3">演算結果のテーブル化</a></h4>
+    <p>
+        新しいテーブル <em>CREATE TABLE</em>
+        コマンドで作成する際に、計算結果が含まれているフィールド名と、その入力先フィールド名の対応を指定するだけで、複数の計算結果を新しいテーブルの各フィールドにまとめて入力できます。入力先が同じフィールド名であれば、その指定を省略できます（単純なフィールドの値の入力）。
+    </p>
+    <pre class=c>
+mysql> <em>create table</em> cityage(city varchar(16), num int, avg int)
+    -> <em>select</em> city, count(age) as num, avg(age) as avg from j4age <em>group by</em> city;
+Query OK, 21 rows affected (0.00 sec)
+Records: 21  Duplicates: 0  Warnings: 0
+</pre>
+    <pre class=c>
+mysql> select * from cityage;
++-------------+------+------+
+| city        | num  | avg  |
++-------------+------+------+
+| adachiku    |   18 |   47 |
+| arakawaku   |    2 |   46 |
+| bunkyouku   |    6 |   46 |
+| chiyodaku   |   10 |   38 |
+| chuuouku    |   10 |   42 |
+| edogawaku   |   13 |   42 |
+| itabashiku  |   14 |   37 |
+| kitaku      |    4 |   56 |
+| koutouku    |   11 |   44 |
+| meguroku    |    5 |   41 |
+| minatoku    |    6 |   40 |
+| nerimaku    |   10 |   39 |
+| ootaku      |   16 |   43 |
+| setagayaku  |   11 |   47 |
+| shibuyaku   |   10 |   50 |
+| shinagawaku |   14 |   43 |
+| shinjukuku  |   16 |   44 |
+| suginamiku  |    9 |   42 |
+| sumidaku    |    3 |   27 |
+| taitouku    |   10 |   37 |
+| toshimaku   |    2 |   61 |
++-------------+------+------+
+</pre>
+
+
+
+</body>
+
+</html>
