@@ -1,6 +1,0 @@
-found malware string /book/index.php for EMDIVI in line 4
-found malware string /book/index.php for EMDIVI in line 7
-found malware string /book/index.php for EMDIVI in line 12
-found malware string /book/index.php for EMDIVI in line 34
-found malware string /book/index.php for EMDIVI in line 44
-found malware string /book/index.php for EMDIVI in line 52
