@@ -5,11 +5,557 @@
     <meta charset="UTF-8">
     <title>prob3</title>
     <link rel="stylesheet" href="../../style.css">
+    <style>
+        .box {
+            border: 1px solid black;
+            padding: 10px;
+            margin: 20px;
+            font-family: monospace;
+            background-color: #f0f0f0;
+        }
+
+        pre {
+            background-color: black;
+            color: white;
+            padding: 10px;
+        }
+    </style>
 </head>
 
 <body>
     <h1>バイナリ解析</h1>
     <h2><a href="prob3_1.py">問3.1 可読文字の抽出(string)</a></h2>
+    "malare.zip”をパスワード
+    “infected”を入力して解凍する。この時、展開されたフアイルがウイルス対策ソフトに検知されないように、「ウイルスと脅威の防止」の「リアルタイム保護」を一時的に無効にする。“malware.ex_”はマルウェアの実行ファイルである。
+    ここで、“malmare.ex_”をバイナリエディタで開くと以下のように表示される。<br>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ADDRESS</th>
+                <th>00</th>
+                <th>01</th>
+                <th>02</th>
+                <th>03</th>
+                <th>04</th>
+                <th>05</th>
+                <th>06</th>
+                <th>07</th>
+                <th>08</th>
+                <th>09</th>
+                <th>0A</th>
+                <th>0B</th>
+                <th>0C</th>
+                <th>0D</th>
+                <th>0E</th>
+                <th>0F</th>
+                <th>ASCII</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="address">00000000</td>
+                <td>4D</td>
+                <td>5A</td>
+                <td>90</td>
+                <td>00</td>
+                <td>03</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>04</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>FF</td>
+                <td>FF</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">MZ.....@............</td>
+            </tr>
+            <tr>
+                <td class="address">00000010</td>
+                <td>B8</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>40</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">@.................</td>
+            </tr>
+            <tr>
+                <td class="address">00000020</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">................</td>
+            </tr>
+            <tr>
+                <td class="address">00000030</td>
+                <td>1F</td>
+                <td>BA</td>
+                <td>0E</td>
+                <td>00</td>
+                <td>B4</td>
+                <td>09</td>
+                <td>CD</td>
+                <td>21</td>
+                <td>B8</td>
+                <td>01</td>
+                <td>4C</td>
+                <td>CD</td>
+                <td>21</td>
+                <td>54</td>
+                <td>68</td>
+                <td>69</td>
+                <td class="ascii">...Th.i.s.program</td>
+            </tr>
+            <tr>
+                <td class="address">00000040</td>
+                <td>73</td>
+                <td>20</td>
+                <td>70</td>
+                <td>72</td>
+                <td>6F</td>
+                <td>67</td>
+                <td>72</td>
+                <td>61</td>
+                <td>6D</td>
+                <td>20</td>
+                <td>63</td>
+                <td>61</td>
+                <td>6E</td>
+                <td>6E</td>
+                <td>6F</td>
+                <td>74</td>
+                <td class="ascii"> s.p.r.o.g.r.a.m</td>
+            </tr>
+            <tr>
+                <td class="address">00000050</td>
+                <td>20</td>
+                <td>62</td>
+                <td>65</td>
+                <td>20</td>
+                <td>72</td>
+                <td>75</td>
+                <td>6E</td>
+                <td>20</td>
+                <td>62</td>
+                <td>65</td>
+                <td>20</td>
+                <td>69</td>
+                <td>6E</td>
+                <td>20</td>
+                <td>44</td>
+                <td>4F</td>
+                <td class="ascii"> b.e.r.u.n.b.e.i.n</td>
+            </tr>
+            <tr>
+                <td class="address">00000060</td>
+                <td>53</td>
+                <td>20</td>
+                <td>6D</td>
+                <td>6F</td>
+                <td>64</td>
+                <td>65</td>
+                <td>2E</td>
+                <td>0D</td>
+                <td>0A</td>
+                <td>24</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>CD</td>
+                <td>21</td>
+                <td>4C</td>
+                <td class="ascii"> S.mode...$.....L.</td>
+            </tr>
+            <tr>
+                <td class="address">00000070</td>
+                <td>3D</td>
+                <td>4A</td>
+                <td>8B</td>
+                <td>1F</td>
+                <td>79</td>
+                <td>05</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>94</td>
+                <td>79</td>
+                <td>F0</td>
+                <td>1E</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td>4C</td>
+                <td class="ascii">=J..y...L..y...LL</td>
+            </tr>
+            <tr>
+                <td class="address">00000080</td>
+                <td>FA</td>
+                <td>1A</td>
+                <td>EB</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>9C</td>
+                <td>4C</td>
+                <td>E5</td>
+                <td>79</td>
+                <td>05</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>E5</td>
+                <td>79</td>
+                <td>F0</td>
+                <td class="ascii">...L..L.y...L..y..</td>
+            </tr>
+            <tr>
+                <td class="address">00000090</td>
+                <td>91</td>
+                <td>1A</td>
+                <td>F3</td>
+                <td>4C</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>79</td>
+                <td>E3</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>F3</td>
+                <td>79</td>
+                <td>05</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td class="ascii">...L.L.y.L..y...L.</td>
+            </tr>
+            <tr>
+                <td class="address">000000A0</td>
+                <td>FA</td>
+                <td>1A</td>
+                <td>EB</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>9C</td>
+                <td>4C</td>
+                <td>E5</td>
+                <td>79</td>
+                <td>05</td>
+                <td>E5</td>
+                <td>4C</td>
+                <td>07</td>
+                <td>E5</td>
+                <td>79</td>
+                <td>F0</td>
+                <td class="ascii">...L..L.y...L..y..</td>
+            </tr>
+            <tr>
+                <td class="address">000000B0</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">................</td>
+            </tr>
+            <tr>
+                <td class="address">000000C0</td>
+                <td>52</td>
+                <td>69</td>
+                <td>63</td>
+                <td>68</td>
+                <td>79</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">Richy.............</td>
+            </tr>
+            <tr>
+                <td class="address">000000D0</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>50</td>
+                <td>45</td>
+                <td>00</td>
+                <td>4C</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">........PE.L......</td>
+            </tr>
+            <tr>
+                <td class="address">000000E0</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td>00</td>
+                <td class="ascii">................</td>
+            </tr>
+        </tbody>
+    </table>
+    図中の左側にはファイルのHEX（16進数）、右側には対応するテキストが表示されている。右側のテキスト表示部においては、アルファベット等の印字可能なデータは、ASCI
+    エコード表に対応して表示されている。制御符号等の印できないデータは、“.”で表示されている。<br>
+    “malware.ex ”に含まれている印字可能文字列のみを出力するプログラムを作成せよ。<br>
+    なお、印字可能文字列は以下のASCIIコード表の色で示す部分である。<br>
+
+    <table>
+        <caption>ASCII Code Table</caption>
+        <tr>
+            <th></th>
+            <th>0</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+        </tr>
+        <tr>
+            <th>0</th>
+            <td>NUL</td>
+            <td>DLE</td>
+            <td>SPACE</td>
+            <td>0</td>
+            <td>@</td>
+            <td>P</td>
+            <td>`</td>
+            <td>p</td>
+        </tr>
+        <tr>
+            <th>1</th>
+            <td>SOH</td>
+            <td>DC1</td>
+            <td>!</td>
+            <td>1</td>
+            <td>A</td>
+            <td>Q</td>
+            <td>a</td>
+            <td>q</td>
+        </tr>
+        <tr>
+            <th>2</th>
+            <td>STX</td>
+            <td>DC2</td>
+            <td>"</td>
+            <td>2</td>
+            <td>B</td>
+            <td>R</td>
+            <td>b</td>
+            <td>r</td>
+        </tr>
+        <tr>
+            <th>3</th>
+            <td>ETX</td>
+            <td>DC3</td>
+            <td>#</td>
+            <td>3</td>
+            <td>C</td>
+            <td>S</td>
+            <td>c</td>
+            <td>s</td>
+        </tr>
+        <tr>
+            <th>4</th>
+            <td>EOT</td>
+            <td>DC4</td>
+            <td>$</td>
+            <td>4</td>
+            <td>D</td>
+            <td>T</td>
+            <td>d</td>
+            <td>t</td>
+        </tr>
+        <tr>
+            <th>5</th>
+            <td>ENQ</td>
+            <td>NAK</td>
+            <td>%</td>
+            <td>5</td>
+            <td>E</td>
+            <td>U</td>
+            <td>e</td>
+            <td>u</td>
+        </tr>
+        <tr>
+            <th>6</th>
+            <td>ACK</td>
+            <td>SYN</td>
+            <td>&amp;</td>
+            <td>6</td>
+            <td>F</td>
+            <td>V</td>
+            <td>f</td>
+            <td>v</td>
+        </tr>
+        <tr>
+            <th>7</th>
+            <td>BEL</td>
+            <td>ETB</td>
+            <td>'</td>
+            <td>7</td>
+            <td>G</td>
+            <td>W</td>
+            <td>g</td>
+            <td>w</td>
+        </tr>
+        <tr>
+            <th>8</th>
+            <td>BS</td>
+            <td>CAN</td>
+            <td>(</td>
+            <td>8</td>
+            <td>H</td>
+            <td>X</td>
+            <td>h</td>
+            <td>x</td>
+        </tr>
+        <tr>
+            <th>9</th>
+            <td>HT</td>
+            <td>EM</td>
+            <td>)</td>
+            <td>9</td>
+            <td>I</td>
+            <td>Y</td>
+            <td>i</td>
+            <td>y</td>
+        </tr>
+        <tr>
+            <th>A</th>
+            <td>LF</td>
+            <td>SUB</td>
+            <td>*</td>
+            <td>:</td>
+            <td>J</td>
+            <td>Z</td>
+            <td>j</td>
+            <td>z</td>
+        </tr>
+        <tr>
+            <th>B</th>
+            <td>VT</td>
+            <td>ESC</td>
+            <td>+</td>
+            <td>;</td>
+            <td>K</td>
+            <td>[</td>
+            <td>k</td>
+            <td>{</td>
+        </tr>
+        <tr>
+            <th>C</th>
+            <td>FF</td>
+            <td>FS</td>
+            <td>,</td>
+            <td>&lt;</td>
+            <td>L</td>
+            <td>\</td>
+            <td>l</td>
+            <td>|</td>
+        </tr>
+        <tr>
+            <th>D</th>
+            <td>CR</td>
+            <td>GS</td>
+            <td>-</td>
+            <td>=</td>
+            <td>M</td>
+            <td>]</td>
+            <td>m</td>
+            <td>}</td>
+        </tr>
+        <tr>
+            <th>E</th>
+            <td>SO</td>
+            <td>RS</td>
+            <td>.</td>
+            <td>&gt;</td>
+            <td>N</td>
+            <td>^</td>
+            <td>n</td>
+            <td>~</td>
+        </tr>
+        <tr>
+            <th>F</th>
+            <td>SI</td>
+            <td>US</td>
+            <td>/</td>
+            <td>?</td>
+            <td>O</td>
+            <td>_</td>
+            <td>o</td>
+            <td>DEL</td>
+        </tr>
+    </table>
+    16進数とテキストの変換には、以下の関数を利用する。<br>
+    print (ord ( "A" )) #テキスト “A”を16進数”0x41”に変換して表示<br>
+    print (chr (0x41) ) #16進数”0x41”をテキスト”A”に変換して表示<br>
+    以下のようにmore コマンドを利用すると、実行結果の先頭部を抽出できる。<br>
+    実行手順:“python 3.1_strings.py 1 more”<br>
+
     <pre><code>
         # -*- coding: utf-8 -*-
         import <a class="underline" href="sys.html">sys</a>
@@ -18,14 +564,14 @@
             file = "malware.ex_"<span class="comment"># 読み込むバイナリファイルを指定</span>
             with <a class="underline" href="open.html">open</a>(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
                 buff = f.read()  <span class="comment"># ファイル内容をバッファに読み込む</span>
-            
+            <span class="red">
             printable = <span class="string">''</span>
             
             <span class="keyword">for</span> byte <span class="keyword">in</span> buff:
                 <span class="keyword">if</span> <span class="number">32</span> &lt;= byte &lt;= <span class="number">126</span>:  <span class="comment"># ASCIIの印字可能文字（32から126）の範囲内かチェック</span>
                     printable += <span class="function">chr</span>(byte)  <span class="comment"># 該当する場合、文字として追加</span>
             
-            <span class="function">print</span>(printable)  <span class="comment"># 集めた印字可能文字を出力またはmoreコマンドでも可能</span>
+            <span class="function">print</span>(printable)  <span class="comment"># 集めた印字可能文字を出力またはmoreコマンドでも可能</span></span>
     
         if __name__ == "__main__":
             main()
@@ -34,6 +580,18 @@
     <pre><code>MZ@!L!This program cannot be run in DOS mode.$=dyLyLyLLxLLRLLrLyLLL|LyLJLLxLLxLRichyLPEL;N@@P@</code></pre>
 
     <h2><a href="prob3_2.py">問題3.2 通信内容のデコード(BASE64)</a></h2>
+
+    <p>以下はマルウェア "malware.ex" の通信内容をキャプチャしたものである。</p>
+
+    <div class="box">
+        <pre>GET /aG9zdG5hbWUtZm9v/ HTTP/1.1</pre>
+        <pre>User-Agent: Mozilla/4.0</pre>
+        <pre>Host: www.practicalmalwareanalysis.com</pre>
+    </div>
+
+    <p>このマルウェアが通信先である <strong>www.practicalmalwareanalysis.com</strong> に送信している内容をデコードするプログラムを作成せよ。</p>
+    <p>なお、通信内容は <strong>BASE64</strong> という方式でエンコードされている。</p>
+
     <pre><code>
         # -*- coding: utf-8 -*-
         import string, base64
@@ -57,6 +615,18 @@
     <pre><code>hostname-foo</code></pre>
 
     <h2><a href="prob3_3.py">問題3.3 通信先の抽出(XOR)</a></h2>
+    <p>マルウェアの通信先である <strong>www.practicalmalwareanalysis.com</strong> は、XORでエンコードされて "malware.ex" に埋め込まれている。分析の結果、XORの鍵は
+        <strong>0x3B</strong> であることが判明した。
+    </p>
+
+    <p>"malware.ex" から <strong>www.practicalmalwareanalysis.com</strong>
+        が埋め込まれている位置を特定し、そのオフセット（ファイル先頭からのバイト数）を表示するプログラムを作成せよ。</p>
+
+    <p>XOR演算は以下のように実施する。</p>
+
+    <div class="box">
+        <pre>print(0xF0 ^ 0x3B)    # 0xF0と0x3BのXOR演算の結果を表示</pre>
+    </div>
     <pre><code>
         # -*- coding: utf-8 -*-
         import string <span class="comment"># asciiコードを使うため</span>
@@ -65,7 +635,7 @@
             file = "malware.ex_"  <span class="comment"># 読み込むファイルの名前</span>
             with open(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
                 buf = f.read()  <span class="comment"># ファイルの内容をすべて読み込む(バイト列)</span>
-            
+            <span class="red">
             xor_key = <span class="number">0x3B</span>  <span class="comment"># XORに使用するキー</span>
             
             plaintext = <span class="string">'www.practicalmalwareanalysis.com'</span> <span class="comment"># 検索するアドレス</span>
@@ -76,7 +646,7 @@
                 
             encode_byte = <span class="function">bytes</span>(xor_encode)  <span class="comment"># xor_encodeはリストオブジェクトなので、バイト列に変換</span>
             index = buf.find(encode_byte)  <span class="comment"># findメソッドでencode_byteを検索</span>
-            <span class="function">print</span>(f<span class="string">"オフセット:{index}"</span>)
+            <span class="function">print</span>(f<span class="string">"オフセット:{index}"</span>)</span>
 
         if __name__ == "__main__":
             main()
@@ -85,6 +655,8 @@
     <pre><code>オフセット:368</code></pre>
 
     <h2><a href="prob3_4.py">問題3.4 通信先の検索(XORsearchi)</a></h2>
+    8.3で作成したプログラムを、XOR の鍵が判明していない場合にも総当りで鍵を検索できるように改良せよ。<br>
+    実行終了後、3.1で無効にした「ウイルスと脅威の防止」の「リアルタイム保護」を有効に戻す。<br>
     <pre><code>
         # -*- coding: utf-8 -*-
 
@@ -92,7 +664,7 @@
             file = "malware.ex_"  <span class="comment"># 読み込むファイルの名前</span>
             with open(file, 'rb') as f:  <span class="comment"># バイナリモードでファイルを開く</span>
                 buf = f.read()  <span class="comment"># ファイルの内容をすべて読み込む（バイト列）</span>
-
+            <span class="red">
             plaintext = <span class="string">'www.practicalmalwareanalysis.com'</span>  <span class="comment"># 検索する文字列</span>
             possible_keys = <span class="function">range</span>(<span class="number">256</span>)  <span class="comment"># 0x00から0xFFまでのすべてのXORキー</span>
 
@@ -105,7 +677,7 @@
                 encode_byte = <span class="function">bytes</span>(xor_encode) <span class="comment">#xor_encodeはリストオブジェクトなので、バイト列に変換</span>
                 index = buf.find(encode_byte) <span class="comment"># エンコードされたバイト列をファイル内で検索</span>
                 <span class="keyword">if</span> index != -<span class="number">1</span>: <span class="comment">#もし一致したら</span>
-                    <span class="function">print</span>(f<span class="string">"XORキー: 0x{xor_key:02X}, オフセット: {index}"</span>)
+                    <span class="function">print</span>(f<span class="string">"XORキー: 0x{xor_key:02X}, オフセット: {index}"</span>)</span>
 
        if __name__ == "__main__":
             main()
