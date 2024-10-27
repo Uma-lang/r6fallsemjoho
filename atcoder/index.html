@@ -329,6 +329,79 @@ int move_number(int n, int from, int to, int ng)
 */</span>
     </code></pre>
 
+    <h3 id="376_C">C - Prepare Another Box</h3>
+    <p><strong>問題文</strong></p>
+    <p>1から \( N \) までの番号が付けられた \( N \) 個のおもちゃと、1から \( N - 1 \) までの番号が付けられた \( N - 1 \) 個の箱があります。おもちゃ \( i \) (\( 1 \leq
+        i \leq N \)) の大きさは \( A_i \)、箱 \( i \) (\( 1 \leq i \leq N - 1 \)) の大きさは \( B_i \) です。</p>
+    <p>すべてのおもちゃを別々の箱にしまいたいと考えている高橋君は、今から以下の操作を順に行うことにしました。</p>
+    <p>1. 任意の正整数 \( x \) を選んで、大きさ \( x \) の箱を1つ購入する。</p>
+    <p>2. \( N \) 個のおもちゃそれぞれを、（元々あった箱と新しく購入した箱を合わせた）\( N \)
+        個の箱のいずれかに入れる。ただし、各おもちゃはそのおもちゃの大きさ以上の大きさを持つ箱にしか入れられることはできず、また1つの箱に2つ以上のおもちゃを入れることもできない。</p>
+    <p>高橋君は、操作1で十分な大きさの箱を購入することで操作2が実行できるようにしたいですが、大きな箱ほど値段が高いため、可能な限り小さな箱を購入したいです。</p>
+    <p>高橋君が操作2を実行できるような \( x \) の値が存在するか判定し、存在するならばその最小値を求めてください。</p>
+
+    <p><strong>制約</strong></p>
+    <p>・ \( 2 \leq N \leq 2 \times 10^5 \)</p>
+    <p>・ \( 1 \leq A_i, B_i \leq 10^9 \)</p>
+    <p>・ 入力は全て整数</p>
+
+    <p><strong>入力</strong></p>
+    <p>入力は以下の形式で標準入力から与えられる。</p>
+    <div class="box">
+        N<br>
+        \( A_1 \) \( A_2 \) ... \( A_N \)<br>
+        \( B_1 \) \( B_2 \) ... \( B_{N-1} \)
+    </div>
+
+    <p><strong>出力</strong></p>
+    <p>高橋君が操作2を実行できるような \( x \) の値が存在するならばその最小値を、存在しないならば <code>-1</code> を出力せよ。</p>
+    <pre><code>
+<span class="comment">//C++</span>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+using namespace std;
+
+int main()
+{
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n), b(n - 1);
+    for (int &i : a)
+        cin &gt;&gt; i;
+    for (int &i : b)
+        cin &gt;&gt; i;
+    sort(a.begin(), a.end());
+    int ok = 1 &lt;&lt; 30, ng = 0;
+    auto f = [&](int x) -&gt; bool
+    {
+        vector&lt;int&gt; nb = b;
+        nb.push_back(x);
+        sort(nb.begin(), nb.end());
+        for (int i = 0; i &lt; n; i++)
+        {
+            if (a[i] &gt; nb[i])
+                return false;
+        }
+        return true;
+    };
+    if (!f(ok))
+    {
+        cout &lt;&lt; -1 &lt;&lt; endl;
+        return 0;
+    }
+    while (ok - ng &gt; 1)
+    {
+        int mid = (ok + ng) / 2;
+        if (f(mid))
+            ok = mid;
+        else
+            ng = mid;
+    }
+    cout &lt;&lt; ok &lt;&lt; endl;
+}
+
+    </code></pre>
     <h2 id="375">パナソニックグループ プログラミングコンテスト2024（AtCoder Beginner Contest 375）</h2>
     <h3 id="375_A">A - Seats</h3>
     <p><strong>問題文</strong></p>
@@ -1748,79 +1821,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    </code></pre>
-    <h3 id="376_C">C - Prepare Another Box</h3>
-    <p><strong>問題文</strong></p>
-    <p>1から \( N \) までの番号が付けられた \( N \) 個のおもちゃと、1から \( N - 1 \) までの番号が付けられた \( N - 1 \) 個の箱があります。おもちゃ \( i \) (\( 1 \leq
-        i \leq N \)) の大きさは \( A_i \)、箱 \( i \) (\( 1 \leq i \leq N - 1 \)) の大きさは \( B_i \) です。</p>
-    <p>すべてのおもちゃを別々の箱にしまいたいと考えている高橋君は、今から以下の操作を順に行うことにしました。</p>
-    <p>1. 任意の正整数 \( x \) を選んで、大きさ \( x \) の箱を1つ購入する。</p>
-    <p>2. \( N \) 個のおもちゃそれぞれを、（元々あった箱と新しく購入した箱を合わせた）\( N \)
-        個の箱のいずれかに入れる。ただし、各おもちゃはそのおもちゃの大きさ以上の大きさを持つ箱にしか入れられることはできず、また1つの箱に2つ以上のおもちゃを入れることもできない。</p>
-    <p>高橋君は、操作1で十分な大きさの箱を購入することで操作2が実行できるようにしたいですが、大きな箱ほど値段が高いため、可能な限り小さな箱を購入したいです。</p>
-    <p>高橋君が操作2を実行できるような \( x \) の値が存在するか判定し、存在するならばその最小値を求めてください。</p>
-
-    <p><strong>制約</strong></p>
-    <p>・ \( 2 \leq N \leq 2 \times 10^5 \)</p>
-    <p>・ \( 1 \leq A_i, B_i \leq 10^9 \)</p>
-    <p>・ 入力は全て整数</p>
-
-    <p><strong>入力</strong></p>
-    <p>入力は以下の形式で標準入力から与えられる。</p>
-    <div class="box">
-        N<br>
-        \( A_1 \) \( A_2 \) ... \( A_N \)<br>
-        \( B_1 \) \( B_2 \) ... \( B_{N-1} \)
-    </div>
-
-    <p><strong>出力</strong></p>
-    <p>高橋君が操作2を実行できるような \( x \) の値が存在するならばその最小値を、存在しないならば <code>-1</code> を出力せよ。</p>
-    <pre><code>
-<span class="comment">//C++</span>
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-
-using namespace std;
-
-int main()
-{
-    int n;
-    cin &gt;&gt; n;
-    vector&lt;int&gt; a(n), b(n - 1);
-    for (int &i : a)
-        cin &gt;&gt; i;
-    for (int &i : b)
-        cin &gt;&gt; i;
-    sort(a.begin(), a.end());
-    int ok = 1 &lt;&lt; 30, ng = 0;
-    auto f = [&](int x) -&gt; bool
-    {
-        vector&lt;int&gt; nb = b;
-        nb.push_back(x);
-        sort(nb.begin(), nb.end());
-        for (int i = 0; i &lt; n; i++)
-        {
-            if (a[i] &gt; nb[i])
-                return false;
-        }
-        return true;
-    };
-    if (!f(ok))
-    {
-        cout &lt;&lt; -1 &lt;&lt; endl;
-        return 0;
-    }
-    while (ok - ng &gt; 1)
-    {
-        int mid = (ok + ng) / 2;
-        if (f(mid))
-            ok = mid;
-        else
-            ng = mid;
-    }
-    cout &lt;&lt; ok &lt;&lt; endl;
-}
-
     </code></pre>
 
 </body>
