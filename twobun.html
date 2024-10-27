@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>二分法についての詳しい説明</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../style.css">
+    
+</head>
+<body>
+
+<h1>二分法についての詳しい説明</h1>
+
+<p><strong>二分法</strong>（にぶんほう、<em>Bisection Method</em>）は、数値解析において非線形方程式の解を求めるための基本的なアルゴリズムの一つです。この方法は、連続関数が特定の区間内で符号が変化する点（つまり、関数値が正から負、または負から正に変わる点）を探すことで、その区間内に解が存在することを利用します。</p>
+
+<hr>
+
+<h2>基本原理</h2>
+
+<p>連続関数 <span class="formula">\( f(x) \)</span> が区間 <span class="formula">\([a, b]\)</span> で定義され、<span class="formula">\( f(a) \)</span> と <span class="formula">\( f(b) \)</span> が異なる符号を持つ場合、中間値の定理より、この区間内に少なくとも一つの実数解 <span class="formula">\( c \)</span> が存在します。二分法は、この区間を繰り返し半分に分割し、解を含むであろうより小さな区間を特定していく手法です。</p>
+
+<hr>
+
+<h2>アルゴリズムの手順</h2>
+
+<ol>
+    <li><strong>初期区間の設定</strong>:
+        <ul>
+            <li>区間 <span class="formula">\([a_0, b_0]\)</span> を選ぶ。ただし、<span class="formula">\( f(a_0) \times f(b_0) < 0 \)</span>（異符号）であること。</li>
+        </ul>
+    </li>
+    <li><strong>反復処理</strong>:
+        <ul>
+            <li>中点を計算する: <span class="formula">\( c = \dfrac{a + b}{2} \)</span></li>
+            <li><span class="formula">\( f(c) \)</span> を計算する。</li>
+            <li>判定:
+                <ul>
+                    <li><strong>ケース1</strong>: <span class="formula">\( f(c) = 0 \)</span> の場合、<span class="formula">\( c \)</span> が解。</li>
+                    <li><strong>ケース2</strong>: <span class="formula">\( f(a) \times f(c) < 0 \)</span> の場合、解は区間 <span class="formula">\([a, c]\)</span> に存在。
+                        <ul>
+                            <li><span class="formula">\( b \)</span> を <span class="formula">\( c \)</span> に更新。</li>
+                        </ul>
+                    </li>
+                    <li><strong>ケース3</strong>: <span class="formula">\( f(c) \times f(b) < 0 \)</span> の場合、解は区間 <span class="formula">\([c, b]\)</span> に存在。
+                        <ul>
+                            <li><span class="formula">\( a \)</span> を <span class="formula">\( c \)</span> に更新。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>収束判定:
+                <ul>
+                    <li>区間の幅 <span class="formula">\( |b - a| \)</span> が所定の許容誤差以下になれば、近似解を得たとみなす。</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li><strong>終了条件</strong>:
+        <ul>
+            <li>反復回数が最大回数に達する。</li>
+            <li>区間の幅が許容誤差以下になる。</li>
+        </ul>
+    </li>
+</ol>
+
+<hr>
+
+<h2>実装例（Pythonコード）</h2>
+
+<pre><code>def bisection_method(f, a, b, tol):
+    if f(a) * f(b) &gt;= 0:
+        print("初期区間が不適切です。")
+        return None
+
+    c = a
+    while (b - a) / 2 &gt; tol:
+        c = (a + b) / 2
+        if f(c) == 0:
+            break  # 解を正確に見つけた
+        elif f(a) * f(c) &lt; 0:
+            b = c
+        else:
+            a = c
+    return c
+
+# 例として f(x) = x^3 - x - 2 の解を探す
+def func(x):
+    return x**3 - x - 2
+
+approx_root = bisection_method(func, 1, 2, 1e-6)
+print("近似解:", approx_root)
+</code></pre>
+
+<hr>
+
+<h2>例題</h2>
+
+<p><strong>問題</strong>: 方程式 <span class="formula">\( x^3 - x - 2 = 0 \)</span> の実数解を二分法で求めよ。</p>
+
+<p><strong>解答手順</strong>:</p>
+
+<ol>
+    <li><strong>初期区間の選定</strong>:
+        <ul>
+            <li><span class="formula">\( f(1) = 1 - 1 - 2 = -2 \)</span></li>
+            <li><span class="formula">\( f(2) = 8 - 2 - 2 = 4 \)</span></li>
+            <li>よって、<span class="formula">\( f(1) \)</span> と <span class="formula">\( f(2) \)</span> は異符号なので、解は区間 <span class="formula">\([1, 2]\)</span> に存在。</li>
+        </ul>
+    </li>
+    <li><strong>反復計算</strong>:
+        <ul>
+            <li>中点 <span class="formula">\( c = \dfrac{1 + 2}{2} = 1.5 \)</span></li>
+            <li><span class="formula">\( f(1.5) = 3.375 - 1.5 - 2 = -0.125 \)</span></li>
+            <li><span class="formula">\( f(1) \times f(1.5) = (-2) \times (-0.125) = 0.25 &gt; 0 \)</span> なので、解は区間 <span class="formula">\([1.5, 2]\)</span> に存在。</li>
+            <li>次に、中点 <span class="formula">\( c = \dfrac{1.5 + 2}{2} = 1.75 \)</span></li>
+            <li><span class="formula">\( f(1.75) = 5.36 - 1.75 - 2 = 1.609 \)</span></li>
+            <li><span class="formula">\( f(1.5) \times f(1.75) = (-0.125) \times (1.609) = -0.201 &lt; 0 \)</span> なので、解は区間 <span class="formula">\([1.5, 1.75]\)</span> に存在。</li>
+            <li>このプロセスを許容誤差以下になるまで繰り返す。</li>
+        </ul>
+    </li>
+    <li><strong>結果</strong>:
+        <ul>
+            <li>反復計算により、解の近似値は <span class="formula">\( x \approx 1.6180 \)</span> と求まる。</li>
+        </ul>
+    </li>
+</ol>
+
+<hr>
+
+<h2>特徴</h2>
+
+<ul>
+    <li><strong>長所</strong>:
+        <ul>
+            <li>シンプルで実装が容易。</li>
+            <li>必ず収束する（ただし、連続関数で初期区間が適切な場合）。</li>
+        </ul>
+    </li>
+    <li><strong>短所</strong>:
+        <ul>
+            <li>収束速度が遅い（線形収束）。</li>
+            <li>重解（多重度が2以上の解）に対しては収束が遅くなる。</li>
+        </ul>
+    </li>
+</ul>
+
+<hr>
+
+<h2>注意点</h2>
+
+<ul>
+    <li><strong>初期区間の選択</strong>:
+        <ul>
+            <li>関数 <span class="formula">\( f(x) \)</span> が連続であることが前提。</li>
+            <li><span class="formula">\( f(a) \times f(b) < 0 \)</span> を満たす <span class="formula">\( a \)</span> と <span class="formula">\( b \)</span> を選ぶ必要がある。</li>
+        </ul>
+    </li>
+    <li><strong>区間内に複数の解がある場合</strong>:
+        <ul>
+            <li>二分法は区間内のいずれか一つの解に収束するが、どの解に収束するかは初期区間と関数の性質による。</li>
+        </ul>
+    </li>
+</ul>
+
+<hr>
+
+<h2>他の数値解法との比較</h2>
+
+<ul>
+    <li><strong>ニュートン法</strong>:
+        <ul>
+            <li>収束速度が二次（高速）だが、初期値の選択に敏感で、収束しない場合もある。</li>
+        </ul>
+    </li>
+    <li><strong>割線法</strong>:
+        <ul>
+            <li>収束速度がニュートン法より遅いが、導関数を必要としない。</li>
+        </ul>
+    </li>
+    <li><strong>二分法</strong>:
+        <ul>
+            <li>収束速度は遅いが、確実に収束するという安定性がある。</li>
+        </ul>
+    </li>
+</ul>
+
+<hr>
+
+<h2>まとめ</h2>
+
+<p>二分法は、数値解析における基本的かつ重要な手法であり、そのシンプルさと確実性から、多くの場面で利用されています。特に、他の方法が適用できない場合や、初期値の良し悪しに関わらず確実な解が求められる場合に有用です。ただし、収束速度が遅いという短所もあるため、問題の性質や必要な精度に応じて他の解法と組み合わせて使用することが推奨されます。</p>
+
+</body>
+</html>

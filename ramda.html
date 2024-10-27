@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>C++ ラムダ関数の使い方</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<h1>C++ ラムダ関数の使い方</h1>
+
+<p>C++の<strong>ラムダ関数</strong>（無名関数）は、その場で一時的な関数を定義し、関数オブジェクトとして扱うことができる機能です。ラムダ関数を使うことで、コードをより簡潔に書くことができ、特にSTLのアルゴリズム関数と組み合わせて便利に使用できます。</p>
+
+<hr>
+
+<h2>基本構文</h2>
+
+<pre><code>[capture](parameters) -&gt; return_type {
+    // 関数の本体
+};
+</code></pre>
+
+<p><strong>各要素の説明:</strong></p>
+
+<ul>
+    <li><strong>[capture]</strong>：ラムダ関数の外部にある変数を使用する場合に、それらをキャプチャする方法を指定します。
+        <ul>
+            <li><code>[]</code>：何もキャプチャしない</li>
+            <li><code>[=]</code>：外部の変数を値（コピー）でキャプチャ</li>
+            <li><code>[&amp;]</code>：外部の変数を参照でキャプチャ</li>
+            <li><code>[x, &amp;y]</code>：<code>x</code>は値で、<code>y</code>は参照でキャプチャ</li>
+        </ul>
+    </li>
+    <li><strong>(parameters)</strong>：関数の引数リスト</li>
+    <li><strong>-&gt; return_type</strong>：戻り値の型（省略可能。C++14以降では型推論されます）</li>
+    <li><strong>{ ... }</strong>：関数の本体</li>
+</ul>
+
+<hr>
+
+<h2>使用例</h2>
+
+<h3>1. 簡単なラムダ関数の定義と使用</h3>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    auto greet = []() {
+        std::cout &lt;&lt; "Hello, Lambda!" &lt;&lt; std::endl;
+    };
+
+    greet();  // 出力: Hello, Lambda!
+    return 0;
+}
+</code></pre>
+
+<h3>2. 引数と戻り値を持つラムダ関数</h3>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    auto add = [](int a, int b) -&gt; int {
+        return a + b;
+    };
+
+    int result = add(3, 5);
+    std::cout &lt;&lt; "3 + 5 = " &lt;&lt; result &lt;&lt; std::endl;  // 出力: 3 + 5 = 8
+    return 0;
+}
+</code></pre>
+
+<h3>3. 外部変数のキャプチャ</h3>
+
+<pre><code>#include &lt;iostream&gt;
+
+int main() {
+    int factor = 10;
+    auto multiply = [factor](int num) {
+        return num * factor;
+    };
+
+    std::cout &lt;&lt; "5 * factor = " &lt;&lt; multiply(5) &lt;&lt; std::endl;  // 出力: 5 * factor = 50
+    return 0;
+}
+</code></pre>
+
+<h3>4. STLアルゴリズムとの組み合わせ</h3>
+
+<pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {5, 2, 8, 1, 3};
+
+    // 昇順にソート
+    std::sort(numbers.begin(), numbers.end(), [](int a, int b) {
+        return a &lt; b;
+    });
+
+    // 結果を表示
+    for (int n : numbers) {
+        std::cout &lt;&lt; n &lt;&lt; " ";  // 出力: 1 2 3 5 8
+    }
+    return 0;
+}
+</code></pre>
+
+<hr>
+
+<h2>ポイント</h2>
+
+<ul>
+    <li><strong>キャプチャの方法を適切に選ぶ</strong>：不要な変数をキャプチャしないようにし、コードの安全性を高めます。</li>
+    <li><strong><code>mutable</code>キーワードの使用</strong>：キャプチャした変数をラムダ内で変更したい場合に使用します。
+        <pre><code>int count = 0;
+auto increment = [count]() mutable {
+    count++;
+    return count;
+};
+</code></pre>
+    </li>
+    <li><strong>ラムダ式の即時実行</strong>：定義と同時に実行することも可能です。
+        <pre><code>[](){
+    std::cout &lt;&lt; "This is an immediately executed lambda." &lt;&lt; std::endl;
+}();
+</code></pre>
+    </li>
+    <li><strong>戻り値の型推論</strong>：C++14以降では、<code>-&gt; return_type</code>を省略できます。</li>
+</ul>
+
+<hr>
+
+<h2>まとめ</h2>
+
+<p>ラムダ関数は、コードをよりシンプルかつ明確にする強力な機能です。特に一時的な関数オブジェクトが必要な場合や、コールバック関数を渡す際に有用です。正しく理解して活用することで、C++でのプログラミングがより効率的になります。</p>
+
+</body>
+</html>

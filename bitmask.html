@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ビットマスクを使って全ての組み合わせを調べるアルゴリズム</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<h1>ビットマスクを使って全ての組み合わせを調べるアルゴリズム</h1>
+
+<h2>1. ビットマスクとは</h2>
+<p>
+    ビットマスクとは、ビット列（0と1からなる数列）を用いて情報を効率的に表現・操作する手法です。各ビットは特定の要素や状態を表し、ビット演算を用いることで高速に計算を行うことができます。
+</p>
+
+<h2>2. ビットマスクで組み合わせを表現する方法</h2>
+<p>
+    N個の要素がある場合、その部分集合の総数は \(2^N\) 通りになります。これは、各要素が「選ぶ」か「選ばない」かの2通りの状態を持つためです。
+</p>
+<p>
+    ビットマスクでは、Nビットのビット列を用いて各要素の選択状態を表します。
+</p>
+<ul>
+    <li>ビットが1：対応する要素を選ぶ</li>
+    <li>ビットが0：対応する要素を選ばない</li>
+</ul>
+<p>
+    例えば、要素が3つ <code>[A, B, C]</code> の場合、ビットマスクは3ビットで表現され、以下のようになります。
+</p>
+
+<table border="1">
+    <tr>
+        <th>ビットマスク</th>
+        <th>部分集合</th>
+    </tr>
+    <tr>
+        <td>000</td>
+        <td>[]</td>
+    </tr>
+    <tr>
+        <td>001</td>
+        <td>[C]</td>
+    </tr>
+    <tr>
+        <td>010</td>
+        <td>[B]</td>
+    </tr>
+    <tr>
+        <td>011</td>
+        <td>[B, C]</td>
+    </tr>
+    <tr>
+        <td>100</td>
+        <td>[A]</td>
+    </tr>
+    <tr>
+        <td>101</td>
+        <td>[A, C]</td>
+    </tr>
+    <tr>
+        <td>110</td>
+        <td>[A, B]</td>
+    </tr>
+    <tr>
+        <td>111</td>
+        <td>[A, B, C]</td>
+    </tr>
+</table>
+
+<h2>3. アルゴリズムの詳細</h2>
+<ol>
+    <li>
+        <strong>全ビットマスクの列挙</strong>:
+        <ul>
+            <li>ビットマスクは0から \(2^N - 1\) までの整数で表されます。</li>
+            <li>これらの整数を順に処理することで、全ての部分集合を生成します。</li>
+        </ul>
+    </li>
+    <li>
+        <strong>各ビットの確認</strong>:
+        <ul>
+            <li>各ビットマスクに対して、0番目から \(N-1\) 番目のビットを調べます。</li>
+            <li>ビットが1であれば、対応する要素を部分集合に含めます。</li>
+        </ul>
+    </li>
+</ol>
+
+<h2>4. コード例</h2>
+
+<h3>Pythonによる実装</h3>
+<pre><code class="language-python">
+# 要素のリスト
+elements = ['A', 'B', 'C']
+
+# 全ビットマスクを列挙
+for bitmask in range(1 &lt;&lt; len(elements)):
+    subset = []
+    for i in range(len(elements)):
+        # ビットが立っているか確認
+        if bitmask & (1 &lt;&lt; i):
+            subset.append(elements[i])
+    print(f"ビットマスク: {bitmask:0{len(elements)}b}, 部分集合: {subset}")
+</code></pre>
+
+<p><strong>出力結果:</strong></p>
+<pre>
+ビットマスク: 000, 部分集合: []
+ビットマスク: 001, 部分集合: ['A']
+ビットマスク: 010, 部分集合: ['B']
+ビットマスク: 011, 部分集合: ['A', 'B']
+ビットマスク: 100, 部分集合: ['C']
+ビットマスク: 101, 部分集合: ['A', 'C']
+ビットマスク: 110, 部分集合: ['B', 'C']
+ビットマスク: 111, 部分集合: ['A', 'B', 'C']
+</pre>
+
+<h3>C++による実装</h3>
+<pre><code class="language-cpp">
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main() {
+    vector&lt;string&gt; elements = {"A", "B", "C"};
+    int N = elements.size();
+
+    // 全ビットマスクを列挙
+    for (int bitmask = 0; bitmask &lt; (1 &lt;&lt; N); bitmask++) {
+        vector&lt;string&gt; subset;
+        for (int i = 0; i &lt; N; i++) {
+            // ビットが立っているか確認
+            if (bitmask & (1 &lt;&lt; i)) {
+                subset.push_back(elements[i]);
+            }
+        }
+        // 出力
+        cout &lt;&lt; "ビットマスク: ";
+        for (int i = N - 1; i &gt;= 0; i--) {
+            cout &lt;&lt; ((bitmask &gt;&gt; i) &amp; 1);
+        }
+        cout &lt;&lt; ", 部分集合: [";
+        for (size_t i = 0; i &lt; subset.size(); i++) {
+            cout &lt;&lt; subset[i];
+            if (i &lt; subset.size() - 1) cout &lt;&lt; ", ";
+        }
+        cout &lt;&lt; "]" &lt;&lt; endl;
+    }
+
+    return 0;
+}
+</code></pre>
+
+<h2>5. 計算量について</h2>
+<ul>
+    <li><strong>時間計算量</strong>: \(O(2^N \times N)\)
+        <ul>
+            <li>全てのビットマスクの数は \(2^N\) 通り。</li>
+            <li>各ビットマスクごとに最大でNビットを確認する必要があります。</li>
+        </ul>
+    </li>
+    <li><strong>空間計算量</strong>: \(O(N)\)
+        <ul>
+            <li>一時的に部分集合を保持するためのメモリが必要です。</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>6. 応用例</h2>
+<ul>
+    <li><strong>部分和問題</strong>: 与えられた数列の部分集合の和が特定の値になる組み合わせを探す。</li>
+    <li><strong>組み合わせ最適化</strong>: 全ての組み合わせを調べて最適な解を見つける（例：ナップサック問題の小規模版）。</li>
+    <li><strong>パターン生成</strong>: 全ての可能な設定や状態を列挙する必要がある場合。</li>
+</ul>
+
+<h2>7. 注意点</h2>
+<ul>
+    <li><strong>要素数が多い場合の計算量増大</strong>: Nが大きくなると \(2^N\) が急速に増加するため、実行時間が現実的でなくなることがあります。</li>
+    <li><strong>ビット演算の利点</strong>: ビット演算は高速であり、効率的な実装が可能です。</li>
+</ul>
+
+<h2>8. まとめ</h2>
+<p>
+    ビットマスクを用いることで、要素の選択・非選択をビット列で表現し、全ての部分集合を効率的に列挙することができます。この手法は組み合わせ爆発を伴う問題において、小規模なNの場合に有効であり、アルゴリズムの基礎的な技術として広く利用されています。
+</p>
+
+</body>
+</html>

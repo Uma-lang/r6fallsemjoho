@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ASCIIコードを利用したプログラミング</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <h1>ASCIIコードを利用したプログラミング</h1>
+
+    <h2>1. ASCIIコードとは</h2>
+    <p>ASCIIコードは、文字を数値で表現する規格です。例えば、<strong>'A'</strong> は 65、<strong>'B'</strong> は 66、<strong>'a'</strong> は 97 などのように、各文字に一意の数値が割り当てられています。C++ では、文字を整数に暗黙的に変換することができ、これを利用してさまざまな操作を行うことができます。</p>
+
+    <h2>2. 文字のインデックスを利用する例</h2>
+    <p>次のコードは、文字列 <code>S</code> の各文字の位置を配列 <code>X</code> に格納する方法を示しています。このコードは、<code>S[i]</code> の文字が 'A' から何文字目にあるかを計算しています。</p>
+    <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main() {
+    string S = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    vector&lt;int&gt; X(26);
+
+    // 文字のインデックスを計算して格納
+    for (int i = 0; i &lt; 26; ++i) {
+        X[S[i] - 'A'] = i;
+    }
+
+    // 結果を表示
+    for (int i = 0; i &lt; 26; ++i) {
+        cout &lt;&lt; "文字: " &lt;&lt; S[i] &lt;&lt; " -> インデックス: " &lt;&lt; X[i] &lt;&lt; endl;
+    }
+
+    return 0;
+}
+</code></pre>
+
+    <h2>3. コードの説明</h2>
+    <p>このコードでは、<code>S</code> の各文字から 'A' の ASCII コードを引くことで、各文字が 'A' から何文字目にあるかを計算しています。</p>
+
+    <h3>重要なポイント</h3>
+    <ul>
+        <li><strong>ASCIIコードの引き算:</strong> <code>S[i] - 'A'</code> の結果は、文字 <code>S[i]</code> が 'A' から何文字目にあるかを示します。</li>
+        <li><strong>例:</strong> 'C' - 'A' は 2 です。したがって、アルファベットの 'C' は 'A' から 2 文字目であることがわかります。</li>
+    </ul>
+
+    <div class="note">
+        <strong>注意:</strong> このコードは、<code>S</code> に 'A' から 'Z' の文字が含まれていることを前提としています。異なる文字が含まれている場合、期待しない結果になる可能性があります。
+    </div>
+
+    <h2>4. 応用例: 文字の出現回数をカウント</h2>
+    <p>次のコードは、文字列内のアルファベットの出現回数をカウントする例です。</p>
+    <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main() {
+    string S = "HELLO WORLD";
+    vector&lt;int&gt; count(26, 0);
+
+    // 各文字の出現回数をカウント
+    for (char c : S) {
+        if (c &gt;= 'A' && c &lt;= 'Z') {
+            count[c - 'A']++;
+        }
+    }
+
+    // 結果を表示
+    for (int i = 0; i &lt; 26; ++i) {
+        if (count[i] &gt; 0) {
+            cout &lt;&lt; "文字: " &lt;&lt; static_cast&lt;char&gt;('A' + i) &lt;&lt; " -> 出現回数: " &lt;&lt; count[i] &lt;&lt; endl;
+        }
+    }
+
+    return 0;
+}
+</code></pre>
+
+    <h2>5. 応用例の説明</h2>
+    <p>このコードでは、文字列 <code>S</code> に含まれるアルファベットの各文字の出現回数をカウントしています。ASCII コードを利用することで、文字のインデックスを簡単に計算し、それを配列のインデックスとして利用しています。</p>
+
+    <h3>ポイント</h3>
+    <ul>
+        <li>大文字のアルファベット 'A' から 'Z' のみを対象にしています。</li>
+        <li>ASCII コードの引き算によって、対応するインデックスを計算し、出現回数を配列に格納しています。</li>
+    </ul>
+    
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>vector&lt;int&gt; A(N)の中身を並べ替える関数の紹介</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        hr {
+            border: none;
+            border-top: 1px solid #bdc3c7;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>vector&lt;int&gt; A(N)の中身を並べ替える関数の紹介</h1>
+
+    <p>C++で<code>vector&lt;int&gt; A(N)</code>の中身を並べ替えるための関数をいくつか紹介します。</p>
+
+    <hr>
+
+    <h2>1. 昇順・降順にソートする</h2>
+
+    <h3>a. 昇順にソートする（小さい順）</h3>
+    <pre><code>#include &lt;algorithm&gt; // std::sortを使用するために必要
+
+std::sort(A.begin(), A.end());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::sort</code>は、指定した範囲の要素を並べ替えます。</li>
+        <li><code>A.begin()</code>と<code>A.end()</code>は、ベクター<code>A</code>の最初から最後までの範囲を示します。</li>
+        <li>デフォルトでは、要素を昇順（小さい順）にソートします。</li>
+    </ul>
+
+    <h3>b. 降順にソートする（大きい順）</h3>
+    <pre><code>#include &lt;algorithm&gt; // std::sortを使用するために必要
+
+std::sort(A.begin(), A.end(), std::greater&lt;int&gt;());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::greater&lt;int&gt;()</code>を第三引数に渡すことで、降順にソートします。</li>
+    </ul>
+
+    <hr>
+
+    <h2>2. ベクターを逆順にする</h2>
+    <pre><code>#include &lt;algorithm&gt; // std::reverseを使用するために必要
+
+std::reverse(A.begin(), A.end());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::reverse</code>は、指定した範囲の要素を反転させます。</li>
+        <li>これにより、ベクターの要素順序が逆になります。</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. ベクターをランダムにシャッフルする</h2>
+    <pre><code>#include &lt;algorithm&gt; // std::shuffleを使用するために必要
+#include &lt;random&gt;    // 乱数エンジンを使用するために必要
+#include &lt;chrono&gt;    // 時間をシードに使うために必要
+
+// 乱数エンジンのシードを設定
+unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+std::shuffle(A.begin(), A.end(), std::default_random_engine(seed));</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::shuffle</code>は、指定した範囲の要素をランダムに並べ替えます。</li>
+        <li>第三引数に乱数エンジンを渡す必要があります。</li>
+        <li><code>std::default_random_engine</code>に現在の時間をシードとして渡しています。</li>
+    </ul>
+
+    <hr>
+
+    <h2>4. 独自の条件でソートする</h2>
+    <p>特定の条件に基づいて並べ替えたい場合、比較関数を定義することができます。</p>
+
+    <h3>例：奇数と偶数でソート（偶数を先に、奇数を後に）</h3>
+    <pre><code>#include &lt;algorithm&gt;
+
+// 比較関数を定義
+bool customCompare(int a, int b) {
+    // 偶数を前に、奇数を後に
+    if ((a % 2 == 0) && (b % 2 != 0))
+        return true;
+    if ((a % 2 != 0) && (b % 2 == 0))
+        return false;
+    // 両方偶数または両方奇数の場合、通常の大小比較
+    return a &lt; b;
+}
+
+// ソートの実行
+std::sort(A.begin(), A.end(), customCompare);</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>customCompare</code>関数を定義し、<code>std::sort</code>の第三引数として渡します。</li>
+        <li>これにより、カスタムの並べ替え条件でソートが可能です。</li>
+    </ul>
+
+    <hr>
+
+    <h2>5. 部分的にソートする</h2>
+    <pre><code>#include &lt;algorithm&gt;
+
+// 先頭から5番目の要素までをソート
+std::sort(A.begin(), A.begin() + 5);</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>A.begin() + 5</code>は、ベクターの先頭から5番目の要素を指します。</li>
+        <li>この範囲内のみソートが行われます。</li>
+    </ul>
+
+    <hr>
+
+    <h2>6. 安定ソートを行う</h2>
+    <p>安定ソートを行いたい場合は、<code>std::stable_sort</code>を使用します。</p>
+    <pre><code>#include &lt;algorithm&gt;
+
+std::stable_sort(A.begin(), A.end());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::stable_sort</code>は、同じ値の要素の元の順序を保持しながらソートを行います。</li>
+    </ul>
+
+    <hr>
+
+    <h2>7. N番目に小さい要素までをソート（部分ソート）</h2>
+    <pre><code>#include &lt;algorithm&gt;
+
+// 3番目に小さい要素までをソート（0-indexedで2番目まで）
+std::nth_element(A.begin(), A.begin() + 2, A.end());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::nth_element</code>は、指定した位置の要素がソート後のその位置に来るように並べ替えます。</li>
+        <li>他の要素の順序は保証されません。</li>
+    </ul>
+
+    <hr>
+
+    <h2>8. ユーザー定義の比較関数をラムダ式で定義</h2>
+    <pre><code>#include &lt;algorithm&gt;
+
+std::sort(A.begin(), A.end(), [](int a, int b) {
+    // 例：絶対値で比較
+    return abs(a) &lt; abs(b);
+});</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li>ラムダ式を使用して、比較関数をインラインで定義できます。</li>
+        <li>ここでは、絶対値での大小比較を行っています。</li>
+    </ul>
+
+    <hr>
+
+    <h2>9. 条件を満たす要素を前後に移動する（パーティショニング）</h2>
+    <pre><code>#include &lt;algorithm&gt;
+
+// 偶数を前に、奇数を後に移動
+std::partition(A.begin(), A.end(), [](int x) {
+    return x % 2 == 0;
+});</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::partition</code>は、条件を満たす要素と満たさない要素を分けます。</li>
+        <li>ソートはされませんが、要素が条件に応じて前後に移動します。</li>
+    </ul>
+
+    <hr>
+
+    <h2>10. ユニークな要素だけを残す</h2>
+    <pre><code>#include &lt;algorithm&gt;
+
+// ソートが必要
+std::sort(A.begin(), A.end());
+
+// 重複を削除
+A.erase(std::unique(A.begin(), A.end()), A.end());</code></pre>
+    <p><strong>説明：</strong></p>
+    <ul>
+        <li><code>std::unique</code>は、隣接する重複要素を削除します。</li>
+        <li><code>std::erase</code>で不要になった要素をベクターから取り除きます。</li>
+    </ul>
+
+    <hr>
+
+    <h2>注意点</h2>
+    <ul>
+        <li>これらの関数を使用するためには、<code>&lt;algorithm&gt;</code>ヘッダをインクルードする必要があります。</li>
+        <li>乱数を使用する際には、適切な乱数エンジンとシードを設定することで、予測可能性を下げることができます。</li>
+    </ul>
+
+    <hr>
+
+    <h2>例</h2>
+    <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; A = {5, 2, 8, 1, 9};
+
+    // 昇順にソート
+    std::sort(A.begin(), A.end());
+
+    // 結果を出力
+    for (int n : A) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    // 出力: 1 2 5 8 9
+
+    return 0;
+}</code></pre>
+
+    <hr>
+
+    <h2>まとめ</h2>
+    <ul>
+        <li><strong><code>std::sort</code></strong>：範囲内の要素をソートします（デフォルトは昇順）。</li>
+        <li><strong><code>std::reverse</code></strong>：範囲内の要素を逆順にします。</li>
+        <li><strong><code>std::shuffle</code></strong>：範囲内の要素をランダムに並べ替えます。</li>
+        <li><strong><code>std::stable_sort</code></strong>：安定ソートを行います。</li>
+        <li><strong><code>std::nth_element</code></strong>：指定した位置の要素をその位置に持ってきます。</li>
+        <li><strong><code>std::partition</code></strong>：条件を満たす要素と満たさない要素を分けます。</li>
+        <li><strong><code>std::unique</code></strong>：重複する要素を削除します（ソートが必要）。</li>
+        <li><strong>カスタム比較関数</strong>：ユーザー定義の条件で並べ替えが可能です。</li>
+    </ul>
+
+    <p>これらの関数を活用して、<code>vector&lt;int&gt; A(N)</code>の要素を目的に応じて並べ替えることができます。</p>
+
+    <p><strong>ご質問やさらに知りたいことがあれば、お気軽にお知らせください。</strong></p>
+</body>
+
+</html>

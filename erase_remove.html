@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>erase() と remove() の使い方</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <h1>erase() と remove() の使い方</h1>
+
+    <h2>1. erase() の使い方</h2>
+    <p><code>erase()</code> 関数は、C++ の <code>std::string</code> や <code>std::vector</code> などのコンテナから、要素を削除するために使用されます。複数のオーバーロードがあり、次のように使い分けることができます。</p>
+
+    <h3>指定した位置から特定の長さの要素を削除</h3>
+    <pre><code>std::string str = "Hello, world!";
+// 5番目の位置から3文字削除
+str.erase(5, 3); // "Hello world!"
+</code></pre>
+
+    <h3>イテレータを使って1文字を削除</h3>
+    <pre><code>std::string str = "Hello, world!";
+// 5番目の位置の文字を削除
+str.erase(str.begin() + 5); // "Hello world!"
+</code></pre>
+
+    <h3>範囲を指定して削除</h3>
+    <pre><code>std::string str = "Hello, world!";
+// 5番目の位置から8番目の位置まで削除
+str.erase(str.begin() + 5, str.begin() + 8); // "Hello world!"
+</code></pre>
+
+    <h2>2. remove() の使い方</h2>
+    <p><code>remove()</code> 関数は、特定の値を削除するための STL アルゴリズムです。しかし、<code>remove()</code> 自体は要素を物理的に削除しません。<strong>「削除対象でない要素を前方に詰めて移動させ、新しい終端を返す」</strong> という動作をします。実際に削除するには、<code>erase()</code> と組み合わせる必要があります。</p>
+
+    <h3>remove() と erase() を組み合わせて特定の要素を削除</h3>
+    <pre><code>#include &lt;algorithm&gt; // std::remove
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 3, 5, 3, 6};
+
+    // 要素 3 を削除
+    vec.erase(std::remove(vec.begin(), vec.end(), 3), vec.end());
+
+    // 結果を出力
+    for (int n : vec) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    return 0;
+}
+</code></pre>
+
+    <div class="note">
+        <strong>注意:</strong> <code>std::remove()</code> 自体は要素を削除するのではなく、削除対象でない要素を前に詰め、新しい終端を返します。物理的に削除するためには、<code>erase()</code> と組み合わせて使う必要があります。
+    </div>
+
+    <h3>条件付きで要素を削除: remove_if()</h3>
+    <pre><code>#include &lt;algorithm&gt; // std::remove_if
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5, 6};
+
+    // 偶数を削除
+    vec.erase(std::remove_if(vec.begin(), vec.end(), [](int n) { return n % 2 == 0; }), vec.end());
+
+    // 結果を出力
+    for (int n : vec) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    return 0;
+}
+</code></pre>
+</body>
+</html>
