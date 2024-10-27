@@ -24,6 +24,12 @@ h1 {
 
 ul {
     list-style: none;
+    /*max-width: 600px;*/
+    padding: 0;
+}
+
+ul.home {
+    list-style: none;
     max-width: 600px;
     margin: 0 auto;
     padding: 0;
@@ -33,7 +39,7 @@ li {
     margin: 15px 0;
 }
 
-a {
+a.home {
     display: block;
     padding: 15px 20px;
     background-color: #3498db;
@@ -45,7 +51,7 @@ a {
     font-size: 1.2em;
 }
 
-a:hover {
+a:hover.home {
     background-color: #2980b9;
 }
 
@@ -150,6 +156,12 @@ th, td {
 }
 th {
     background-color: #f2f2f2;
+}
+
+caption {
+    caption-side: top;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 600px) {
