@@ -38,7 +38,13 @@ def main():
                     
                     print(f"HTTP packet detected: Source Port: {source_port}, Destination Port: {destination_port}")
                     print(f"Payload starts at byte {payload_offset}")
-                    print(binascii.hexlify(raw_buffer[payload_offset:]).decode('utf-8'))  # ペイロードの内容を16進数で表示
+                    
+                    # ペイロードをテキスト形式で出力
+                    try:
+                        http_payload = raw_buffer[payload_offset:].decode('utf-8', errors='ignore')
+                        print(http_payload)  # HTTPリクエスト内容をそのまま表示
+                    except UnicodeDecodeError:
+                        print("Failed to decode HTTP payload.")
 
     except KeyboardInterrupt:
         if os.name == "nt":
