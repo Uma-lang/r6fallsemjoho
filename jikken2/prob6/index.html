@@ -208,16 +208,16 @@ def main():
     with open(file, 'r', encoding='utf-8') as f:
         buf = f.read().splitlines()
 
-    <span class="red"># 各行を検索してマルウェアパターンを探す
+    <span class="red">
     # 各行を検索してマルウェアパターンを探す
-i = 1  # 行番号を1から始める
-for row in buf:
-    for malware in signatures:  # .items()を使わずにキーのみを取得
-        patterns = signatures[malware]  # キーを使って対応する値（パターンリスト）を取得
-        for pattern in patterns:
-            if pattern in row:
-                print(f"found malware string {pattern} for {malware} in line {i}")
-    i += 1  # 行ごとにカウントを増やす</span>
+    i = 1  # 行番号を1から始める
+    for row in buf:
+        for malware in signatures:  # .items()を使わずにキーのみを取得
+            patterns = signatures[malware]  # キーを使って対応する値（パターンリスト）を取得
+            for pattern in patterns:
+                if pattern in row:
+                    print(f"found malware string {pattern} for {malware} in line {i}")
+        i += 1  # 行ごとにカウントを増やす</span>
 
 if __name__ == "__main__":
     main()
