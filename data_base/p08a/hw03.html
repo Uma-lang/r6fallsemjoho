@@ -1,605 +1,606 @@
-<!DOCTYPE html>
-<html lang="ja">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
-  <title>データベース論（岩切准教授）</title>
-  <link rel="stylesheet" href="../dbstyle.css">
-  <style type="text/css">
-  </style>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>データベース論（岩切准教授）</title>
+<link rel="stylesheet" href="../dbstyle.css">
+<style type="text/css">
+</style>
 </head>
-
 <body>
 
 
-  <h2>
-    <height=19 width=18 alt="">第１正規形の表と主キー、外部キー
-  </h2>
+<h2><height=19 width=18 alt="">第１正規形の表と主キー、外部キー</h2>
+<ul>
+  <li>非正規形のテーブル</li>
+  <li>第１正規形のテーブル</li>
+  <li>関数従属性</li>
+  <li>多値従属性</li>
+  <li>主キーと候補キー</li>
+  <li>外部キーと外部キー制約</li>
+</ul>
 
-  <h4> <a name="01">非正規形のテーブル</a></h4>
-  <p>
-    非正規形表とは、一つのフィールドへの複数情報の記載や、複数行にわたる記述を許したものです。手書きの表として収集したデータシートなどをまとめる際、一般的に用いられている形式です。表として閲覧する際に見やすく、また、表を手書きでまとめるときには、同じ内容を何度も記載する必要がないので、便利な形式といえます。
-  </p>
-  <table border=0 cellspacing=30>
-    <tr>
-      <td>
-        <table border=1>
-          <caption>課外活動状況（非正規形）</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=lightblue>課外活動（参加状況）</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ａ部（○）、Ｂ同好会（△）</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ部（△）、Ｂ同好会（×）、Ｃ研究会（○）</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>成績一覧（非正規形）</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=lightblue>科目（担当教官、教官所属）</td>
-            <td align=center bgcolor=lightblue>成績</td>
-          </tr>
-          <tr>
-            <td align=right rowspan=3>5001</td>
-            <td align=center rowspan=3>学生名１</td>
-            <td align=center>科目名１（教官名１、Ａ学科）</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=center>科目名２（教官名２、Ｂ学科）</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=center>科目名３（教官名２、Ｂ学科）</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=right rowspan=2>5002</td>
-            <td align=center rowspan=2>学生名２</td>
-            <td align=center>科目名１（教官名１、Ａ学科）</td>
-            <td align=center>Ｄ</td>
-          </tr>
-          <tr>
-            <td align=center>科目名４（教官名１、Ａ学科）</td>
-            <td align=center>Ｂ</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<h4> <a name="01">(1) 非正規形のテーブル</a></h4>
+<p>
+非正規形表とは、一つのフィールドへの複数情報の記載や、複数行にわたる記述を許したものです。手書きの表として収集したデータシートなどをまとめる際、一般的に用いられている形式です。表として閲覧する際に見やすく、また、表を手書きでまとめるときには、同じ内容を何度も記載する必要がないので、便利な形式といえます。
+</p>
+<table border=0 cellspacing=30>
+<tr>
+<td>
+<table border=1>
+ <caption>課外活動状況（非正規形）</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=lightblue>課外活動（参加状況）</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ａ部（○）、Ｂ同好会（△）</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ部（△）、Ｂ同好会（×）、Ｃ研究会（○）</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>成績一覧（非正規形）</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=lightblue>科目（担当教官、教官所属）</td>
+   <td align=center bgcolor=lightblue>成績</td>
+ </tr>
+ <tr>
+   <td align=right  rowspan=3>5001</td>
+   <td align=center rowspan=3>学生名１</td>
+   <td align=center>科目名１（教官名１、Ａ学科）</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=center>科目名２（教官名２、Ｂ学科）</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=center>科目名３（教官名２、Ｂ学科）</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=right  rowspan=2>5002</td>
+   <td align=center rowspan=2>学生名２</td>
+   <td align=center>科目名１（教官名１、Ａ学科）</td>
+   <td align=center>Ｄ</td>
+ </tr>
+ <tr>
+   <td align=center>科目名４（教官名１、Ａ学科）</td>
+   <td align=center>Ｂ</td>
+ </tr>
+</table>
+</td>
+</tr>
+</table>
 
-  <h4> <a name="02">第１正規形のテーブル</a></h4>
-  <p>
-    非正規形の表は、新しい情報の追加や削除の際に、フィールドの大きさや同じ情報を共有するレコード数を変更しなければなりません。特に、データ数が多くなると重複する要素をまとめ直す処理の負担は、大きくなります。そのため、非正規形は、機械的な自動処理には向かないといえます。そこで、一般的には、非正規形の表を正規化することにより、レコードの追加や削除を容易にします。通常、第１正規形から第３正規形が利用されます。理論的には、第４正規形、第５正規形まで定義できますが、あまり一般的ではありません。すなわち、第１正規形から第３正規形までを十分に理解していれば、問題ないといえます。
-  </p>
-  <p>
-    第１正規形は、正規化の最も基本となる形式です。これは、非正規形の表の重複する要素や分離できる要素を異なるレコードに分け、まとめ直したものです。非正規形から第１正規形への変換処理をフラット化とも呼びます。
-  </p>
+<h4> <a name="02">(2) 第１正規形のテーブル</a></h4>
+<p>
+非正規形の表は、新しい情報の追加や削除の際に、フィールドの大きさや同じ情報を共有するレコード数を変更しなければなりません。特に、データ数が多くなると重複する要素をまとめ直す処理の負担は、大きくなります。そのため、非正規形は、機械的な自動処理には向かないといえます。そこで、一般的には、非正規形の表を正規化することにより、レコードの追加や削除を容易にします。通常、第１正規形から第３正規形が利用されます。理論的には、第４正規形、第５正規形まで定義できますが、あまり一般的ではありません。すなわち、第１正規形から第３正規形までを十分に理解していれば、問題ないといえます。
+</p>
+<p>
+第１正規形は、正規化の最も基本となる形式です。これは、非正規形の表の重複する要素や分離できる要素を異なるレコードに分け、まとめ直したものです。非正規形から第１正規形への変換処理をフラット化とも呼びます。
+</p>
 
-  <table border=0 cellspacing=30>
-    <tr>
-      <td>
-        <table border=1>
-          <caption>課外活動状況（第１正規形）</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=lightblue>課外活動</td>
-            <td align=center bgcolor=lightblue>参加状況</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ａ部</td>
-            <td align=center>○</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ部</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>×</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｃ研究会</td>
-            <td align=center>○</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>成績一覧（第１正規形）</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=lightblue>科目</td>
-            <td align=center bgcolor=lightblue>担当教官</td>
-            <td align=center bgcolor=lightblue>教官所属</td>
-            <td align=center bgcolor=lightblue>成績</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名２</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名３</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｄ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名４</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<table border=0 cellspacing=30>
+<tr>
+<td>
+<table border=1>
+ <caption>課外活動状況（第１正規形）</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=lightblue>課外活動</td>
+   <td align=center bgcolor=lightblue>参加状況</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ａ部</td>
+   <td align=center>○</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ部</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>×</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｃ研究会</td>
+   <td align=center>○</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>成績一覧（第１正規形）</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=lightblue>科目</td>
+   <td align=center bgcolor=lightblue>担当教官</td>
+   <td align=center bgcolor=lightblue>教官所属</td>
+   <td align=center bgcolor=lightblue>成績</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名２</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名３</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｄ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名４</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+</table>
+</td>
+</tr>
+</table>
 
-  <h4> <a name="03">関数従属性</a></h4>
-  <p>
-    関数従属性は、あるフィールド値の変化がそれに関連するフィールドの値に影響を及ぼす性質です。フィールド値Ｘが、<em>フィールド値Ｙを関数的に決定する状態にあるとき、ＹはＸに関数的に従属する</em>といいます。このとき、<em>フィールド値Ｘは、フィールド値Ｙを関数的に決定する</em>ことになります。たとえば、成績｛Ａ，Ｂ，Ｃ，Ｄ｝は、得点に応じて決定されるとします。そうすると、成績は、得点に関数的に従属することになり、得点は、成績を関数的に決定することになります。ほかにも、身近な例として、｛商品単価、販売数｝が売上額を関数的に決定し、売上額が｛商品単価、販売数｝に関数的に従属する、という関係があります。
-  </p>
-  <table border=0 cellspacing=10 align=center>
-    <tr>
-      <td>
-        <table border=1 width=250>
-          <caption>成績＝判定関数（得点）</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>得点（Ｘ）</td>
-            <td align=center bgcolor=lightblue>成績（Ｙ）</td>
-          </tr>
-          <tr>
-            <td align=center>80以上</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=center>70以上、80未満</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=center>60以上、70未満</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=center>60未満</td>
-            <td align=center>Ｄ</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1 width=150>
-          <caption>成績判定結果</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>得点（Ｘ）</td>
-            <td align=center bgcolor=lightblue>成績（Ｙ）</td>
-          </tr>
-          <tr>
-            <td align=center>88</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=center>62</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=center>75</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=center>54</td>
-            <td align=center>Ｄ</td>
-          </tr>
-          <tr>
-            <td align=center>71</td>
-            <td align=center>Ｂ</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<h4> <a name="03">(3) 関数従属性</a></h4>
+<p>
+関数従属性は、あるフィールド値の変化がそれに関連するフィールドの値に影響を及ぼす性質です。フィールド値Ｘが、<em>フィールド値Ｙを関数的に決定する状態にあるとき、ＹはＸに関数的に従属する</em>といいます。このとき、<em>フィールド値Ｘは、フィールド値Ｙを関数的に決定する</em>ことになります。たとえば、成績｛Ａ，Ｂ，Ｃ，Ｄ｝は、得点に応じて決定されるとします。そうすると、成績は、得点に関数的に従属することになり、得点は、成績を関数的に決定することになります。ほかにも、身近な例として、｛商品単価、販売数｝が売上額を関数的に決定し、売上額が｛商品単価、販売数｝に関数的に従属する、という関係があります。
+</p>
+<table border=0 cellspacing=10 align=center>
+<tr>
+<td>
+<table border=1 width=250>
+ <caption>成績＝判定関数（得点）</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>得点（Ｘ）</td>
+   <td align=center bgcolor=lightblue>成績（Ｙ）</td>
+ </tr>
+ <tr>
+   <td align=center>80以上</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=center>70以上、80未満</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=center>60以上、70未満</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=center>60未満</td>
+   <td align=center>Ｄ</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1 width=150>
+ <caption>成績判定結果</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>得点（Ｘ）</td>
+   <td align=center bgcolor=lightblue>成績（Ｙ）</td>
+ </tr>
+ <tr>
+   <td align=center>88</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=center>62</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=center>75</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=center>54</td>
+   <td align=center>Ｄ</td>
+ </tr>
+ <tr>
+   <td align=center>71</td>
+   <td align=center>Ｂ</td>
+ </tr>
+</table>
+</td>
+</tr>
+</table>
 
-  <h4> <a name="04">多値従属性</a></h4>
-  <p>
-    多値従属性とは、あるフィールドの値が、そのレコードの複数のフィールド値を決定する性質です。たとえば、航空機の｛搭乗員、機種、出発、到着｝は、｛便名｝に<em>多値が従属</em>することになります。また、<em>｛便名｝は、｛搭乗員、機種、出発、到着｝の多値を決定</em>するともいいます。この関係が成り立つ場合、通常、その表は<em>情報無損失分解</em>できます。
-    数値以外の値を扱う点では、少し意味が異なりますが、ある値が別の値を一意に定めるので、広義の多値従属性は、関数従属性の一種ともいえます。
-  </p>
-  <table border=0 cellspacing=10 align=center>
-    <tr>
-      <td colspan=4 align=center>
-        <table border=1>
-          <caption>名簿</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=lightblue>ふりがな</td>
-            <td align=center bgcolor=lightblue>住所</td>
-            <td align=center bgcolor=lightblue>電話番号</td>
-          </tr>
-          <tr>
-            <td align=center>001</td>
-            <td align=center>氏名１</td>
-            <td align=center>しめい１</td>
-            <td align=center>住所１</td>
-            <td align=center>電話番号１</td>
-          </tr>
-          <tr>
-            <td align=center>002</td>
-            <td align=center>氏名２</td>
-            <td align=center>しめい２</td>
-            <td align=center>住所２</td>
-            <td align=center>電話番号２</td>
-          </tr>
-          <tr>
-            <td align=center>003</td>
-            <td align=center>氏名３</td>
-            <td align=center>しめい３</td>
-            <td align=center>住所３</td>
-            <td align=center>電話番号３</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <table border=1>
-          <caption>氏名</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-          </tr>
-          <tr>
-            <td align=center>001</td>
-            <td align=center>氏名１</td>
-          </tr>
-          <tr>
-            <td align=center>002</td>
-            <td align=center>氏名２</td>
-          </tr>
-          <tr>
-            <td align=center>003</td>
-            <td align=center>氏名３</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>ふりがな</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>ふりがな</td>
-          </tr>
-          <tr>
-            <td align=center>001</td>
-            <td align=center>しめい１</td>
-          </tr>
-          <tr>
-            <td align=center>002</td>
-            <td align=center>しめい２</td>
-          </tr>
-          <tr>
-            <td align=center>003</td>
-            <td align=center>しめい３</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>住所</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>住所</td>
-          </tr>
-          <tr>
-            <td align=center>001</td>
-            <td align=center>住所１</td>
-          </tr>
-          <tr>
-            <td align=center>002</td>
-            <td align=center>住所２</td>
-          </tr>
-          <tr>
-            <td align=center>003</td>
-            <td align=center>住所３</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>電話</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=lightblue>電話番号</td>
-          </tr>
-          <tr>
-            <td align=center>001</td>
-            <td align=center>電話番号１</td>
-          </tr>
-          <tr>
-            <td align=center>002</td>
-            <td align=center>電話番号２</td>
-          </tr>
-          <tr>
-            <td align=center>003</td>
-            <td align=center>電話番号３</td>
-          </tr>
-        </table>
-      </td>
+<h4> <a name="04">(4) 多値従属性</a></h4>
+<p>
+多値従属性とは、あるフィールドの値が、そのレコードの複数のフィールド値を決定する性質です。たとえば、航空機の｛搭乗員、機種、出発、到着｝は、｛便名｝に<em>多値が従属</em>することになります。また、<em>｛便名｝は、｛搭乗員、機種、出発、到着｝の多値を決定</em>するともいいます。この関係が成り立つ場合、通常、その表は<em>情報無損失分解</em>できます。
+数値以外の値を扱う点では、少し意味が異なりますが、ある値が別の値を一意に定めるので、広義の多値従属性は、関数従属性の一種ともいえます。
+</p>
+<table border=0 cellspacing=10 align=center>
+<tr>
+<td colspan=4 align=center>
+<table border=1>
+ <caption>名簿</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=lightblue>ふりがな</td>
+   <td align=center bgcolor=lightblue>住所</td>
+   <td align=center bgcolor=lightblue>電話番号</td>
+ </tr>
+ <tr>
+   <td align=center>001</td>
+   <td align=center>氏名１</td>
+   <td align=center>しめい１</td>
+   <td align=center>住所１</td>
+   <td align=center>電話番号１</td>
+ </tr>
+ <tr>
+   <td align=center>002</td>
+   <td align=center>氏名２</td>
+   <td align=center>しめい２</td>
+   <td align=center>住所２</td>
+   <td align=center>電話番号２</td>
+ </tr>
+ <tr>
+   <td align=center>003</td>
+   <td align=center>氏名３</td>
+   <td align=center>しめい３</td>
+   <td align=center>住所３</td>
+   <td align=center>電話番号３</td>
+ </tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table border=1>
+ <caption>氏名</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+ </tr>
+ <tr>
+   <td align=center>001</td>
+   <td align=center>氏名１</td>
+ </tr>
+ <tr>
+   <td align=center>002</td>
+   <td align=center>氏名２</td>
+ </tr>
+ <tr>
+   <td align=center>003</td>
+   <td align=center>氏名３</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>ふりがな</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>ふりがな</td>
+ </tr>
+ <tr>
+   <td align=center>001</td>
+   <td align=center>しめい１</td>
+ </tr>
+ <tr>
+   <td align=center>002</td>
+   <td align=center>しめい２</td>
+ </tr>
+ <tr>
+   <td align=center>003</td>
+   <td align=center>しめい３</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>住所</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>住所</td>
+ </tr>
+ <tr>
+   <td align=center>001</td>
+   <td align=center>住所１</td>
+ </tr>
+ <tr>
+   <td align=center>002</td>
+   <td align=center>住所２</td>
+ </tr>
+ <tr>
+   <td align=center>003</td>
+   <td align=center>住所３</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>電話</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=lightblue>電話番号</td>
+ </tr>
+ <tr>
+   <td align=center>001</td>
+   <td align=center>電話番号１</td>
+ </tr>
+ <tr>
+   <td align=center>002</td>
+   <td align=center>電話番号２</td>
+ </tr>
+ <tr>
+   <td align=center>003</td>
+   <td align=center>電話番号３</td>
+ </tr>
+</table>
+</td>
 
-    </tr>
-  </table>
+</tr>
+</table>
 
 
-  <h4> <a name="05">主キーと候補キー</a></h4>
-  <p>
-    主キーとは、<em>レコードを唯一に識別できる値を含むフィールドもしくはフィールドの組</em>です。すなわち、主キーのフィールド値に、同じ値が複数出現してはいけません。フィールドの組を主キーとする際は、その組数ができるだけ少なくなるように選択します。
-  </p>
-  <table border=0 cellspacing=30 align=center>
-    <tr>
-      <td>
-        <table border=1>
-          <caption>課外活動状況</caption>
-          <tr>
-            <td align=center bgcolor=Lime>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=Lime>課外活動</td>
-            <td align=center bgcolor=lightblue>参加状況</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ａ部</td>
-            <td align=center>○</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ部</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>×</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｃ研究会</td>
-            <td align=center>○</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>成績一覧</caption>
-          <tr>
-            <td align=center bgcolor=Lime>番号</td>
-            <td align=center bgcolor=lightblue>氏名</td>
-            <td align=center bgcolor=Lime>科目</td>
-            <td align=center bgcolor=lightblue>担当教官</td>
-            <td align=center bgcolor=lightblue>教官所属</td>
-            <td align=center bgcolor=lightblue>成績</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名２</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名３</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｄ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名４</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td align=center colspan=2>
-        <em>※同姓同名の学生が、同じ課外活動や科目を選択していない場合</em>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <table border=1>
-          <caption>課外活動状況</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=Lime>氏名</td>
-            <td align=center bgcolor=Lime>課外活動</td>
-            <td align=center bgcolor=lightblue>参加状況</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ａ部</td>
-            <td align=center>○</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ部</td>
-            <td align=center>△</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｂ同好会</td>
-            <td align=center>×</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=left>Ｃ研究会</td>
-            <td align=center>○</td>
-          </tr>
-        </table>
-      </td>
-      <td>
-        <table border=1>
-          <caption>成績一覧</caption>
-          <tr>
-            <td align=center bgcolor=lightblue>番号</td>
-            <td align=center bgcolor=Lime>氏名</td>
-            <td align=center bgcolor=Lime>科目</td>
-            <td align=center bgcolor=lightblue>担当教官</td>
-            <td align=center bgcolor=lightblue>教官所属</td>
-            <td align=center bgcolor=lightblue>成績</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ａ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名２</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｃ</td>
-          </tr>
-          <tr>
-            <td align=right>5001</td>
-            <td align=center>学生名１</td>
-            <td align=center>科目名３</td>
-            <td align=center>教官名２</td>
-            <td align=center>Ｂ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名１</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｄ</td>
-          </tr>
-          <tr>
-            <td align=right>5002</td>
-            <td align=center>学生名２</td>
-            <td align=center>科目名４</td>
-            <td align=center>教官名１</td>
-            <td align=center>Ａ学科</td>
-            <td align=center>Ｂ</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-  <p>
-    また、主キーとなりえるフィールドもしくはフィールドの組のことを、<em>候補キー</em>と呼びます。主キーとして<em>選ばれなかった候補キーのことを一意性制約</em>ともいいます（レコードを唯一に識別できるため）。また、主キーのフィールド値として、空値（NULL）を入力することはできません。
-  </p>
+<h4> <a name="05">(5) 主キーと候補キー</a></h4>
+<p>
+主キーとは、<em>レコードを唯一に識別できる値を含むフィールドもしくはフィールドの組</em>です。すなわち、主キーのフィールド値に、同じ値が複数出現してはいけません。フィールドの組を主キーとする際は、その組数ができるだけ少なくなるように選択します。
+</p>
+<table border=0 cellspacing=30 align=center>
+<tr>
+<td>
+<table border=1>
+ <caption>課外活動状況</caption>
+ <tr>
+   <td align=center bgcolor=Lime     >番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=Lime     >課外活動</td>
+   <td align=center bgcolor=lightblue>参加状況</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ａ部</td>
+   <td align=center>○</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ部</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>×</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｃ研究会</td>
+   <td align=center>○</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>成績一覧</caption>
+ <tr>
+   <td align=center bgcolor=Lime     >番号</td>
+   <td align=center bgcolor=lightblue>氏名</td>
+   <td align=center bgcolor=Lime     >科目</td>
+   <td align=center bgcolor=lightblue>担当教官</td>
+   <td align=center bgcolor=lightblue>教官所属</td>
+   <td align=center bgcolor=lightblue>成績</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名２</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名３</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｄ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名４</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align=center colspan=2>
+<em>※同姓同名の学生が、同じ課外活動や科目を選択していない場合</em>
+</td>
+</tr>
+<tr>
+<td>
+<table border=1>
+ <caption>課外活動状況</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=Lime     >氏名</td>
+   <td align=center bgcolor=Lime     >課外活動</td>
+   <td align=center bgcolor=lightblue>参加状況</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ａ部</td>
+   <td align=center>○</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ部</td>
+   <td align=center>△</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｂ同好会</td>
+   <td align=center>×</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=left>Ｃ研究会</td>
+   <td align=center>○</td>
+ </tr>
+</table>
+</td>
+<td>
+<table border=1>
+ <caption>成績一覧</caption>
+ <tr>
+   <td align=center bgcolor=lightblue>番号</td>
+   <td align=center bgcolor=Lime     >氏名</td>
+   <td align=center bgcolor=Lime     >科目</td>
+   <td align=center bgcolor=lightblue>担当教官</td>
+   <td align=center bgcolor=lightblue>教官所属</td>
+   <td align=center bgcolor=lightblue>成績</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ａ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名２</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｃ</td>
+ </tr>
+ <tr>
+   <td align=right>5001</td>
+   <td align=center>学生名１</td>
+   <td align=center>科目名３</td>
+   <td align=center>教官名２</td>
+   <td align=center>Ｂ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名１</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｄ</td>
+ </tr>
+ <tr>
+   <td align=right>5002</td>
+   <td align=center>学生名２</td>
+   <td align=center>科目名４</td>
+   <td align=center>教官名１</td>
+   <td align=center>Ａ学科</td>
+   <td align=center>Ｂ</td>
+ </tr>
+</table>
+</td>
+</tr>
+</table>
+<p>
+また、主キーとなりえるフィールドもしくはフィールドの組のことを、<em>候補キー</em>と呼びます。主キーとして<em>選ばれなかった候補キーのことを一意性制約</em>ともいいます（レコードを唯一に識別できるため）。また、主キーのフィールド値として、空値（NULL）を入力することはできません。
+</p>
 
-  <h4> <a name="06">外部キーと外部キー制約</a></h4>
-  <p>
-    ここで、関連性のある二つのテーブルがあるとします。一つが<em>主キーを持つ親テーブル</em>とし、もう一つを<em>外部キーを持つ子テーブル</em>とします。外部キーとは、図に示したとおり、<em>親テーブルの主キーに関連付けられた子テーブルの値（フィールド）</em>のことです。
-  </p>
-  <div align="center">
-    <img src="./03.gif">
-  </div>
+<h4> <a name="06">(6) 外部キーと外部キー制約</a></h4>
+<p>
+ここで、関連性のある二つのテーブルがあるとします。一つが<em>主キーを持つ親テーブル</em>とし、もう一つを<em>外部キーを持つ子テーブル</em>とします。外部キーとは、図に示したとおり、<em>親テーブルの主キーに関連付けられた子テーブルの値（フィールド）</em>のことです。
+</p>
+<div align="center">
+<img src="./03.gif">
+</div>
 
-  </table>
+</table>
 
 
 </body>
-
 </html>
