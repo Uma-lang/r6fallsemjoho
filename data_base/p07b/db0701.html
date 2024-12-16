@@ -1,35 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
-    <title>データベース論（岩切准教授）</title>
-    <link rel="stylesheet" href="../dbstyle.css">
-    <style type="text/css">
-    </style>
+<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+<title>データベース論（岩切准教授）</title>
+<link rel="stylesheet" href="../dbstyle.css">
+<style type="text/css">
+</style>
 </head>
-
 <body>
 
 
-    <h2>
-        <height=19 width=18 alt="">
-            テーブルの結合
-    </h2>
+<h2><height=19 width=18 alt="">
+テーブルの結合
+</h2>
+<p>
+データベースが持つ複数のテーブルを活用する際、通常は、必要な情報を抽出して正しい組を作り、加工して出力する必要があります。
+</p>
+<p>
+本講義では、次の手順により分解された状態のテーブル（コンピュータが管理しやすいデータ形式）を、利用者が活用しやすいテーブルに結合する代表的な手法について実習します。
+</p>
+<ul>
+  <li>交差結合</li>
+  <li>自己結合</li>
+  <li>左外部結合</li>
+  <li>右外部結合</li>
+  <li>内部結合</li>
+  <li>和結合</li>
+</ul>
 
-    <p>
-        データベースが持つ複数のテーブルを活用する際、通常は、必要な情報を抽出して正しい組を作り、加工して出力する必要があります。
-    </p>
-    <p>
-        本講義では、次の手順により分解された状態のテーブル（コンピュータが管理しやすいデータ形式）を、利用者が活用しやすいテーブルに結合する代表的な手法について実習します。
-    </p>
-    <h4><a name="00">実習準備</a></h4>
-    <p>
-        ここでは、すでにデータベースが持つ表を分割する処理について、復習を兼ねながら実習します。 具体的には、テーブル j4age
-        から必要なフィールド値をコピーする（同じ属性のテーブルを作成し、そこにレコードを読み込む）という手順の繰り返しになります。
-    </p>
-    <pre class=c>
+<h4><a name="00">実習準備</a></h4>
+<p>
+ここでは、すでにデータベースが持つ表を分割する処理について、復習を兼ねながら実習します。 具体的には、テーブル j4age から必要なフィールド値をコピーする（同じ属性のテーブルを作成し、そこにレコードを読み込む）という手順の繰り返しになります。
+</p>
+<pre class=c>
 [iwak@cmwww15 ~]$ <b>mysql -h home.nda.ac.jp -u iwak -p</b>
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -38,14 +40,14 @@ Server version: 5.0.45 Source distribution
 
 Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>use iwak;</b>
 Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
 
 Database changed
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>show tables;</b>
 +----------------+
 | Tables_in_iwak |
@@ -59,7 +61,7 @@ mysql> <b>show tables;</b>
 +----------------+
 6 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>create table <ems>namelist</ems>(id varchar(8), name varchar(32))</b>
     -> <b>select <ems>id, name</ems> from j4age;</b>
 Query OK, 200 rows affected (0.01 sec)
@@ -67,7 +69,7 @@ Records: 200  Duplicates: 0  Warnings: 0
 </pre>
 
 
-    <pre class=c>
+<pre class=c>
 mysql> <b>select * from namelist;</b>
 +--------+-----------------------+
 | id     | name                  |
@@ -84,13 +86,13 @@ mysql> <b>select * from namelist;</b>
 +--------+-----------------------+
 200 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>create table <ems>bloodtype</ems>(id varchar(8), type varchar(2))</b>
     -> <b>select <ems>id, <u>bloodtype as type</u></ems> from j4age;</b>
 Query OK, 200 rows affected (0.01 sec)
 Records: 200  Duplicates: 0  Warnings: 0
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>select * from bloodtype;</b>
 +--------+------+
 | id     | type |
@@ -107,18 +109,18 @@ mysql> <b>select * from bloodtype;</b>
 +--------+------+
 200 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>create table <ems>typename</ems>(type varchar(2), name varchar(16));</b>
 Query OK, 0 rows affected (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>insert into typename(<ems>type, name</ems>) values</b>
     -> <b>(<ems>"A","Type A Blood"</ems>),(<ems>"B","Type B Blood"</ems>),</b>
     -> <b>(<ems>"AB","Type AB Blood"</ems>),(<ems>"O","Type O Blood"</ems>);</b>
 Query OK, 4 rows affected (0.00 sec)
 Records: 4  Duplicates: 0  Warnings: 0
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>select * from typename;</b>
 +------+---------------+
 | type | name          |
@@ -130,18 +132,18 @@ mysql> <b>select * from typename;</b>
 +------+---------------+
 4 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>create table <ems>typename2</ems>(type varchar(2), name varchar(16));</b>
 Query OK, 0 rows affected (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>insert into typename2(<ems>type, name</ems>) values</b>
     -> <b>(<ems>"AA","Type AA Blood"</ems>),(<ems>"AO","Type AO Blood"</ems>),</b>
     -> <b>(<ems>"BB","Type BB Blood"</ems>),(<ems>"BO","Type BO Blood"</ems>);</b>
 Query OK, 4 rows affected (0.00 sec)
 Records: 4  Duplicates: 0  Warnings: 0
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>select * from typename2;</b>
 +------+---------------+
 | type | name          |
@@ -153,16 +155,16 @@ mysql> <b>select * from typename2;</b>
 +------+---------------+
 4 rows in set (0.00 sec)
 </pre>
-    <br>
-    今後の実習に備えて、外部からテーブルを一つ追加で読み込みます。
-    <br>
-    <pre class=c>
+<br>
+今後の実習に備えて、外部からテーブルを一つ追加で読み込みます。
+<br>
+<pre class=c>
 mysql> <b>create table <ems>j4team</ems>(id varchar(8),name varchar(32),pid varchar(8));</b>
 Query OK, 0 rows affected (0.00 sec)
 mysql> <b>quit</b>
 Bye
 </pre>
-    <pre class=c>
+<pre class=c>
 [iwak@cmwww15 ~]$ <b>wget http://home.nda.ac.jp/~iwak/J3DB/data/j4team.csv</b>
 
 --08:22:49--  http://home.nda.ac.jp/~iwak/J3DB/data/j4team.csv
@@ -176,7 +178,7 @@ Saving to: `j4team.csv'
 
 08:22:49 (70.5 MB/s) - `j4team.csv' を保存しました [591/591]
 </pre>
-    <pre class=c>
+<pre class=c>
 EDE1C01% <b>mysqlimport -h home.nda.ac.jp -L -p
               --fields-terminated-by=","
               --lines-terminated-by="\n"
@@ -184,7 +186,7 @@ EDE1C01% <b>mysqlimport -h home.nda.ac.jp -L -p
 Enter password: 
 iwak.j4team: Records: 20  Deleted: 0  Skipped: 0  Warnings: 0
 </pre>
-    <pre class=c>
+<pre class=c>
 [iwak@cmwww15 ~]$ <b>mysql -h home.nda.ac.jp -u iwak -p</b>
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -193,14 +195,14 @@ Server version: 5.0.45 Source distribution
 
 Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>use iwak;</b>
 Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
 
 Database changed
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> <b>select * from j4team;</b>
 +--------+--------------------+--------+
 | <ems>id</ems>     | <ems>name</ems>               | <ems>pid</ems>    |
@@ -228,10 +230,10 @@ mysql> <b>select * from j4team;</b>
 +--------+--------------------+--------+
 20 rows in set (0.00 sec)
 </pre>
-    <br>
-    以上の手順で作成されたテーブルの一覧を確認します。
-    <br>
-    <pre class=c>
+<br>
+以上の手順で作成されたテーブルの一覧を確認します。
+<br>
+<pre class=c>
 mysql> <b>show tables;</b>
 +----------------+
 | Tables_in_iwak |
@@ -250,15 +252,15 @@ mysql> <b>show tables;</b>
 </pre>
 
 
-    <h4>(1) <a name="01">交差結合(Cross join)</a></h4>
-    <p>
-        対応（関連）条件なしの結合です。二つの表から得られる<em>すべての組み合わせ</em>が網羅できます。すべての組を作成して、その中からなんらかのパターンを得たい場合などに利用しますが、あまり使われないです。
-    </p>
-    <div align="center">
-        <img src="./cj.gif">
-    </div>
+<h4>(1) <a name="01">交差結合(Cross join)</a></h4>
+<p>
+対応（関連）条件なしの結合です。二つの表から得られる<em>すべての組み合わせ</em>が網羅できます。すべての組を作成して、その中からなんらかのパターンを得たい場合などに利用しますが、あまり使われないです。
+</p>
+<div align="center">
+<img src="./cj.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from <em>namelist</em>,<em>typename</em>;
 +--------+-----------------------+------+---------------+
 | id     | name                  | type | name          |
@@ -284,7 +286,7 @@ mysql> select * from <em>namelist</em>,<em>typename</em>;
 +--------+-----------------------+------+---------------+
 800 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from bloodtype,typename;
 +--------+------+------+---------------+
 | id     | type | type | name          |
@@ -310,11 +312,10 @@ mysql> select * from bloodtype,typename;
 +--------+------+------+---------------+
 800 rows in set (0.00 sec)
 </pre>
-    <p>
-        交差結合は、条件指定することにより、必要な情報のみ含むテーブルを作成できます（後述の各種結合と同等の処理）。ただし、下の例の type
-        のように二つのテーブルに<em>同じフィールド名</em>が存在する場合には、<em>ピリオド（.）</em>で区切った識別子を付け加えなければなりません（<em>テーブル名.フィールド名</em>の書式）。
-    </p>
-    <pre class=c>
+<p>
+交差結合は、条件指定することにより、必要な情報のみ含むテーブルを作成できます（後述の各種結合と同等の処理）。ただし、下の例の type のように二つのテーブルに<em>同じフィールド名</em>が存在する場合には、<em>ピリオド（.）</em>で区切った識別子を付け加えなければなりません（<em>テーブル名.フィールド名</em>の書式）。
+</p>
+<pre class=c>
 mysql> select * from bloodtype, typename where <em>bloodtype.type</em>=<em>typename.type</em>;
 +--------+------+------+---------------+
 | id     | type | type | name          |
@@ -338,17 +339,16 @@ mysql> select * from bloodtype, typename where <em>bloodtype.type</em>=<em>typen
 </pre>
 
 
-    <h4>(2) <a name="02">自己結合(Self join)</a></h4>
-    <p>
-        自己結合は、特定のフィールドに<em>関連するフィールドが同じテーブル上に存在</em>するときに、それらの関連を得るときに用います。たとえば、ある競技チームのパートナーを示すテーブル「j4team」には、相棒の id
-        番号（pid）のみ示されています。
-    </p>
+<h4>(2) <a name="02">自己結合(Self join)</a></h4>
+<p>
+自己結合は、特定のフィールドに<em>関連するフィールドが同じテーブル上に存在</em>するときに、それらの関連を得るときに用います。たとえば、ある競技チームのパートナーを示すテーブル「j4team」には、相棒の id 番号（pid）のみ示されています。
+</p>
 
-    <div align="center">
-        <img src="./sj.gif">
-    </div>
+<div align="center">
+<img src="./sj.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from j4team;
 +--------+--------------------+--------+
 | id     | name               | pid    |
@@ -376,11 +376,10 @@ mysql> select * from j4team;
 +--------+--------------------+--------+
 20 rows in set (0.00 sec)
 </pre>
-    <p>
-        このテーブルを自己結合させると、相手の氏名を表示できるので、直感的にわかりやすくなります。
-        自己結合の要点は、<em>テーブルに別名（エイリアス）</em>を付け、一つの命令文の中で、同じテーブルを別のテーブルを扱うように記述する点です。
-    </p>
-    <pre class=c>
+<p>
+このテーブルを自己結合させると、相手の氏名を表示できるので、直感的にわかりやすくなります。 自己結合の要点は、<em>テーブルに別名（エイリアス）</em>を付け、一つの命令文の中で、同じテーブルを別のテーブルを扱うように記述する点です。
+</p>
+<pre class=c>
 mysql> select j4team.name,al_j4team.name from j4team, <em>j4team al_j4team</em>
     -> where j4team.pid=<em>al_j4team</em>.id;
 +--------------------+--------------------+
@@ -412,16 +411,16 @@ mysql> select j4team.name,al_j4team.name from j4team, <em>j4team al_j4team</em>
 
 
 
-    <h4>(3) <a name="03">左外部結合(Left join)</a></h4>
-    <p>
-        左外部結合は、二つのテーブルを左右に並べて結合する際に、<em>左側のレコードがすべて表示</em>される結合法です。
-    </p>
+<h4>(3) <a name="03">左外部結合(Left join)</a></h4>
+<p>
+左外部結合は、二つのテーブルを左右に並べて結合する際に、<em>左側のレコードがすべて表示</em>される結合法です。
+</p>
 
-    <div align="center">
-        <img src="./lj.gif">
-    </div>
+<div align="center">
+<img src="./lj.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from <em>namelist</em> left join <em>bloodtype</em> on namelist.id=bloodtype.id;
 +--------+-----------------------+--------+------+
 | id     | name                  | id     | type |
@@ -438,7 +437,7 @@ mysql> select * from <em>namelist</em> left join <em>bloodtype</em> on namelist.
 +--------+-----------------------+--------+------+
 200 rows in set (0.01 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from bloodtype left join typename on bloodtype.type=typename.type;
 +--------+------+------+---------------+
 | id     | type | type | name          |
@@ -457,16 +456,16 @@ mysql> select * from bloodtype left join typename on bloodtype.type=typename.typ
 </pre>
 
 
-    <h4>(4) <a name="04">右外部結合(Right join)</a></h4>
-    <p>
-        右外部結合は、左外部結合とは逆に、二つのテーブルを左右に並べて結合する際に、<em>右側のレコードがすべて表示</em>される結合法です。
-    </p>
+<h4>(4) <a name="04">右外部結合(Right join)</a></h4>
+<p>
+右外部結合は、左外部結合とは逆に、二つのテーブルを左右に並べて結合する際に、<em>右側のレコードがすべて表示</em>される結合法です。
+</p>
 
-    <div align="center">
-        <img src="./rj.gif">
-    </div>
+<div align="center">
+<img src="./rj.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from <em>bloodtype</em> right join <em>typename</em> on bloodtype.type=typename.type;
 +--------+------+------+---------------+
 | id     | type | type | name          |
@@ -494,14 +493,14 @@ mysql> select * from <em>bloodtype</em> right join <em>typename</em> on bloodtyp
 +--------+------+------+---------------+
 200 rows in set (0.00 sec)
 </pre>
-    <p>
-        右側のテーブルに<em>対応するレコードが無い場合</em>、左側のテーブルのレコードが<em>空値（NULL）</em>になります。
-    </p>
-    <pre class=c>
+<p>
+右側のテーブルに<em>対応するレコードが無い場合</em>、左側のテーブルのレコードが<em>空値（NULL）</em>になります。
+</p>
+<pre class=c>
 mysql> insert into typename(<ems>type, name</ems>) values (<ems>"X","Type X Blood"</ems>);
 Query OK, 1 row affected (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from typename;
 +------+---------------+
 | type | name          |
@@ -514,7 +513,7 @@ mysql> select * from typename;
 +------+---------------+
 5 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from <em>bloodtype</em> right join <em>typename</em> 
     -> on bloodtype.type=typename.type;
 +--------+------+------+---------------+
@@ -544,10 +543,10 @@ mysql> select * from <em>bloodtype</em> right join <em>typename</em>
 +--------+------+------+---------------+
 201 rows in set (0.00 sec)
 </pre>
-    <p>
-        また、最初に述べたとおり、結合は、使いやすいテーブルを得るための処理です。通常、<em>必要なフィールドのみ選択（selectで指定）して表示</em>します。
-    </p>
-    <pre class=c>
+<p>
+また、最初に述べたとおり、結合は、使いやすいテーブルを得るための処理です。通常、<em>必要なフィールドのみ選択（selectで指定）して表示</em>します。
+</p>
+<pre class=c>
 mysql> select bloodtype.id,bloodtype.type,typename.name
     -> from bloodtype right join typename on bloodtype.type=typename.type;
 +--------+------+---------------+
@@ -579,16 +578,16 @@ mysql> select bloodtype.id,bloodtype.type,typename.name
 </pre>
 
 
-    <h4>(5) <a name="05">内部結合(Inner join)</a></h4>
-    <p>
-        内部結合とは、二つのテーブルを結合した際に、<em>空値のレコードが現れない</em>ようにする結合法です。
-    </p>
+<h4>(5) <a name="05">内部結合(Inner join)</a></h4>
+<p>
+内部結合とは、二つのテーブルを結合した際に、<em>空値のレコードが現れない</em>ようにする結合法です。
+</p>
 
-    <div align="center">
-        <img src="./ij.gif">
-    </div>
+<div align="center">
+<img src="./ij.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from <em>bloodtype</em> inner join <em>typename</em>
     -> on bloodtype.type=typename.type;
 +--------+------+------+---------------+
@@ -613,7 +612,7 @@ mysql> select * from <em>bloodtype</em> inner join <em>typename</em>
 +--------+------+------+---------------+
 200 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select bloodtype.id,typename.name from bloodtype
     -> inner join typename on bloodtype.type=typename.type;
 +--------+---------------+
@@ -638,16 +637,16 @@ mysql> select bloodtype.id,typename.name from bloodtype
 </pre>
 
 
-    <h4>(6) <a name="06">和結合(Union)</a></h4>
-    <p>
-        二つのテーブルを<em>縦積みする結合</em>です。同じ構成のフィールドを持つテーブルのレコードを合わせたい場合に利用できます。同じ構成でない場合でも、フィールド名の対応を指定することにより、和結合できます。
-    </p>
+<h4>(6) <a name="06">和結合(Union)</a></h4>
+<p>
+二つのテーブルを<em>縦積みする結合</em>です。同じ構成のフィールドを持つテーブルのレコードを合わせたい場合に利用できます。同じ構成でない場合でも、フィールド名の対応を指定することにより、和結合できます。
+</p>
 
-    <div align="center">
-        <img src="./un.gif">
-    </div>
+<div align="center">
+<img src="./un.gif">
+</div>
 
-    <pre class=c>
+<pre class=c>
 mysql> select * from typename;
 +------+---------------+
 | type | name          |
@@ -660,7 +659,7 @@ mysql> select * from typename;
 +------+---------------+
 5 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from typename2;
 +------+---------------+
 | type | name          |
@@ -672,7 +671,7 @@ mysql> select * from typename2;
 +------+---------------+
 4 rows in set (0.00 sec)
 </pre>
-    <pre class=c>
+<pre class=c>
 mysql> select * from typename <em>union</em> select * from typename2;
 +------+---------------+
 | type | name          |
@@ -689,10 +688,10 @@ mysql> select * from typename <em>union</em> select * from typename2;
 +------+---------------+
 9 rows in set (0.01 sec)
 </pre>
-    <p>
-        また、<em>対応を無視して和結合</em>すると、フィールド値が定義の順番どおりに（不適切に）割り当てられて出力されます。
-    </p>
-    <pre class=c>
+<p>
+また、<em>対応を無視して和結合</em>すると、フィールド値が定義の順番どおりに（不適切に）割り当てられて出力されます。
+</p>
+<pre class=c>
 mysql> select * from typename union select * from bloodtype;
 +--------+---------------+
 | type   | name          |
@@ -719,10 +718,10 @@ mysql> select * from typename union select * from bloodtype;
 205 rows in set (0.00 sec)
 </pre>
 
-    <p>
-        結合したテーブルは、次のように<b>サブクエリ（入れ子型処理）</b>としてエリアス指定することで、便利に活用できます。
-    </p>
-    <pre class=c>
+<p>
+結合したテーブルは、次のように<b>サブクエリ（入れ子型処理）</b>としてエリアス指定することで、便利に活用できます。
+</p>
+<pre class=c>
 mysql> select * from
     -> (select * from typename union all select * from typename2) <b>utypename</b>
     ->  where <b>utypename.type</b>='X';
@@ -733,18 +732,17 @@ mysql> select * from
 +------+--------------+
 1 row in set (0.00 sec)
 </pre>
-    <p>
-        サブクエリにエリアス指定しなかった場合、次のエラーが出ます。エリアス指定は、忘れがちなので注意しましょう。
-    </p>
-    <pre class=c>
+<p>
+サブクエリにエリアス指定しなかった場合、次のエラーが出ます。エリアス指定は、忘れがちなので注意しましょう。
+</p>
+<pre class=c>
 mysql> select * from 
     -> (select * from typename union all select * from typename2) 
     ->  where type='X';
 ERROR 1248 (42000): <ems>Every derived table must have its own alias</ems>
 </pre>
-    <br>
-    <br>
+<br>
+<br>
 
 </body>
-
 </html>
