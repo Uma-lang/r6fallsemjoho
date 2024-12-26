@@ -1,148 +1,149 @@
-<!-- saved from url=(0041)http://home.nda.ac.jp/~iwak/J3MP/2023/07/ -->
 <html>
-
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-    <title>メディア情報処理（岩切准教授）</title>
-    <link rel="stylesheet" href="./style.css">
-    <style type="text/css">
-    </style>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>メディア情報処理（岩切准教授）</title>
+<link rel="stylesheet" href="../mpstyle.css">
+<style type="text/css">
+</style>
 </head>
-
 <body>
 
 
-    <h2>
-        <height=19 width="18" alt=""> 雑音除去とフィルタ処理</height=19>
-    </h2>
+<h2><height=19 width=18 alt=""> 幾何変換と補間（内挿）</h2>
+<ul>
+<li>アフィン変換</li>
+<li>アフィン変換処理の一例</li>
+<li>拡大（単純写像）による画素欠落</li>
+<li>ニアレストネイバー補間</li>
+<li>バイリニア補間</li>
+<li>バイキュービック補間</li>
+<li>補間画質の比較</li>
+<li>アフィン変換による回転</li>
+<li>回転による画素欠落</li>
+<li>内挿を考慮した回転</li>
+<li>アフィン変換による平行移動</li>
+<li>時系列画像（動画像）生成</li>
+</ul>
 
-    <h4>(1) <a name="001">雑音の分類</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/001.gif">
-    </div>
-    <br><br>
+<h4>(1) <a name="001">アフィン変換</a></h4>
+<p></p>
+<div align="center">
+<img src="./001.gif">
+</div>
+<br><br>
 
-    <h4>(2) <a name="002">代表的な雑音除去法</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/002.gif">
-    </div>
-    <br><br>
+<h4>(2) <a name="002">アフィン変換処理の一例</a></h4>
+<p></p>
+<div align="center">
+<img src="./002.png">
+</div>
+<br><br>
 
-    <h4>(3) <a name="003">移動平均法の概要</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <a href="http://home.nda.ac.jp/~iwak/J3MP/2023/07/MovingAverage00/">
-            <img src="./08_files/003.gif">
-        </a>
-    </div>
-    <br><br>
+<h4>(3) <a name="003">拡大（単純写像）による画素欠落</a></h4>
+<p></p>
+<div align="center">
+<img src="./003.png">
+<br><br>
+<img src="./003a.png">
+</div>
+<br><br>
 
-    <h4>(4) <a name="004">ＦＩＲとＩＩＲ</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/004.gif">
-    </div>
-    <br><br>
+<h4>(4) <a name="004">ニアレストネイバー補間</a></h4>
+<p></p>
+<div align="center">
+<img src="./004.png">
+<br><br>
+<img src="./004a.png">
+</div>
+<br><br>
 
-    <h4>(5) <a name="005">画像の移動平均化処理</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/005.gif">
-        <br><br>
-        <br><br>
-        <img src="./08_files/006.png">
-        <br><br>
-        <b>
-            移動平均処理例
-        </b>
-    </div>
-    <br><br>
+<h4>(5) <a name="005">バイリニア補間</a></h4>
+<p></p>
+<div align="center">
+<img src="./005.png">
+<br><br>
+<img src="./005a.png">
+</div>
+<br><br>
 
-    <h4>(6) <a name="006">移動平均フィルタ例（３×３）</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/007.gif">
-    </div>
-    <br><br>
+<h4>(6) <a name="006">バイキュービック補間</a></h4>
+<p></p>
+<div align="center">
+<img src="./006.png">
+<br><br>
+<img src="./006a.png">
+<br><br>
+<img src="./006b.png">
+</div>
+<br><br>
 
-    <h4>(7) <a name="007">移動平均法の雑音低減効果</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/008.png">
-        <br><br>
-        <br><br>
-        <img src="./08_files/MP25s.png">
-        <br><br>
-        <b>
-            移動平均処理プログラムの例
-        </b>
-    </div>
-    <br><br>
+<h4>(7) <a name="007">補間画質の比較</a></h4>
+<p></p>
+<div align="center">
+<img src="./007.gif">
+</div>
+<br><br>
 
-    <h4>(8) <a name="008">アンチエイリアシングへの応用</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/009.png">
-    </div>
-    <br><br>
+<h4>(8) <a name="008">アフィン変換による回転</a></h4>
+<p></p>
+<div align="center">
+<img src="./008.gif">
+</div>
+<br><br>
 
-    <h4>(9) <a name="009">メディアン（中央値）フィルタ</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/010.gif">
-    </div>
-    <br><br>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/011.png">
-        <br><br>
-        <b>
-            メディアンフィルタ処理例
-        </b>
-    </div>
-    <br><br>
+<h4>(9) <a name="009">回転による画素欠落</a></h4>
+<p></p>
+<div align="center">
+<img src="./009.gif">
+<br><br>
+<img src="./009a.gif">
+<br><br>
+<img src="./009b.png">
+<br><br>
+画像データのダウンロード： <a href="../data/Text.bmp">Text.bmp</a>
+<br><br>
+<img src="./009s.png">
+<br><br>
+</div>
+<br><br>
 
-    <h4>(10) <a name="010">選択的局所平均化</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/012.gif">
-        <br><br>
-        <br><br>
-        <img src="./08_files/013.gif">
-        <br><br>
-        <b>
-            局所平均処理窓の例
-        </b>
-        <br><br>
-        <br><br>
-        <img src="./08_files/014.png">
-        <br><br>
-        <b>
-            選択的局所平均化処理例
-        </b>
-    </div>
-    <br><br>
+<h4>(10) <a name="010">内挿を考慮した回転</a></h4>
+<p></p>
+<div align="center">
+<img src="./010.gif">
+<br><br>
+<img src="./010a.png">
+<br><br>
+<img src="./010b.gif">
+</div>
+<br><br>
 
-    <h4>(11) <a name="011">各フィルタ処理効果の比較</a></h4>
-    <p>
-    </p>
-    <div align="center">
-        <img src="./08_files/015.gif">
-    </div>
+<h4>(11) <a name="011">アフィン変換による平行移動</a></h4>
+<p></p>
+<div align="center">
+<img src="./011.gif">
+<br><br>
+<img src="./011a.png">
+</div>
+<br><br>
+
+<h4>(12) <a name="012">時系列画像（動画像）生成</a></h4>
+<p></p>
+<div align="center">
+<img src="./012.gif">
+<br><br>
+<img src="./012a.png">
+<br><br>
+<img src="./012b.gif">
+</div>
+<br><br>
+
+<h4><a name="013">課題７：内挿を考慮した画像の回転処理</a></h4>
+<p>
+<b>
+(9)回転による画素欠落、(10)内挿を考慮した回転を参考に、内挿を考慮した画像の回転処理プログラムを作成し、その実行結果のスクリーンショット（PNG形式）およびプログラムデータ一式（ZIP形式、Archive Sketch保存）をTeamsの課題に対する回答として提出せよ。
+</b>
+</p>
+
 </body>
-
 </html>
