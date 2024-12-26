@@ -1,30 +1,32 @@
-<!DOCTYPE html>
-<html lang="ja">
-
+<html>
 <head>
-     <meta charset="UTF-8">
-     <meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
-     <title>データベース論（岩切准教授）</title>
-     <link rel="stylesheet" href="../dbstyle.css">
-     <style type="text/css">
-     </style>
+<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">
+<title>データベース論（岩切准教授）</title>
+<link rel="stylesheet" href="dbstyle.css">
+<style type="text/css">
+</style>
 </head>
-
 <body>
 
 
-     <h2>
-          <height=19 width=18 alt="">
-               基本統計処理（集計関数）
-     </h2>
+<h2><height=19 width=18 alt="">
+基本統計処理（集計関数）
+</h2>
+<ul>
+  <li>準備</li>
+  <li>平均値</li>
+  <li>合計</li>
+  <li>標準偏差</li>
+  <li>最大値、最小値</li>
+  <li>レコード数</li>
+  <li>グループごとの集計</li>
+</ul>
 
-
-     <h4>(1) <a name="01">準備</a></h4>
-     <p>
-          本実習で使用するテーブルを作成します。教官のホームページ領域から、CSVファイル「<a
-               href="http://home.nda.ac.jp/~iwak/J3DB/data/j4age.csv">j4age.csv</a>」をダウンロードし、それを実習用データベース（各自のユーザ名のデータベース）に読み込みます。※各フィールドの定義は実行例を参照
-     </p>
-     <pre class=c>
+<h4>(1) <a name="01">準備</a></h4>
+<p>
+本実習で使用するテーブルを作成します。教官のホームページ領域から、CSVファイル「<a href="http://home.nda.ac.jp/~iwak/J3DB/data/j4age.csv">j4age.csv</a>」をダウンロードし、それを実習用データベース（各自のユーザ名のデータベース）に読み込みます。※各フィールドの定義は実行例を参照
+</p>
+<pre class=c>
 [iwak@cmwww15 ~]$ <em>wget http://home.nda.ac.jp/~iwak/J3DB/data/j4age.csv</em>
 --09:18:49--  http://home.nda.ac.jp/~iwak/J3DB/data/j4age.csv
 home.nda.ac.jp をDNSに問いあわせています... 10.0.0.44
@@ -37,7 +39,7 @@ Saving to: `j4age.csv'
 
 09:18:49 (447 MB/s) - `j4age.csv' を保存しました [7976/7976]
 </pre>
-     <pre class=c>
+<pre class=c>
 [iwak@cmwww15 ~]$ cat j4age.csv
 <ems>no,id,city,bloodtype,name,age</ems> ※フィールド名（項目名）を示す行
 1,811001,bunkyouku,A,Nozawa Katsuhiko,39
@@ -59,16 +61,16 @@ Saving to: `j4age.csv'
 199,765199,edogawaku,A,Endou Katsuhiko,29
 200,843200,bunkyouku,A,Taki Rika,44
 </pre>
-     <p>
-          ※注意： 各コマンドは一行で書くこと（空白は区切の意味を持つ）
-     </p>
-     <pre class=c>
+<p>
+※注意： 各コマンドは一行で書くこと（空白は区切の意味を持つ）
+</p>
+<pre class=c>
 [iwak@cmwww15 ~]$ <em>mysql</em> -h home.nda.ac.jp -u iwak -p --execute="use iwak;
                 <em>create table</em> j4age(no int, id varchar(8), city varchar(16),
                 bloodtype varchar(4), name varchar(32), age int);"
 Enter password: 
 </pre>
-     <pre class=c>
+<pre class=c>
 [iwak@cmwww15 ~]$ <em>mysqlimport</em> -h home.nda.ac.jp -u iwak -L -p 
                 --fields-terminated-by=","
                 --lines-terminated-by="\n"
@@ -79,10 +81,10 @@ iwak.j4age: Records: 200  Deleted: 0  Skipped: 0  Warnings: 0
 
 ※１行目（項目行）を読み飛ばしていることに注意（--ignore-lines）
 </pre>
-     <p>
-          次の処理結果の確認作業は、MySQLクライアントから対話形式で実施してもよいです。
-     </p>
-     <pre class=c>
+<p>
+次の処理結果の確認作業は、MySQLクライアントから対話形式で実施してもよいです。
+</p>
+<pre class=c>
 [iwak@cmwww15 ~]$ <em>mysql -h home.nda.ac.jp -u iwak -p --execute="use iwak; show tables;"</em>
 Enter password: 
 +----------------+
@@ -93,7 +95,7 @@ Enter password:
 | list1a         | 
 +----------------+
 </pre>
-     <pre class=c>
+<pre class=c>
 [iwak@cmwww15 ~]$ <em>mysql -h home.nda.ac.jp -u iwak -p --execute="use iwak; select * from j4age;"</em>
 Enter password: 
 
@@ -121,10 +123,10 @@ Enter password:
 +------+--------+-------------+-----------+-----------------------+------+
 
 </pre>
-     <p>
-          このように実習用テーブルの準備ができたならば、MySQLクライアントを起動します。
-     </p>
-     <pre class=c>
+<p>
+このように実習用テーブルの準備ができたならば、MySQLクライアントを起動します。
+</p>
+<pre class=c>
 [iwak@cmwww15 ~]$ mysql -h home.nda.ac.jp -u iwak -p;
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -133,7 +135,7 @@ Server version: 5.0.45 Source distribution
 
 Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
 </pre>
-     <pre class=c>
+<pre class=c>
 mysql> use iwak;
 Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
@@ -142,11 +144,11 @@ You can turn off this feature to get a quicker startup with -A
 
 
 
-     <h4>(2) <a name="02">平均値</a></h4>
-     <p>
-          指定テーブルに関するフィールド上の値の平均を求める関数は、 <em>AVG</em> 関数です。平均値を求めるフィールド名は、引数として指定します。テーブル名は、from 構文で指定します。
-     </p>
-     <pre class=c>
+<h4>(2) <a name="02">平均値</a></h4>
+<p>
+指定テーブルに関するフィールド上の値の平均を求める関数は、 <em>AVG</em> 関数です。平均値を求めるフィールド名は、引数として指定します。テーブル名は、from 構文で指定します。
+</p>
+<pre class=c>
 mysql> select <em>avg(age)</em> from j4age;
 +----------+
 | avg(age) |
@@ -157,11 +159,11 @@ mysql> select <em>avg(age)</em> from j4age;
 </pre>
 
 
-     <h4>(3) <a name="03">合計</a></h4>
-     <p>
-          指定テーブルに関するフィールド上の値の合計を求める関数は、 <em>SUM</em> 関数です。基本的な使用法は、AVG関数と同様です（フィールド名とテーブル名を指定）。
-     </p>
-     <pre class=c>
+<h4>(3) <a name="03">合計</a></h4>
+<p>
+指定テーブルに関するフィールド上の値の合計を求める関数は、 <em>SUM</em> 関数です。基本的な使用法は、AVG関数と同様です（フィールド名とテーブル名を指定）。
+</p>
+<pre class=c>
 mysql> select <em>sum(age)</em> from j4age;
 +----------+
 | sum(age) |
@@ -172,11 +174,11 @@ mysql> select <em>sum(age)</em> from j4age;
 </pre>
 
 
-     <h4>(4) <a name="04">標準偏差</a></h4>
-     <p>
-          指定テーブルに関するフィールド上の値の標準偏差を求める関数は、 <em>STD</em> 関数です。基本的な使用法は、AVG関数と同様です。
-     </p>
-     <pre class=c>
+<h4>(4) <a name="04">標準偏差</a></h4>
+<p>
+指定テーブルに関するフィールド上の値の標準偏差を求める関数は、 <em>STD</em> 関数です。基本的な使用法は、AVG関数と同様です。
+</p>
+<pre class=c>
 mysql> select <em>std(age)</em> from j4age;
 +----------+
 | std(age) |
@@ -187,11 +189,11 @@ mysql> select <em>std(age)</em> from j4age;
 </pre>
 
 
-     <h4>(5) <a name="05">最大値、最小値</a></h4>
-     <p>
-          指定テーブルに関するフィールド上の値の最大値を求める関数は、 <em>MAX</em> 関数です。また、MAX関数とは逆に、最小値を求める関数が <em>MIN</em> 関数です。基本的な使用法は、これまでと同様です。
-     </p>
-     <pre class=c>
+<h4>(5) <a name="05">最大値、最小値</a></h4>
+<p>
+指定テーブルに関するフィールド上の値の最大値を求める関数は、 <em>MAX</em> 関数です。また、MAX関数とは逆に、最小値を求める関数が <em>MIN</em> 関数です。基本的な使用法は、これまでと同様です。
+</p>
+<pre class=c>
 mysql> select <em>max(age)</em> from j4age;
 +----------+
 | max(age) |
@@ -200,7 +202,7 @@ mysql> select <em>max(age)</em> from j4age;
 +----------+
 1 row in set (0.00 sec)
 </pre>
-     <pre class=c>
+<pre class=c>
 mysql> select <em>min(age)</em> from j4age;
 +----------+
 | min(age) |
@@ -210,11 +212,11 @@ mysql> select <em>min(age)</em> from j4age;
 1 row in set (0.00 sec)
 </pre>
 
-     <h4>(6) <a name="06">レコード数</a></h4>
-     <p>
-          指定テーブル上のレコード数を調べる関数は、 <em>COUNT</em> 関数です。基本的な使用法は、これまでと同様です。引数として、<em>フィールド名</em>を与えても同じ結果が得られます。
-     </p>
-     <pre class=c>
+<h4>(6) <a name="06">レコード数</a></h4>
+<p>
+指定テーブル上のレコード数を調べる関数は、  <em>COUNT</em> 関数です。基本的な使用法は、これまでと同様です。引数として、<em>フィールド名</em>を与えても同じ結果が得られます。
+</p>
+<pre class=c>
 mysql> select <em>count(*)</em> from j4age;
 +----------+
 | count(*) |
@@ -223,7 +225,7 @@ mysql> select <em>count(*)</em> from j4age;
 +----------+
 1 row in set (0.00 sec)
 </pre>
-     <pre class=c>
+<pre class=c>
 mysql> select <em>count(age)</em> from j4age;
 +------------+
 | count(age) |
@@ -234,12 +236,11 @@ mysql> select <em>count(age)</em> from j4age;
 </pre>
 
 
-     <h4>(7) <a name="07">グループごとの集計</a></h4>
-     <p>
-          <em>GROUP BY 構文</em>により、レコードのグループ化指定ができます。グループ化処理の際は、 <em>識別子（各グループ共通の値）</em>が含まれるフィールドを準備し（もしくは、定めて）、それを
-          GROUP BY 構文により指定します。下の例では、基本的な使い方を示します。
-     </p>
-     <pre class=c>
+<h4>(7) <a name="07">グループごとの集計</a></h4>
+<p>
+<em>GROUP BY 構文</em>により、レコードのグループ化指定ができます。グループ化処理の際は、 <em>識別子（各グループ共通の値）</em>が含まれるフィールドを準備し（もしくは、定めて）、それを GROUP BY 構文により指定します。下の例では、基本的な使い方を示します。
+</p>
+<pre class=c>
 mysql> select bloodtype, count(age) from j4age <em>group by</em> bloodtype;
 +-----------+------------+
 | bloodtype | count(age) |
@@ -251,7 +252,7 @@ mysql> select bloodtype, count(age) from j4age <em>group by</em> bloodtype;
 +-----------+------------+
 </pre>
 
-     <!--
+<!--
 <h4>(8) <a name="08">演習(Exercises)</a></h4>
 <p>
 これまでに学んだ SQL 構文を復習するために、いくつかの実行例を示します。各処理内容について、各SQL構文をよく確認しながら解読してみてください。
@@ -325,5 +326,4 @@ mysql> select city, count(age) as NUM, format(avg(age),2) as AVG from j4age grou
 -->
 
 </body>
-
 </html>
